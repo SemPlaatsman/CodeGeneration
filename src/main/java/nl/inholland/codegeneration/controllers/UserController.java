@@ -26,7 +26,7 @@ public class UserController {
 
     @RequestMapping(path = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<User> insertUser(@RequestBody User user) {
-        User _user = userRepository.save(new User(123L, true, false, "sempl", "sem123", "Sem", "Plaatsman", "688208@student.inholland.nl", "06 12345678", LocalDate.of(2003, 9, 1), new BigDecimal(1000), new BigDecimal(200), false));
+        User _user = userRepository.save(new User(null, false, true, user.getUsername(), user.getPassword(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhoneNumber(), user.getBirthdate(), user.getDayLimit(), user.getTransactionLimit(), false));
         return ResponseEntity.status(201).body(_user);
     }
 }

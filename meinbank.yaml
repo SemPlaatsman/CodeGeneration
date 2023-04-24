@@ -47,8 +47,7 @@ paths:
                     - $ref: "#/components/schemas/User"
               example:
                 - id: 1
-                  isEmployee: false
-                  isCustomer: true
+                  role: Customer
                   username: "johndoe"
                   password: "john123"
                   firstName: "John"
@@ -60,8 +59,7 @@ paths:
                   transactionLimit: 200
                   isDeleted: false
                 - id: 2
-                  isEmployee: false
-                  isCustomer: true
+                  role: Customer
                   username: "janedoe"
                   password: "jane123"
                   firstName: "Jane"
@@ -73,8 +71,7 @@ paths:
                   transactionLimit: 200
                   isDeleted: false
                 - id: 3
-                  isEmployee: false
-                  isCustomer: true
+                  role: Customer
                   username: "richdoe"
                   password: "rich123"
                   firstName: "Rich"
@@ -86,8 +83,7 @@ paths:
                   transactionLimit: 300
                   isDeleted: false
                 - id: 4
-                  isEmployee: false
-                  isCustomer: true
+                  role: Customer
                   username: "jake"
                   password: "jake123"
                   firstName: "Jake"
@@ -134,8 +130,7 @@ paths:
                 $ref: "#/components/schemas/User"
               example:
                 id: 1
-                isEmployee: false
-                isCustomer: true
+                role: Customer
                 username: "johndoe"
                 password: "john123"
                 firstName: "John"
@@ -193,8 +188,7 @@ paths:
                 $ref: "#/components/schemas/User"
               example:
                 id: 1
-                isEmployee: false
-                isCustomer: true
+                role: Customer
                 username: "johndoe"
                 password: "john123"
                 firstName: "John"
@@ -224,8 +218,7 @@ paths:
               $ref: "#/components/schemas/User"
             example:
               id: 1
-              isEmployee: false
-              isCustomer: true
+              role: Customer
               username: "janedoe"
               password: "jane123"
               firstName: "Jane"
@@ -251,8 +244,7 @@ paths:
                 $ref: "#/components/schemas/User"
               example:
                 id: 1
-                isEmployee: false
-                isCustomer: true
+                role: Customer
                 username: "janedoe"
                 password: "jane123"
                 firstName: "Jane"
@@ -281,26 +273,8 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-              example:
-                id: 1
-                isEmployee: false
-                isCustomer: true
-                username: "janedoe"
-                password: "jane123"
-                firstName: "Jane"
-                lastName: "Doe"
-                email: "janedoe@mail.com"
-                phoneNumber: "06 12345678"
-                birthdate: "2000-01-02"
-                dayLimit: 1000
-                transactionLimit: 200
-                isDeleted: false
+        "204":
+          description: No Content
         "400":
           description: Bad Request
         "401":
@@ -725,9 +699,66 @@ paths:
   /transactions:
     get:
       summary: Get all transactions
+      parameters:
+        - in: query
+          name: filter
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: fields
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: offset
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  anyOf:
+                    - $ref: "#/components/schemas/Transaction"
+              example:
+                - id: 1
+                  timestamp: 2023-01-02 01:23:45
+                  accountFrom: NL01INHO0000000001
+                  accountTo: NL02INHO0000000002
+                  amount: 340
+                  performingUser: 1
+                  description: "Money laundering"
+                - id: 2
+                  timestamp: 2023-01-02 01:23:45
+                  accountFrom: NL24INHO0000000121
+                  accountTo: NL34INHO0000000034
+                  amount: 200
+                  performingUser: 1
+                  description: "Money laundering"
+                - id: 3
+                  timestamp: 2023-01-02 01:23:45
+                  accountFrom: NL04INHO0000000004
+                  accountTo: NL06INHO0000000006
+                  amount: 120
+                  performingUser: 1
+                  description: "Money laundering"
+                - id: 4
+                  timestamp: 2023-01-02 01:23:45
+                  accountFrom: NL01INHO0000000001
+                  accountTo: NL00INHO0000000194
+                  amount: 2.10
+                  performingUser: 1
+                  description: "Money laundering"
         "400":
           description: Bad Request
         "401":
@@ -739,9 +770,36 @@ paths:
 
     post:
       summary: Create a new transaction
+      requestBody:
+        description: A JSON object containing all the values needed to create a transaction.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Transaction"
+            example:
+              id: 1
+              timestamp: 2020-01-01 00:00:00
+              accountFrom: NL02INHO0000000002
+              accountTo: NL34INHO0000000034
+              amount: 100
+              performingUser: 1
+              description: "Test transaction"         
       responses:
         "201":
           description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+              example:
+                id: 1
+                timestamp: 2020-01-01 00:00:00
+                accountFrom: NL02INHO0000000002
+                accountTo: NL34INHO0000000034
+                amount: 100
+                performingUser: 1
+                description: "Test transaction"              
         "400":
           description: Bad Request
         "401":
@@ -760,9 +818,42 @@ paths:
           required: true
           schema:
             type: integer
+        - in: query
+          name: filter
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: fields
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: offset
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+              example:
+                id: 1
+                timestamp: 2023-01-02 01:23:45
+                accountFrom: NL01INHO0000000001
+                accountTo: NL02INHO0000000002
+                amount: 340
+                performingUser: 1
+                description: "Money laundering"
+                
         "400":
           description: Bad Request
         "401":
@@ -972,7 +1063,7 @@ components:
           format: int64
           nullable: false
           minimum: 0
-        transaction_date:
+        timestamp:
           type: string
           format: date-time
           nullable: false

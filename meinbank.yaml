@@ -390,9 +390,66 @@ paths:
   /accounts:
     get:
       summary: Get all accounts
+      parameters:
+        - in: query
+          name: filter
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: fields
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: offset
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Account"
+              example:
+                - id: 97
+                  iban: NL02INHO0000000002
+                  customerId: 1
+                  balance: 130.23
+                  absoluteLimit: -2000
+                  role: Current
+                  isDeleted: false
+                - id: 101
+                  iban: NL34INHO0000000034
+                  customerId: 1
+                  balance: 927
+                  absoluteLimit: -1000
+                  role: Current
+                  isDeleted: false
+                - id: 102
+                  iban: NL25INHO0000565632
+                  customerId: 1
+                  balance: -187.01
+                  absoluteLimit: -2000
+                  role: Current
+                  isDeleted: false
+                - id: 134
+                  iban: NL62INHO0062924932
+                  customerId: 1
+                  balance: 72382130.23
+                  absoluteLimit: -2000
+                  role: Savings
+                  isDeleted: false
+
         "400":
           description: Bad Request
         "401":
@@ -404,6 +461,19 @@ paths:
 
     post:
       summary: Create a new account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Account"
+            example:
+              iban: NL02INHO0000000002
+              customerId: 1
+              balance: 130.23
+              absoluteLimit: -2000
+              role: Current
+              isDeleted: false
       responses:
         "201":
           description: Created
@@ -416,10 +486,31 @@ paths:
       tags:
         - "accounts"
 
+  # accounts/{iban}
   /accounts/{iban}:
     get:
       summary: Get a specific account
       parameters:
+        - in: query
+          name: filter
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: fields
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: offset
+          required: false
+          schema:
+            type: string
         - name: iban
           in: path
           required: true
@@ -428,6 +519,17 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
+              example:
+                iban: NL02INHO0000000002
+                customerId: 1
+                balance: 130.23
+                absoluteLimit: -2000
+                role: Current
+                isDeleted: false
         "400":
           description: Bad Request
         "401":
@@ -445,9 +547,33 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Account"
+            example:
+              iban: NL02INHO0000000002
+              customerId: 1
+              balance: 130.23
+              absoluteLimit: -2000
+              role: Current
+              isDeleted: false
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
+              example:
+                iban: NL02INHO0000000002
+                customerId: 1
+                balance: 130.23
+                absoluteLimit: -2000
+                role: Current
+                isDeleted: false
         "400":
           description: Bad Request
         "401":
@@ -466,8 +592,8 @@ paths:
           schema:
             type: string
       responses:
-        "200":
-          description: OK
+        "204":
+          description: No Content
         "400":
           description: Bad Request
         "401":
@@ -481,6 +607,26 @@ paths:
     get:
       summary: Get all transactions of a specific account
       parameters:
+        - in: query
+          name: filter
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: fields
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: offset
+          required: false
+          schema:
+            type: string
         - name: iban
           in: path
           required: true
@@ -489,6 +635,30 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+              example:
+               - id: 0
+                 timestamp: 2012-04-23T18:25:43.511Z
+                 accountFrom: NL02INHO0000000002
+                 accountTo:  NL02INHO0000000002
+                 amount: 100
+                 performingUser: false
+                 description: "Payment"
+
+               - id: 1
+                 timestamp: 2012-04-23T18:25:43.511Z
+                 accountFrom: NL02INHO0000000003
+                 accountTo:  NL02INHO0000000003
+                 amount: 100
+                 performingUser: false
+                 description: "payment"
+                
+
+               
+
         "400":
           description: Bad Request
         "401":
@@ -502,6 +672,26 @@ paths:
     get:
       summary: Get the balance of a specific account
       parameters:
+        - in: query
+          name: filter
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: fields
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: offset
+          required: false
+          schema:
+            type: string
         - name: iban
           in: path
           required: true
@@ -510,6 +700,18 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
+              example:
+                id: 0
+                timestamp: 1
+                accountFrom: NL02INHO0000000002
+                accountTo:  NL02INHO0000000002
+                amount: 100
+                performingUser: false
+                description: "Payment"
         "400":
           description: Bad Request
         "401":
@@ -641,8 +843,6 @@ paths:
       tags:
         - "authenticate"
 
-
-
 # write generic schemas here so it can easily be used in multiple endpoints uncomment the following lines and add your schemas
 components:
   schemas:
@@ -746,9 +946,9 @@ components:
           nullable: false
           minLength: 18
           maxLength: 18
-          pattern: '/NL[0-9]{2}INHO0[0-9]{9}/gs'
+          pattern: "/NL[0-9]{2}INHO0[0-9]{9}/gs"
         customerId:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
         balance:
           type: number
           nullable: false
@@ -777,15 +977,15 @@ components:
           format: date-time
           nullable: false
         accountFrom:
-          $ref: '#/components/schemas/Account'
+          $ref: "#/components/schemas/Account"
         accountTo:
-          $ref: '#/components/schemas/Account'
+          $ref: "#/components/schemas/Account"
         amount:
           type: number
           format: double
           nullable: false
         performingUser:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
         description:
           type: string
           nullable: true

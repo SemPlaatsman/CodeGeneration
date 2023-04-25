@@ -35,8 +35,8 @@ public class TransactionController {
     }  
 
     @PutMapping("/{id}/delete")
-    public Transaction markTransactionAsDeleted(@PathVariable int id) {
-        return transactionService.markTransactionAsDeleted(id);
+    public Transaction deleteTransaction(@PathVariable int id) {
+        return transactionService.deleteTransaction(id);
     }
 }
     // @Autowired

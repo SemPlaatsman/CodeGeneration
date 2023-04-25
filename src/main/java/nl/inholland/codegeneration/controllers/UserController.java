@@ -1,7 +1,7 @@
 package nl.inholland.codegeneration.controllers;
 
 import nl.inholland.codegeneration.models.User;
-import nl.inholland.codegeneration.repositories.UserRepository;
+import nl.inholland.codegeneration.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,17 +16,55 @@ import java.util.List;
 @RequestMapping(path = "/users")
 public class UserController {
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
-    @RequestMapping(path = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<User>> getAll() {
-        List<User> users = userRepository.findAll();
-        return ResponseEntity.status(200).body(users);
+    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getAll() {
+        try {
+            List<User> users = userService.getAll();
+            return ResponseEntity.status(200).body(users);
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
-    @RequestMapping(path = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> insertUser(@RequestBody User user) {
-        User _user = userRepository.save(new User(null, false, true, user.getUsername(), user.getPassword(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhoneNumber(), user.getBirthdate(), user.getDayLimit(), user.getTransactionLimit(), false));
-        return ResponseEntity.status(201).body(_user);
+    @GetMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getById(@PathVariable Long id) {
+        try {
+            User user = userService.getById(id);
+            return ResponseEntity.status(200).body(user);
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity add(@RequestBody User user) {
+        try {
+            User addedUser = userService.add(user);
+            return ResponseEntity.status(201).body(addedUser);
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
+    @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity update(@RequestBody User user, @PathVariable Long id) {
+        try {
+            User updatedUser = userService.update(user, id);
+            return ResponseEntity.status(200).body(updatedUser);
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
+    @DeleteMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity delete(@PathVariable Long id) {
+        try {
+            userService.delete(id);
+            return ResponseEntity.status(204).body("No Content");
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 }

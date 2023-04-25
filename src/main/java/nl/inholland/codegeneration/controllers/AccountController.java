@@ -12,24 +12,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import nl.inholland.codegeneration.models.Account;
-import nl.inholland.codegeneration.repositories.AccountRepository;
+import nl.inholland.codegeneration.services.AccountService;
 
 @RestController
 @RequestMapping(path = "/accounts")
 public class AccountController {
 
     @Autowired
-    private  AccountRepository accountRepository;
+    private  AccountService accountService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Account>> getAll() {
-        List<Account> accounts = accountRepository.findAll();
+        List<Account> accounts = accountService.getAll();
         return ResponseEntity.status(200).body(accounts);
     }
 
     @PostMapping(produces=MediaType.APPLICATION_JSON_VALUE, consumes=MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Account> insertAccount(@RequestBody Account account) {
-        Account _account = accountRepository.save(new Account( 0, account.getIban(), account.getAccountType(), account.getCustomer(), account.getBalance(), account.getAbsoluteLimit()));
+        Account _account = accountService.insertAccount(account);
         return ResponseEntity.status(201).body(_account);
     }
     

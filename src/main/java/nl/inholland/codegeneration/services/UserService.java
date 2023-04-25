@@ -1,5 +1,6 @@
 package nl.inholland.codegeneration.services;
 
+import nl.inholland.codegeneration.models.Transaction;
 import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +27,14 @@ public class UserService {
     }
 
     public User update(User user, Long id) {
-        User existingUser = getById(user.getId());
+        User existingUser = this.getById(id);
         existingUser.update(user);
         return userRepository.save(existingUser);
     }
 
     public void delete(Long id) {
-        userRepository.delete(getById(id));
+        User user = this.getById(id);
+        user.setIsDeleted(true);
+        userRepository.save(user);
     }
 }

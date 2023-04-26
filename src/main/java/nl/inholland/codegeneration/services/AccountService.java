@@ -14,10 +14,12 @@ public class AccountService {
     private AccountRepository accountRepository;
 
     public List<Account> getAll() {
+        System.out.println();
         return accountRepository.findAll();
     }
 
     public Account insertAccount(Account account) {
-        return accountRepository.save(new Account(0, account.getIban(), account.getAccountType(), account.getCustomer(),account.getBalance(), account.getAbsoluteLimit()));
+//        return accountRepository.save(new Account(0, account.getIban(), account.getAccountType(), account.getCustomer(),account.getBalance(), account.getAbsoluteLimit()));
+        return null;
     }
 }

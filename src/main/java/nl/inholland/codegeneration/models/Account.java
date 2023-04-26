@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 
 @Entity
@@ -13,13 +14,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Account {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private long id;
-
-    @Column(name = "iban", nullable = false, unique = true, columnDefinition = "varchar(255)")
+    @GenericGenerator(name = "ibangen", strategy = "nl.inholland.codegeneration.services.IBANGenerator")
+    @GeneratedValue(generator = "ibangen")
+    @Column(name = "iban")
     private String iban;
 
     @Column(name = "accountType", nullable = false, columnDefinition = "enum('CURRENT', 'SAVINGS')")

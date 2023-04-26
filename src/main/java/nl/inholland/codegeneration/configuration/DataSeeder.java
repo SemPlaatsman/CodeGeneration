@@ -1,8 +1,10 @@
 package nl.inholland.codegeneration.configuration;
 
+import nl.inholland.codegeneration.models.Account;
 import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.Transaction;
 import nl.inholland.codegeneration.models.User;
+import nl.inholland.codegeneration.repositories.AccountRepository;
 import nl.inholland.codegeneration.repositories.TransactionRepository;
 import nl.inholland.codegeneration.repositories.UserRepository;
 import nl.inholland.codegeneration.services.UserService;
@@ -21,6 +23,8 @@ public class DataSeeder implements ApplicationRunner {
     private UserRepository userRepository;
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private AccountRepository accountRepository;
 
     // Test data
     @Override
@@ -37,6 +41,6 @@ public class DataSeeder implements ApplicationRunner {
         userRepository.save(new User(null, Role.Customer, "johnwilson", "john123", "John", "Wilson", "john.wilson@yahoo.com", "0654321098", LocalDate.of(1983, 4, 29), new BigDecimal(1000), new BigDecimal(200), false));
 
         // Transactions
-//        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 26, 13, 8, 0), ));
+//        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 26, 13, 8, 0), new BigDecimal(200), "Je moeder"));
     }
 }

@@ -12,37 +12,21 @@ public class TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
 
-    public Transaction createTransaction(Transaction transaction) {
+    public Transaction add(Transaction transaction) {
         return transactionRepository.save(transaction);
     }
 
-    public List<Transaction> getTransactions() {
+    public List<Transaction> getAll() {
         return (List<Transaction>) transactionRepository.findAll();
     }
 
-    public Transaction getTransactionId(long id) {
+    public Transaction getById(long id) {
         return transactionRepository.findById(id).orElse(null);
     }
 
-    public Transaction updateTransaction(Transaction transaction, long id) {
-        Transaction existingTransaction = getTransactionId(id);
-
-        existingTransaction.setTimestamp(transaction.getTimestamp());
-        existingTransaction.setAccountFrom(transaction.getAccountFrom());
-        existingTransaction.setAccountTo(transaction.getAccountTo());
-        existingTransaction.setAmount(transaction.getAmount());
-        existingTransaction.setPerformingUser(transaction.getPerformingUser());
-        existingTransaction.setDescription(transaction.getDescription());
-
+    public Transaction update(Transaction transaction, long id) {
+        Transaction existingTransaction = getById(id);
+        existingTransaction.update(transaction);
         return transactionRepository.save(existingTransaction);
-    }
-
-    public Transaction deleteTransaction(long id) {
-        Transaction existingTransaction = getTransactionId(id);
-        if (existingTransaction != null) {
-            existingTransaction.setIsDeleted(true);
-            return transactionRepository.save(existingTransaction);
-        }
-        return null;
     }
 }

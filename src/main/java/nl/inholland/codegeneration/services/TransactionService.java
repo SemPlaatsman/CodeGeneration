@@ -37,7 +37,7 @@ public class TransactionService {
         return transactionRepository.save(existingTransaction);
     }
 
-    public Transaction markTransactionAsDeleted(long id) {
+    public Transaction deleteTransaction(long id) {
         Transaction existingTransaction = getTransactionId(id);
         if (existingTransaction != null) {
             existingTransaction.setIsDeleted(true);

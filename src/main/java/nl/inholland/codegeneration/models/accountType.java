@@ -1,6 +1,6 @@
 package nl.inholland.codegeneration.models;
 
-public enum accountType {
+public enum AccountType {
     CURRENT, 
     SAVINGS
 }

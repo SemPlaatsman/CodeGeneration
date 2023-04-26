@@ -30,7 +30,15 @@ public class Transaction {
     @JoinColumn(name="user_id", nullable = false)
     private User performingUser;
     @Column(name = "description", nullable = false, columnDefinition = "varchar(255)")
-    private String description;
-    @Column(name = "isDeleted", nullable = false, columnDefinition = "boolean default false")
-    private Boolean isDeleted;
+    private String description;    
+
+    public Transaction update(Transaction transaction) {
+        this.setTimestamp(transaction.getTimestamp());
+        this.setAccountFrom(transaction.getAccountFrom());
+        this.setAccountTo(transaction.getAccountTo());
+        this.setAmount(transaction.getAmount());
+        this.setPerformingUser(transaction.getPerformingUser());
+        this.setDescription(transaction.getDescription());
+        return this;
+    }
 }    

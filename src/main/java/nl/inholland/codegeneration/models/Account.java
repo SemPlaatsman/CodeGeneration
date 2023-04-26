@@ -23,7 +23,7 @@ public class Account {
     private String iban;
 
     @Column(name = "accountType", nullable = false, columnDefinition = "enum('CURRENT', 'SAVINGS')")
-    private accountType accountType;
+    private AccountType accountType;
 
     @ManyToOne
     private User customer;

@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
+@Data
 @Table(name = "users")
 @Getter
 @Setter
@@ -17,10 +18,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @Column(name = "isEmployee", nullable = false, columnDefinition = "boolean default false")
-    private Boolean isEmployee;
-    @Column(name = "isCustomer", nullable = false, columnDefinition = "boolean default true")
-    private Boolean isCustomer;
+    @Enumerated
+    @Column(name = "role", nullable = false, columnDefinition = "smallint default 1")
+    private Role role;
     @Column(name = "username", nullable = false, unique = true, columnDefinition = "varchar(255)")
     private String username;
     @Column(name = "password", nullable = false, columnDefinition = "varchar(255)")
@@ -42,4 +42,18 @@ public class User {
     private BigDecimal transactionLimit;
     @Column(name = "isDeleted", nullable = false, columnDefinition = "boolean default false")
     private Boolean isDeleted;
+
+    public User update(User user) {
+        this.setRole(user.getRole());
+        this.setUsername(user.getUsername());
+        this.setPassword(user.getPassword());
+        this.setFirstName(user.getFirstName());
+        this.setLastName(user.getLastName());
+        this.setEmail(user.getEmail());
+        this.setPhoneNumber(user.getPhoneNumber());
+        this.setBirthdate(user.getBirthdate());
+        this.setDayLimit(user.getDayLimit());
+        this.setTransactionLimit(user.getTransactionLimit());
+        return this;
+    }
 }

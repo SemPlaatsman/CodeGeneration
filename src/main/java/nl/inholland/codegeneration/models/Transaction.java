@@ -26,8 +26,9 @@ public class Transaction {
     private String accountTo;
     @Column(name = "amount", nullable = false, columnDefinition = "Decimal(32,2)")
     private BigDecimal amount;
-    @Column(name = "performingUser", nullable = false, columnDefinition = "long")
-    private Long performingUser;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id", nullable = false)
+    private User performingUser;
     @Column(name = "description", nullable = false, columnDefinition = "varchar(255)")
     private String description;
     @Column(name = "isDeleted", nullable = false, columnDefinition = "boolean default false")

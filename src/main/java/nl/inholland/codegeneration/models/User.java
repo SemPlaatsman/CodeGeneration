@@ -18,28 +18,39 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
     @Enumerated
     @Column(name = "role", nullable = false, columnDefinition = "smallint default 1")
     private Role role;
+
     @Column(name = "username", nullable = false, unique = true, columnDefinition = "varchar(255)")
     private String username;
+
     @Column(name = "password", nullable = false, columnDefinition = "varchar(255)")
     private String password;
+
     @Column(name = "firstName", nullable = false, columnDefinition = "varchar(255)")
     private String firstName;
+
     @Column(name = "lastName", nullable = false, columnDefinition = "varchar(255)")
     private String lastName;
+
     @Column(name = "email", nullable = false, columnDefinition = "varchar(255)")
     private String email;
+
     @Column(name = "phoneNumber", nullable = false, columnDefinition = "varchar(255)")
     private String phoneNumber;
+
     @Column(name = "birthdate", nullable = false)
     @Temporal(TemporalType.DATE)
     private LocalDate birthdate;
+
     @Column(name = "dayLimit", nullable = false, columnDefinition = "Decimal(32,2) default '1000.00'")
     private BigDecimal dayLimit;
+
     @Column(name = "TransactionLimit", nullable = false, columnDefinition = "Decimal(32,2) default '200.00'")
     private BigDecimal transactionLimit;
+
     @Column(name = "isDeleted", nullable = false, columnDefinition = "boolean default false")
     private Boolean isDeleted;
 

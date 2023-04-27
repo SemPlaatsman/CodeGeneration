@@ -6,6 +6,9 @@ import org.springframework.stereotype.Repository;
 import nl.inholland.codegeneration.models.Account;
 
 @Repository
-public interface AccountRepository extends JpaRepository<Account, Long>{
-    
+public interface AccountRepository extends JpaRepository<Account, Long> {
+
+    Account findByIban(String iban);
+
+  
 }

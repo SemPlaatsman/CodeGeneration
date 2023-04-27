@@ -1,10 +1,14 @@
 package nl.inholland.codegeneration.configuration;
 
+import nl.inholland.codegeneration.models.Account;
+import nl.inholland.codegeneration.models.AccountType;
 import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.Transaction;
 import nl.inholland.codegeneration.models.User;
+import nl.inholland.codegeneration.repositories.AccountRepository;
 import nl.inholland.codegeneration.repositories.TransactionRepository;
 import nl.inholland.codegeneration.repositories.UserRepository;
+import nl.inholland.codegeneration.services.AccountService;
 import nl.inholland.codegeneration.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -14,6 +18,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Component
 public class DataSeeder implements ApplicationRunner {
@@ -21,6 +26,8 @@ public class DataSeeder implements ApplicationRunner {
     private UserRepository userRepository;
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private AccountRepository accountRepository;
 
     // Test data
     @Override
@@ -35,8 +42,17 @@ public class DataSeeder implements ApplicationRunner {
         userRepository.save(new User(null, Role.Customer, "tomsmith", "tom123", "Tom", "Smith", "tom.smith@hotmail.com", "0636549871", LocalDate.of(1987, 8, 4), new BigDecimal(1000), new BigDecimal(200), false));
         userRepository.save(new User(null, Role.Customer, "saradoe", "sara123", "Sara", "Doe", "sara.doe@gmail.com", "0687654321", LocalDate.of(1975, 6, 17), new BigDecimal(1000), new BigDecimal(200), false));
         userRepository.save(new User(null, Role.Customer, "johnwilson", "john123", "John", "Wilson", "john.wilson@yahoo.com", "0654321098", LocalDate.of(1983, 4, 29), new BigDecimal(1000), new BigDecimal(200), false));
-
         // Transactions
 //        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 26, 13, 8, 0), ));
-    }
+
+        //accounts
+        //company account (maybe make a object for the user that the company uses)
+        final Optional<User> companyUser = userRepository.findById((long) 1);
+        accountRepository.save(new Account(1, "NL01INHO0000000001", AccountType.CURRENT, companyUser.get(), new BigDecimal(100000), new BigDecimal(100000)));
+   
+        final Optional<User> companyUser2 = userRepository.findById((long) 2);
+        accountRepository.save(new Account(2, "NL01INHO0000000002", AccountType.SAVINGS, companyUser2.get(), new BigDecimal(100000), new BigDecimal(100000)));
+        accountRepository.save(new Account(3, "NL01INHO0000000003", AccountType.CURRENT, companyUser2.get(), new BigDecimal(1000), new BigDecimal(20000)));
+
+    } 
 }

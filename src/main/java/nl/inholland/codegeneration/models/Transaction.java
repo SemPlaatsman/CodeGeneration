@@ -17,29 +17,28 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
     @Column(name = "timestamp", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime timestamp;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name="accountFrom", nullable = false, referencedColumnName = "IBAN")
     private Account accountFrom;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name="accountTo", nullable = false, referencedColumnName = "IBAN")
     private Account accountTo;
+
     @Column(name = "amount", nullable = false, columnDefinition = "Decimal(32,2)")
     private BigDecimal amount;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name="userId", nullable = false)
     private User performingUser;
+
     @Column(name = "description", nullable = false, columnDefinition = "varchar(255)")
     private String description;
-
-    public Transaction(Long id, LocalDateTime timestamp, BigDecimal amount, String description) {
-        this.id = id;
-        this.timestamp = timestamp;
-        this.amount = amount;
-        this.description = description;
-    }
 
     public Transaction update(Transaction transaction) {
         this.setTimestamp(transaction.getTimestamp());

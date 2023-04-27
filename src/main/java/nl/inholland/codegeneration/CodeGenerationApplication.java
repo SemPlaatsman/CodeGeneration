@@ -20,11 +20,5 @@ public class CodeGenerationApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CodeGenerationApplication.class, args);
-		IBANGenerator ibanGenerator = new IBANGenerator();
-		for(int i = 0; i < 5; i++) {
-			Object IBAN = ibanGenerator.generate(null, null);
-			System.out.println(IBAN);
-			System.out.println(ibanGenerator.validateIBAN(IBAN.toString()));
-		}
 	}
 }

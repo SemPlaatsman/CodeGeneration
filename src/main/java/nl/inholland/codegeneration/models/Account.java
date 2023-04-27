@@ -20,6 +20,7 @@ public class Account {
     @Column(name = "iban")
     private String iban;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "accountType", nullable = false, columnDefinition = "enum('CURRENT', 'SAVINGS')")
     private AccountType accountType;
 
@@ -31,8 +32,4 @@ public class Account {
 
     @Column(name = "absoluteLimit", nullable = false, columnDefinition = "Decimal(32,2) default '1000.00'")
     private BigDecimal absoluteLimit;
-
-    //generate getters and setters for these fields
-
- 
 }

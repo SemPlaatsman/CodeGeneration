@@ -5,11 +5,13 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import nl.inholland.codegeneration.models.FilterCriteria;
+import nl.inholland.codegeneration.models.QueryParams;
 import nl.inholland.codegeneration.models.Transaction;
 import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,8 +21,8 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    public List<User> getAll() {
-//        FilterSpecification<User> spec = new FilterSpecification<>(new FilterCriteria("lastName", ":", "Doe"));
+    public List<User> getAll(@Nullable QueryParams queryParams) {
+
         return (List<User>)userRepository.findAll();
     }
 

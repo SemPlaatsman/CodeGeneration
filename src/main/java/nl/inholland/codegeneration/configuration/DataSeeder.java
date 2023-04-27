@@ -1,9 +1,11 @@
 package nl.inholland.codegeneration.configuration;
 
 import nl.inholland.codegeneration.models.*;
+
 import nl.inholland.codegeneration.repositories.AccountRepository;
 import nl.inholland.codegeneration.repositories.TransactionRepository;
 import nl.inholland.codegeneration.repositories.UserRepository;
+import nl.inholland.codegeneration.services.AccountService;
 import nl.inholland.codegeneration.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Component
 public class DataSeeder implements ApplicationRunner {
@@ -22,6 +25,8 @@ public class DataSeeder implements ApplicationRunner {
     private AccountRepository accountRepository;
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private AccountRepository accountRepository;
 
     // Test data
     @Override
@@ -66,4 +71,5 @@ public class DataSeeder implements ApplicationRunner {
         transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 24, 23, 13, 11), accountRepository.findById("NL10INHO0721943866").orElseThrow(), accountRepository.findById("NL53INHO0969793709").orElseThrow(), new BigDecimal("37.20"), userRepository.findById(7L).orElseThrow(), "Broodje ham"));
         transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 24, 12, 54, 10), accountRepository.findById("NL76INHO0000640299").orElseThrow(), accountRepository.findById("NL37INHO0849482569").orElseThrow(), new BigDecimal("12.50"), userRepository.findById(9L).orElseThrow(), "Kaas"));
     }
+
 }

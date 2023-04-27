@@ -2,6 +2,7 @@ package nl.inholland.codegeneration.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.math.BigDecimal;
 
@@ -21,13 +22,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(as = Account.class)
 
 public class Account {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private long id;
-
-    @Column(name = "iban", nullable = false, unique = true, columnDefinition = "varchar(255)")
+    @GenericGenerator(name = "ibangen", strategy = "nl.inholland.codegeneration.services.IBANGenerator")
+    @GeneratedValue(generator = "ibangen")
+    @Column(name = "iban")
     private String iban;
 
     @Column(name = "accountType", nullable = false, columnDefinition = "smallint default 1")
@@ -42,6 +40,7 @@ public class Account {
     private BigDecimal balance = new BigDecimal(0);
 
     @Column(name = "absoluteLimit", nullable = false, columnDefinition = "Decimal(32,2) default '1000.00'")
+
     private BigDecimal absoluteLimit = new BigDecimal(1000);
   
 

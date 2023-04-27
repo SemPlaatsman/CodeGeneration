@@ -22,11 +22,13 @@ public class AccountService {
 
 
     public List<Account> getAll() {
+        System.out.println();
         return accountRepository.findAll();
     }
 
 
     public Account insertAccount(Account account) {
+
         System.out.println(account.getAbsoluteLimit());
         return accountRepository.save(new Account(0, account.getIban(), account.getAccountType(), account.getCustomer(),account.getBalance(), account.getAbsoluteLimit()));
     }

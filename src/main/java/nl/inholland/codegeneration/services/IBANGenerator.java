@@ -16,53 +16,49 @@ import java.util.stream.Stream;
 // IBAN Generator class based on: https://en.wikipedia.org/wiki/International_Bank_Account_Number#Algorithms
 @Component
 public class IBANGenerator implements IdentifierGenerator {
-    private final long RND_SEED = 126L;
-    private final Random rnd = new Random(RND_SEED);
+    private final Random RND = new Random(126); // Possibly replace with seed from e.g. config file
+    private final int RND_ORIGIN = 2; // 0 is an invalid IBAN account number and 1 is reserved for the bank
+    private final int RND_BOUND = 1000000000; // Makes sure IBAN account numbers won't have more than 9 characters
     private final String COUNTRY_CODE = "NL";
-    private final String BANK_CODE = "INHO0";
-    private final int IBAN_LENGTH = 18;
-    private final int MODULO_OPERATOR = 97;
+    private final String BANK_CODE = "INHO0"; // Trails with zero based on IBAN standard provided in project guide
+    private final int IBAN_LENGTH = 18; // (Country code) + (Check digits) + (Bank code) + (Account number) = 18
+    private final int MODULO_OPERATOR = 97; // Standard modulo operator used in IBAN calculation algorithms
 
+    // Generate a random IBAN
     @Override
     public Object generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
-        String accountNumber = String.format("%09d", rnd.nextInt(2, 1000000000)); // Replace with finals
-//        System.out.println("1: " + accountNumber);
+        String accountNumber = String.format("%09d", RND.nextInt(RND_ORIGIN, RND_BOUND));
         String IBAN = COUNTRY_CODE + "00" + BANK_CODE + accountNumber;
-//        System.out.println("2: " + IBAN);
         int checkDigits = calculateCheckDigits(IBAN);
         IBAN = IBAN.substring(0, COUNTRY_CODE.length()) + String.format("%02d", checkDigits) + IBAN.substring(2 + COUNTRY_CODE.length());
         return IBAN;
     }
 
+    // Calculate the check digits for a given IBAN
     private int calculateCheckDigits(String IBAN) throws IdentifierGenerationException {
         BigInteger IBANInteger = this.calculateIBANInteger(IBAN);
         int remainder = IBANInteger.mod(BigInteger.valueOf(MODULO_OPERATOR)).intValue();
         return Math.abs(remainder - (MODULO_OPERATOR + 1));
     }
 
+    // Convert an IBAN into a BigInteger using the method provided in https://en.wikipedia.org/wiki/International_Bank_Account_Number#Algorithms
     private BigInteger calculateIBANInteger(String IBAN) throws IdentifierGenerationException {
         if (IBAN.length() != IBAN_LENGTH) {
             throw new IdentifierGenerationException("Something went wrong while generating a new IBAN");
         }
 
-        // DIT HOEFT MISSCHIEN NIET ALS HET BEREKENEN VAN DE IBANINTEGER MET CHECKDIGITS MODULO 97 UITKOMT OP 1!!!!!
-//        if (!IBAN.substring(COUNTRY_CODE.length(), COUNTRY_CODE.length() + 2).equals("00")) {
-//            IBAN = IBAN.substring(0, COUNTRY_CODE.length()) + "00" + IBAN.substring(2 + COUNTRY_CODE.length());
-//        }
-
         IBAN = IBAN.substring(4) + IBAN.substring(0, 4);
-//        System.out.println("3: " + IBAN);
-
         for(int i = 0; i < IBAN.length(); i++) {
             if (!Character.isDigit(IBAN.charAt(i))) {
                 IBAN = IBAN.substring(0, i) + Character.getNumericValue(IBAN.charAt(i)) + IBAN.substring(i + 1);
             }
         }
-//        System.out.println("4: " + IBAN);
 
         return new BigInteger(IBAN);
     }
 
+    // Validate an IBAN by recalculating the check digits and using the mod-97 method to check if the remainder is 1.
+    // If the remainder is 1, the IBAN is valid. More information is provided at https://en.wikipedia.org/wiki/International_Bank_Account_Number#Algorithms
     public boolean validateIBAN(String IBAN) {
         BigInteger IBANInteger = this.calculateIBANInteger(IBAN);
         return IBANInteger.mod(BigInteger.valueOf(MODULO_OPERATOR)).intValue() == 1;

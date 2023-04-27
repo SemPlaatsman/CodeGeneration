@@ -48,11 +48,11 @@ public class DataSeeder implements ApplicationRunner {
         //accounts
         //company account (maybe make a object for the user that the company uses)
         final Optional<User> companyUser = userRepository.findById((long) 1);
-        accountRepository.save(new Account(1, "NL01INHO0000000001", AccountType.CURRENT, companyUser.get(), new BigDecimal(100000), new BigDecimal(100000)));
+        accountRepository.save(new Account("NL01INHO0000000001", AccountType.CURRENT, companyUser.get(), new BigDecimal(100000), new BigDecimal(100000)));
    
         final Optional<User> companyUser2 = userRepository.findById((long) 2);
-        accountRepository.save(new Account(2, "NL01INHO0000000002", AccountType.SAVINGS, companyUser2.get(), new BigDecimal(100000), new BigDecimal(100000)));
-        accountRepository.save(new Account(3, "NL01INHO0000000003", AccountType.CURRENT, companyUser2.get(), new BigDecimal(1000), new BigDecimal(20000)));
+        accountRepository.save(new Account("NL01INHO0000000002", AccountType.SAVINGS, companyUser2.get(), new BigDecimal(100000), new BigDecimal(100000)));
+        accountRepository.save(new Account("NL01INHO0000000003", AccountType.CURRENT, companyUser2.get(), new BigDecimal(1000), new BigDecimal(20000)));
 
     } 
 }

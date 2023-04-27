@@ -22,11 +22,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public class Account {
 
+    // @Id
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // @Column(name = "id")
+    // private long id;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private long id;
-
     @Column(name = "iban", nullable = false, unique = true, columnDefinition = "varchar(255)")
     private String iban;
 

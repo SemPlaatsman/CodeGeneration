@@ -39,7 +39,7 @@ public class AccountController {
     @GetMapping(path = "/{Ibans}" , produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAccountByIban(@PathVariable("Ibans") String Ibans) {
         try {
-            Account account = accountService.getAccountByIban(Ibans);
+            Account account = accountService.getAccountByIban(Ibans).get();
             return ResponseEntity.status(200).body(account);
 
         } catch (Exception e) {

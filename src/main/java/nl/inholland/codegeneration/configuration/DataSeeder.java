@@ -25,8 +25,7 @@ public class DataSeeder implements ApplicationRunner {
     private AccountRepository accountRepository;
     @Autowired
     private TransactionRepository transactionRepository;
-    @Autowired
-    private AccountRepository accountRepository;
+
 
     // Test data
     @Override
@@ -62,16 +61,16 @@ public class DataSeeder implements ApplicationRunner {
         accountRepository.save(new Account(null, AccountType.SAVINGS, userRepository.findById(9L).orElseThrow(), new BigDecimal("600"), new BigDecimal("-1000")));
 
         // Transactions
-        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 27, 18, 53, 11), accountRepository.findById("NL57INHO0552427663").orElseThrow(), accountRepository.findById("NL31INHO0095220668").orElseThrow(), new BigDecimal("100"), userRepository.findById(1L).orElseThrow(), "Die verdraaide belastingdienst!"));
-        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 27, 13, 28, 1), accountRepository.findById("NL23INHO0072736988").orElseThrow(), accountRepository.findById("NL47INHO0513670038").orElseThrow(), new BigDecimal("5.50"), userRepository.findById(2L).orElseThrow(), "Sushibox"));
-        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 27, 13, 26, 54), accountRepository.findById("NL06INHO0622818862").orElseThrow(), accountRepository.findById("NL37INHO0849482569").orElseThrow(), new BigDecimal("20000"), userRepository.findById(8L).orElseThrow(), "Beretta AR70/90"));
-        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 27, 11, 45, 23), accountRepository.findById("NL44INHO0920084766").orElseThrow(), accountRepository.findById("NL57INHO0552427663").orElseThrow(), new BigDecimal("12.50"), userRepository.findById(6L).orElseThrow(), "Bowlen"));
-        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 26, 15, 47, 47), accountRepository.findById("NL06INHO0622818862").orElseThrow(), accountRepository.findById("NL72INHO0968171721").orElseThrow(), new BigDecimal("230000"), userRepository.findById(4L).orElseThrow(), "Pizzo Maranzano, Basilicata, Veneto"));
-        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 25, 5, 33, 53), accountRepository.findById("NL53INHO0969793709").orElseThrow(), accountRepository.findById("NL06INHO0622818862").orElseThrow(), new BigDecimal("100000"), userRepository.findById(7L).orElseThrow(), "Maranzano pizzo"));
-        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 25, 3, 26, 25), accountRepository.findById("NL76INHO0000640299").orElseThrow(), accountRepository.findById("NL06INHO0622818862").orElseThrow(), new BigDecimal("70000"), userRepository.findById(9L).orElseThrow(), "Basilicata pizzo"));
-        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 24, 23, 52, 2), accountRepository.findById("NL57INHO0552427663").orElseThrow(), accountRepository.findById("NL06INHO0622818862").orElseThrow(), new BigDecimal("50000"), userRepository.findById(1L).orElseThrow(), "Veneto pizzo"));
-        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 24, 23, 13, 11), accountRepository.findById("NL10INHO0721943866").orElseThrow(), accountRepository.findById("NL53INHO0969793709").orElseThrow(), new BigDecimal("37.20"), userRepository.findById(7L).orElseThrow(), "Broodje ham"));
-        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 24, 12, 54, 10), accountRepository.findById("NL76INHO0000640299").orElseThrow(), accountRepository.findById("NL37INHO0849482569").orElseThrow(), new BigDecimal("12.50"), userRepository.findById(9L).orElseThrow(), "Kaas"));
+        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 27, 18, 53, 11), accountRepository.findByIban("NL57INHO0552427663").orElseThrow(), accountRepository.findByIban("NL31INHO0095220668").orElseThrow(), new BigDecimal("100"), userRepository.findById(1L).orElseThrow(), "Die verdraaide belastingdienst!"));
+        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 27, 13, 28, 1), accountRepository.findByIban("NL23INHO0072736988").orElseThrow(), accountRepository.findByIban("NL47INHO0513670038").orElseThrow(), new BigDecimal("5.50"), userRepository.findById(2L).orElseThrow(), "Sushibox"));
+        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 27, 13, 26, 54), accountRepository.findByIban("NL06INHO0622818862").orElseThrow(), accountRepository.findByIban("NL37INHO0849482569").orElseThrow(), new BigDecimal("20000"), userRepository.findById(8L).orElseThrow(), "Beretta AR70/90"));
+        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 27, 11, 45, 23), accountRepository.findByIban("NL44INHO0920084766").orElseThrow(), accountRepository.findByIban("NL57INHO0552427663").orElseThrow(), new BigDecimal("12.50"), userRepository.findById(6L).orElseThrow(), "Bowlen"));
+        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 26, 15, 47, 47), accountRepository.findByIban("NL06INHO0622818862").orElseThrow(), accountRepository.findByIban("NL72INHO0968171721").orElseThrow(), new BigDecimal("230000"), userRepository.findById(4L).orElseThrow(), "Pizzo Maranzano, Basilicata, Veneto"));
+        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 25, 5, 33, 53), accountRepository.findByIban("NL53INHO0969793709").orElseThrow(), accountRepository.findByIban("NL06INHO0622818862").orElseThrow(), new BigDecimal("100000"), userRepository.findById(7L).orElseThrow(), "Maranzano pizzo"));
+        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 25, 3, 26, 25), accountRepository.findByIban("NL76INHO0000640299").orElseThrow(), accountRepository.findByIban("NL06INHO0622818862").orElseThrow(), new BigDecimal("70000"), userRepository.findById(9L).orElseThrow(), "Basilicata pizzo"));
+        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 24, 23, 52, 2), accountRepository.findByIban("NL57INHO0552427663").orElseThrow(), accountRepository.findByIban("NL06INHO0622818862").orElseThrow(), new BigDecimal("50000"), userRepository.findById(1L).orElseThrow(), "Veneto pizzo"));
+        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 24, 23, 13, 11), accountRepository.findByIban("NL10INHO0721943866").orElseThrow(), accountRepository.findByIban("NL53INHO0969793709").orElseThrow(), new BigDecimal("37.20"), userRepository.findById(7L).orElseThrow(), "Broodje ham"));
+        transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 24, 12, 54, 10), accountRepository.findByIban("NL76INHO0000640299").orElseThrow(), accountRepository.findByIban("NL37INHO0849482569").orElseThrow(), new BigDecimal("12.50"), userRepository.findById(9L).orElseThrow(), "Kaas"));
     }
 
 }

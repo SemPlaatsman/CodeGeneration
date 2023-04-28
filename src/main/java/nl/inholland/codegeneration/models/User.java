@@ -6,6 +6,8 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import org.springframework.security.core.userdetails.UserDetails;
+
 @Entity
 @Data
 @Table(name = "users")
@@ -22,6 +24,10 @@ public class User {
     @Enumerated
     @Column(name = "role", nullable = false, columnDefinition = "smallint default 1")
     private Role role;
+
+    // @ElementCollection(fetch = FetchType.EAGER)
+    // private List<Role> role;
+
 
     @Column(name = "username", nullable = false, unique = true, columnDefinition = "varchar(255)")
     private String username;
@@ -67,4 +73,6 @@ public class User {
         this.setTransactionLimit(user.getTransactionLimit());
         return this;
     }
+
+  
 }

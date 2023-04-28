@@ -20,12 +20,12 @@ public class QueryParams {
     private int page = 0;
 
     public void setFilter(String filterQuery) {
-        System.out.println(filterQuery);
+//        System.out.println(filterQuery);
         this.filterCriteria.clear();
         Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(\\w+?),");
         Matcher matcher = pattern.matcher(filterQuery + ",");
         while (matcher.find()) {
-            System.out.println("First: " + matcher.group(1) + ". Second: " + matcher.group(2) + ". Third: " + matcher.group(3));
+//            System.out.println("First: " + matcher.group(1) + ". Second: " + matcher.group(2) + ". Third: " + matcher.group(3));
             this.addFilter(new FilterCriteria(matcher.group(1), matcher.group(2), matcher.group(3)));
         }
     }

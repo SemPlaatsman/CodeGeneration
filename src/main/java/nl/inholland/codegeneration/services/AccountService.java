@@ -26,9 +26,8 @@ public class AccountService {
 
 
     public Account insertAccount(Account account) {
-
         System.out.println(account.getAbsoluteLimit());
-        return accountRepository.save(new Account(0, account.getIban(), account.getAccountType(), account.getCustomer(),account.getBalance(), account.getAbsoluteLimit()));
+        return accountRepository.save(new Account(account.getIban(), account.getAccountType(), account.getCustomer(),account.getBalance(), account.getAbsoluteLimit()));
     }
 
     public Account getAccountByIban(String iban) {
@@ -36,7 +35,7 @@ public class AccountService {
     }
 
     public Account updateAccount(Account account) {
-        Account _account = accountRepository.findById(account.getId()).get();
+        Account _account = accountRepository.findById(account.getIban()).get();
         _account.setIban(account.getIban());
         _account.setAccountType(account.getAccountType());
         _account.setCustomer(account.getCustomer());
@@ -46,15 +45,17 @@ public class AccountService {
     }
 
     public void deleteAccount(long id) {
-        accountRepository.deleteById(id);
+//        accountRepository.deleteById(id);
     }
 
     public Optional<Account> getAccountTransaction(long accountID) {
-        return accountRepository.findById(accountID);
+//        return accountRepository.findById(accountID);
+        return null;
     }
 
     public BigDecimal getAccountBalance(Long accountID) {
-        return accountRepository.findById(accountID).get().getBalance();
+//        return accountRepository.findById(accountID).get().getBalance();
+        return new BigDecimal(200);
     }
 
 

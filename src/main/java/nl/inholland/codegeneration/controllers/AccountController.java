@@ -2,6 +2,8 @@ package nl.inholland.codegeneration.controllers;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
+import nl.inholland.codegeneration.models.QueryParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +24,8 @@ public class AccountController {
     private  AccountService accountService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Account>> getAll() {
-        List<Account> accounts = accountService.getAll();
+    public ResponseEntity<List<Account>> getAll(@Valid QueryParams queryParams) {
+        List<Account> accounts = accountService.getAll(queryParams);
         return ResponseEntity.status(200).body(accounts);
     }
 

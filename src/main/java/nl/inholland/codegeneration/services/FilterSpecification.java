@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import nl.inholland.codegeneration.models.FilterCriteria;
 import org.springframework.data.jpa.domain.Specification;
 
+// FilterSpecification object to add field filters based on the following article: https://www.baeldung.com/rest-api-search-language-spring-data-specifications
 @AllArgsConstructor
 public class FilterSpecification<T> implements Specification<T> {
     private FilterCriteria filterCriteria;

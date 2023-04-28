@@ -10,6 +10,7 @@ import nl.inholland.codegeneration.models.Transaction;
 import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,7 @@ public class UserService {
     UserRepository userRepository;
 
     public List<User> getAll(@Nullable QueryParams queryParams) {
-
-        return (List<User>)userRepository.findAll();
+        return userRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent();
     }
 
     public User getById(Long id) {

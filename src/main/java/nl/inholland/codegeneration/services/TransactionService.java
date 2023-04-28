@@ -1,7 +1,11 @@
 package nl.inholland.codegeneration.services;
 
 import java.util.List;
+
+import nl.inholland.codegeneration.models.QueryParams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import nl.inholland.codegeneration.models.Transaction;
@@ -16,8 +20,8 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-    public List<Transaction> getAll() {
-        return (List<Transaction>) transactionRepository.findAll();
+    public List<Transaction> getAll(@Nullable QueryParams queryParams) {
+        return transactionRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent();
     }
 
     public Transaction getById(long id) {

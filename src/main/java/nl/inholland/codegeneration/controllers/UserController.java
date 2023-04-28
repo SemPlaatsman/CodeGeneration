@@ -22,12 +22,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity getAll(QueryParams queryParams) {
-//        for(FilterCriteria filterCriteria : queryParams.getFilterSpecifications()) {
-//            System.out.println(filterCriteria.getKey() + filterCriteria.getOperation() + filterCriteria.getValue());
-//        }
-//        System.out.println(queryParams.getPage());
-//        System.out.println(queryParams.getLimit());
+    public ResponseEntity getAll(@Valid QueryParams queryParams) {
         try {
             List<User> users = userService.getAll(queryParams);
             return ResponseEntity.status(200).body(users);

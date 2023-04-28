@@ -1,5 +1,8 @@
 package nl.inholland.codegeneration.services;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -15,7 +18,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import nl.inholland.codegeneration.models.User;
+import nl.inholland.codegeneration.repositories.UserRepository;
 
 @Service
 public class UserService {

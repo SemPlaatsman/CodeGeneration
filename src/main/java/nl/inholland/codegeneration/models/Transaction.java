@@ -1,5 +1,6 @@
 package nl.inholland.codegeneration.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,18 +23,26 @@ public class Transaction {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime timestamp;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name="accountFrom", nullable = false, referencedColumnName = "IBAN")
+//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+//    @JoinColumn(name="account_from", nullable = false, referencedColumnName = "iban")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @ManyToOne
+    @JoinColumn(name = "account_from", nullable = false)
     private Account accountFrom;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name="accountTo", nullable = false, referencedColumnName = "IBAN")
+//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+//    @JoinColumn(name="account_to", nullable = false, referencedColumnName = "iban")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @ManyToOne
+    @JoinColumn(name = "account_to", nullable = false)
     private Account accountTo;
 
     @Column(name = "amount", nullable = false, columnDefinition = "Decimal(32,2)")
     private BigDecimal amount;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne
     @JoinColumn(name="userId", nullable = false)
     private User performingUser;
 

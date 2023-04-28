@@ -25,8 +25,6 @@ public class DataSeeder implements ApplicationRunner {
     private AccountRepository accountRepository;
     @Autowired
     private TransactionRepository transactionRepository;
-    @Autowired
-    private AccountRepository accountRepository;
 
     // Test data
     @Override

@@ -2,6 +2,8 @@ package nl.inholland.codegeneration.controllers;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
+import nl.inholland.codegeneration.models.QueryParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +35,6 @@ public class AccountController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-
     }
 
     @GetMapping(path = "/{Ibans}" , produces = MediaType.APPLICATION_JSON_VALUE)

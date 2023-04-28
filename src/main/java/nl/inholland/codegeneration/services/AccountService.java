@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import nl.inholland.codegeneration.models.QueryParams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import nl.inholland.codegeneration.models.Account;
@@ -17,13 +20,8 @@ public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
-
- 
-
-
-    public List<Account> getAll() {
-        System.out.println();
-        return accountRepository.findAll();
+    public List<Account> getAll(@Nullable QueryParams queryParams) {
+        return accountRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent();
     }
 
 

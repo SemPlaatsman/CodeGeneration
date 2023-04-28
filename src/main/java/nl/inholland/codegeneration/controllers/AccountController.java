@@ -1,5 +1,6 @@
 package nl.inholland.codegeneration.controllers;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import nl.inholland.codegeneration.models.Account;
 import nl.inholland.codegeneration.models.Transaction;
 import nl.inholland.codegeneration.services.AccountService;
-import nl.inholland.codegeneration.services.TransactionService;
 
 @RestController
 @RequestMapping(path = "/accounts")
@@ -26,8 +26,7 @@ public class AccountController {
     @Autowired
     private  AccountService accountService;
 
-    @Autowired
-    private  TransactionService transactionService;
+  
 
     // get /accounts
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -97,7 +96,7 @@ public class AccountController {
     @GetMapping(path = "/{Iban}/transactions", produces=MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getTransactions(@PathVariable("Iban") String Iban) {
         try {
-            List<Transaction> accounts = accountService.getAccountsTransaction(Iban);
+            List<Transaction> accounts = accountService.getTransactions(Iban);
             return ResponseEntity.status(200).body(accounts);
 
         } catch (Exception e) {
@@ -106,9 +105,15 @@ public class AccountController {
     }
 
     // get /accounts/{id}/balance
-    // @PostMapping(path = "/balance", produces=MediaType.APPLICATION_JSON_VALUE, consumes=MediaType.APPLICATION_JSON_VALUE)
-    // public ResponseEntity<Account> getBalance(@RequestBody Account account, @RequestParam("iban") double amount) {
+    @GetMapping(path = "/{Iban}/balance", produces=MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<BigDecimal> getBalance(@PathVariable("Iban") String Iban) {
+        try {
+            BigDecimal balance = accountService.getBalance(Iban);
+            return ResponseEntity.status(200).body(balance);
 
-    //     return null;
-    // }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+    }
 }

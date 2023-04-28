@@ -17,7 +17,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity getAll() {
+    public ResponseEntity<?> getAll() { //add a type where the question mark is if applicable
         try {
             List<User> users = userService.getAll();
             return ResponseEntity.status(200).body(users);
@@ -27,7 +27,7 @@ public class UserController {
     }
 
     @GetMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity getById(@PathVariable Long id) {
+    public ResponseEntity<?> getById(@PathVariable Long id) { //add a type where the question mark is if applicable
         try {
             User user = userService.getById(id);
             return ResponseEntity.status(200).body(user);
@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity add(@RequestBody User user) {
+    public ResponseEntity<?> add(@RequestBody User user) { //add a type where the question mark is if applicable
         try {
             User addedUser = userService.add(user);
             return ResponseEntity.status(201).body(addedUser);
@@ -47,7 +47,7 @@ public class UserController {
     }
 
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity update(@RequestBody User user, @PathVariable Long id) {
+    public ResponseEntity<?> update(@RequestBody User user, @PathVariable Long id) { //add a type where the question mark is if applicable
         try {
             User updatedUser = userService.update(user, id);
             return ResponseEntity.status(200).body(updatedUser);
@@ -57,7 +57,7 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity delete(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) { //add a type where the question mark is if applicable
         try {
             userService.delete(id);
             return ResponseEntity.status(204).body("No Content");

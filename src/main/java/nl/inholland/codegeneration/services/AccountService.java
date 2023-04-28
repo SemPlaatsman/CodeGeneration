@@ -84,7 +84,7 @@ public class AccountService {
         }
     }
 
-    public List<Transaction> getAccountsTransaction(String accountID) {
+    public List<Transaction> getTransactions(String accountID) {
         try {
             List<Transaction> accounts =  transactionRepository.findAllByAccountFromIban(accountID);
             return accounts;
@@ -94,7 +94,7 @@ public class AccountService {
         }
     }
 
-    public BigDecimal getAccountBalance(String accountID) {
+    public BigDecimal getBalance(String accountID) {
 
         try {
             Optional<Account> account = accountRepository.findByIban(accountID);

@@ -17,7 +17,7 @@ public class TransactionController {
     private TransactionService transactionService;
 
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity getAll() {
+    public ResponseEntity<?> getAll() { //add a type where the question mark is if applicable
         try {
             List<Transaction> transactions = transactionService.getAll();
             return ResponseEntity.status(200).body(transactions);
@@ -27,7 +27,7 @@ public class TransactionController {
     }    
     
     @GetMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity getById(@PathVariable int id) {
+    public ResponseEntity<?> getById(@PathVariable int id) { //add a type where the question mark is if applicable
         try {
             Transaction transaction = transactionService.getById(id);
             return ResponseEntity.status(200).body(transaction);
@@ -37,7 +37,7 @@ public class TransactionController {
     }    
     
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity add(@RequestBody Transaction transaction) {
+    public ResponseEntity<?> add(@RequestBody Transaction transaction) {//add a type where the question mark is if applicable
         try {
             Transaction addedTransaction = transactionService.add(transaction);
             return ResponseEntity.status(201).body(addedTransaction);
@@ -47,7 +47,7 @@ public class TransactionController {
     }    
     
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity update(@RequestBody Transaction transaction, @PathVariable int id) {
+    public ResponseEntity<?> update(@RequestBody Transaction transaction, @PathVariable int id) { //add a type where the question mark is if applicable
         try {
             Transaction updatedTransaction = transactionService.update(transaction, id);
             return ResponseEntity.status(200).body(updatedTransaction);

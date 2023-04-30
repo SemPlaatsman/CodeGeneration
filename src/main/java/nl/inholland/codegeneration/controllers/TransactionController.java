@@ -13,12 +13,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/transactions")
+@CrossOrigin("http://localhost:5173/")
 public class TransactionController {
 
     @Autowired
     private TransactionService transactionService;
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.ALL_VALUE)
     public ResponseEntity getAll(@Valid QueryParams queryParams) {
         try {
             List<Transaction> transactions = transactionService.getAll(queryParams);

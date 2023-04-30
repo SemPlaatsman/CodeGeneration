@@ -23,15 +23,11 @@ public class Transaction {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime timestamp;
 
-//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-//    @JoinColumn(name="account_from", nullable = false, referencedColumnName = "iban")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne
     @JoinColumn(name = "account_from", nullable = false)
     private Account accountFrom;
 
-//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-//    @JoinColumn(name="account_to", nullable = false, referencedColumnName = "iban")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne
     @JoinColumn(name = "account_to", nullable = false)
@@ -41,7 +37,6 @@ public class Transaction {
     private BigDecimal amount;
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @ManyToOne
     @JoinColumn(name="userId", nullable = false)
     private User performingUser;

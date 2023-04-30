@@ -17,7 +17,7 @@ public class AuthenticateService {
     @Autowired
     UserRepository userRepository;
 
-
+    //returns a jwt token for a user
     public String Authenticate(String username, String password) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));

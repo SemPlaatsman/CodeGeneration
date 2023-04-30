@@ -2,18 +2,12 @@ package nl.inholland.codegeneration.security;
 
 import java.util.Base64;
 import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import javax.management.relation.Role;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -26,6 +20,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import nl.inholland.codegeneration.services.UserService;
+import nl.inholland.codegeneration.models.Role;
 
 @Component
 public class JwtProvider {
@@ -44,10 +39,10 @@ public class JwtProvider {
       secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
   
-    public String createToken(String username, Role appUserRoles) {
+    public String createToken(String username, Role role) {
   
       Claims claims = Jwts.claims().setSubject(username);
-      claims.put("auth",  new SimpleGrantedAuthority(appUserRoles.toString()).getAuthority());
+      claims.put("auth",  new SimpleGrantedAuthority(role.toString()).getAuthority());
       Date now = new Date();
       Date validity = new Date(now.getTime() + validityInMilliseconds);
   

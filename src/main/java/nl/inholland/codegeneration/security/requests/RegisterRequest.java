@@ -1,4 +1,4 @@
-package nl.inholland.codegeneration.security;
+package nl.inholland.codegeneration.security.requests;
 
 import java.time.LocalDate;
 

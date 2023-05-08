@@ -1,4 +1,4 @@
-package nl.inholland.codegeneration.security;
+package nl.inholland.codegeneration.security.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

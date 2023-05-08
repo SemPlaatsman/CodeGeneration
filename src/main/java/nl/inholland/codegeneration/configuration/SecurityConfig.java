@@ -10,6 +10,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
+
+
 import nl.inholland.codegeneration.security.JwtFIlter;
 
 
@@ -24,19 +26,19 @@ public class SecurityConfig{
         "/authenticate/**"
         };
     private final JwtFIlter JwtFIlter;
-    private static final AuthenticationProvider AuthenticationProvider = null;
+    private final AuthenticationProvider AuthenticationProvider;
+    
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-        .csrf().disable()
-        .authorizeHttpRequests()
-        .requestMatchers(AUTH_WHITELIST).permitAll()
-        .anyRequest().authenticated()
-        .and()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
-        .authenticationProvider(AuthenticationProvider)
-        .addFilterBefore(JwtFIlter, UsernamePasswordAuthenticationFilter.class);
+                .csrf().disable()
+                .authorizeHttpRequests()
+                .requestMatchers(AUTH_WHITELIST).permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(AuthenticationProvider)
+                .addFilterBefore(JwtFIlter, UsernamePasswordAuthenticationFilter.class);
     
     
         return http.build();

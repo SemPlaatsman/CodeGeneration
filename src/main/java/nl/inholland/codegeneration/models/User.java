@@ -67,14 +67,14 @@ public class User implements UserDetails{
     @Temporal(TemporalType.DATE)
     private LocalDate birthdate;
 
-    @Column(name = "dayLimit", nullable = false, columnDefinition = "Decimal(32,2) default '1000.00'")
-    private BigDecimal dayLimit;
+    @Column(name = "dayLimit", nullable = false, columnDefinition = "Decimal(32,2) default '0'")
+    private BigDecimal dayLimit = new BigDecimal(0);
 
-    @Column(name = "TransactionLimit", nullable = false, columnDefinition = "Decimal(32,2) default '200.00'")
-    private BigDecimal transactionLimit;
+    @Column(name = "TransactionLimit", nullable = false, columnDefinition = "Decimal(32,2) default '0'")
+    private BigDecimal transactionLimit = new BigDecimal(0);
 
     @Column(name = "isDeleted", nullable = false, columnDefinition = "boolean default false")
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 
     public User update(User user) {
         this.setRole(user.getRole());
@@ -104,7 +104,6 @@ public class User implements UserDetails{
 
     @Override
     public boolean isAccountNonLocked() {
-        // TODO Auto-generated method stub
         return true;
     }
 

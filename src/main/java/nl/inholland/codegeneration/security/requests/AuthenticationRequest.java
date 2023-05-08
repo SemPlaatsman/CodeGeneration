@@ -1,4 +1,4 @@
-package nl.inholland.codegeneration.security;
+package nl.inholland.codegeneration.security.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class AuthenticationRequest {
     private String username;
 
-     String password;
+    String password;
 
 }

@@ -11,4 +11,6 @@ public enum Role implements GrantedAuthority{
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getAuthority'");
     }
+
+  
 }

@@ -10,5 +10,5 @@ import nl.inholland.codegeneration.models.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
-    Optional<User> findOneByUsername(String username);
+    Optional<User> findByUsername(String username);
 }

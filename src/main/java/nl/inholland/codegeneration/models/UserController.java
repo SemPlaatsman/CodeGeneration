@@ -1,6 +1,5 @@
-package nl.inholland.codegeneration.controllers;
+package nl.inholland.codegeneration.models;
 
-import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

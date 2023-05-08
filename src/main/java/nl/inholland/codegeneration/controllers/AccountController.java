@@ -21,7 +21,7 @@ import nl.inholland.codegeneration.services.AccountService;
 
 @RestController
 @RequestMapping(path = "/accounts")
-@CrossOrigin("http://localhost:5173/")
+// @CrossOrigin("http://localhost:5173/")
 public class AccountController {
 
     @Autowired

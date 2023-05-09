@@ -18,7 +18,7 @@ public class TransactionController {
     @Autowired
     private TransactionService transactionService;
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getAll(@Valid QueryParams queryParams) {
         try {
             List<Transaction> transactions = transactionService.getAll(queryParams);
@@ -28,7 +28,7 @@ public class TransactionController {
         }
     }    
     
-    @GetMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getById(@PathVariable int id) {
         try {
             Transaction transaction = transactionService.getById(id);

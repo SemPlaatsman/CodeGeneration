@@ -69,5 +69,4 @@ public class DataSeeder implements ApplicationRunner {
         transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 24, 23, 13, 11), accountRepository.findById("NL10INHO0721943866").orElseThrow(), accountRepository.findById("NL53INHO0969793709").orElseThrow(), new BigDecimal("37.20"), userRepository.findById(7L).orElseThrow(), "Broodje ham"));
         transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4, 24, 12, 54, 10), accountRepository.findById("NL76INHO0000640299").orElseThrow(), accountRepository.findById("NL37INHO0849482569").orElseThrow(), new BigDecimal("12.50"), userRepository.findById(9L).orElseThrow(), "Kaas"));
     }
-
 }

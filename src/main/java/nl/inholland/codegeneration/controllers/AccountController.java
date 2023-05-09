@@ -21,7 +21,6 @@ import nl.inholland.codegeneration.services.AccountService;
 
 @RestController
 @RequestMapping(path = "/accounts")
-// @CrossOrigin("http://localhost:5173/")
 public class AccountController {
 
     @Autowired
@@ -60,10 +59,6 @@ public class AccountController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    
-
-
-
 
     // get /accounts/{id}/transaction
     @PostMapping(path = "/transaction", produces=MediaType.APPLICATION_JSON_VALUE, consumes=MediaType.APPLICATION_JSON_VALUE)

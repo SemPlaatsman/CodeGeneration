@@ -4,13 +4,11 @@ import jakarta.validation.Valid;
 import nl.inholland.codegeneration.models.FilterCriteria;
 import nl.inholland.codegeneration.models.QueryParams;
 import nl.inholland.codegeneration.models.User;
-import nl.inholland.codegeneration.services.FilterSpecification;
 import nl.inholland.codegeneration.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 
 import javax.management.Query;
 import java.util.List;

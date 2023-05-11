@@ -19,6 +19,7 @@ public class TransactionController {
     private TransactionService transactionService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+
     public ResponseEntity getAll(@Valid QueryParams queryParams) {
         try {
             List<Transaction> transactions = transactionService.getAll(queryParams);
@@ -28,6 +29,7 @@ public class TransactionController {
         }
     }    
     
+
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getById(@PathVariable int id) {
         try {
@@ -39,7 +41,7 @@ public class TransactionController {
     }    
     
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity add(@RequestBody Transaction transaction) {
+    public ResponseEntity<?> add(@RequestBody Transaction transaction) {//add a type where the question mark is if applicable
         try {
             Transaction addedTransaction = transactionService.add(transaction);
             return ResponseEntity.status(201).body(addedTransaction);
@@ -49,7 +51,7 @@ public class TransactionController {
     }    
     
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity update(@RequestBody Transaction transaction, @PathVariable int id) {
+    public ResponseEntity<?> update(@RequestBody Transaction transaction, @PathVariable int id) { //add a type where the question mark is if applicable
         try {
             Transaction updatedTransaction = transactionService.update(transaction, id);
             return ResponseEntity.status(200).body(updatedTransaction);

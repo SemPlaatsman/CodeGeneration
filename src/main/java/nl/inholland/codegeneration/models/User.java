@@ -1,10 +1,28 @@
 package nl.inholland.codegeneration.models;
 
-import jakarta.persistence.*;
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Data
@@ -13,7 +31,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User implements UserDetails{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -22,6 +40,10 @@ public class User {
     @Enumerated
     @Column(name = "role", nullable = false, columnDefinition = "smallint default 1")
     private Role role;
+
+    // @ElementCollection(fetch = FetchType.EAGER)
+    // private List<Role> role;
+
 
     @Column(name = "username", nullable = false, unique = true, columnDefinition = "varchar(255)")
     private String username;
@@ -45,14 +67,14 @@ public class User {
     @Temporal(TemporalType.DATE)
     private LocalDate birthdate;
 
-    @Column(name = "dayLimit", nullable = false, columnDefinition = "Decimal(32,2) default '1000.00'")
-    private BigDecimal dayLimit;
+    @Column(name = "dayLimit", nullable = false, columnDefinition = "Decimal(32,2) default '0'")
+    private BigDecimal dayLimit = new BigDecimal(0);
 
-    @Column(name = "TransactionLimit", nullable = false, columnDefinition = "Decimal(32,2) default '200.00'")
-    private BigDecimal transactionLimit;
+    @Column(name = "TransactionLimit", nullable = false, columnDefinition = "Decimal(32,2) default '0'")
+    private BigDecimal transactionLimit = new BigDecimal(0);
 
     @Column(name = "isDeleted", nullable = false, columnDefinition = "boolean default false")
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 
     public User update(User user) {
         this.setRole(user.getRole());
@@ -67,4 +89,37 @@ public class User {
         this.setTransactionLimit(user.getTransactionLimit());
         return this;
     }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+
+    @Override
+    public boolean isAccountNonExpired() {
+        // return true;
+        return this.getIsDeleted();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+   
+
+  
 }

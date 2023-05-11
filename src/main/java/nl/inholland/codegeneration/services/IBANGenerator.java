@@ -1,18 +1,13 @@
 package nl.inholland.codegeneration.services;
 
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializerBase;
-import nl.inholland.codegeneration.repositories.AccountRepository;
+import java.math.BigInteger;
+import java.util.Random;
+
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.IdentifierGenerationException;
 import org.hibernate.id.IdentifierGenerator;
 import org.springframework.stereotype.Component;
-
-import java.io.Serializable;
-import java.math.BigInteger;
-import java.util.Random;
-import java.util.stream.Stream;
 
 // IBAN Generator class based on: https://en.wikipedia.org/wiki/International_Bank_Account_Number#Algorithms
 @Component

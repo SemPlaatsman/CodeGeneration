@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 // IBAN Generator class based on: https://en.wikipedia.org/wiki/International_Bank_Account_Number#Algorithms
 @Component
 public class IBANGenerator implements IdentifierGenerator {
-    private final Random RND = new Random(126); // Possibly replace with seed from e.g. config file
+    private static final Random RND = new Random(94837L); // Possibly replace with seed from e.g. config file
     private final int RND_ORIGIN = 2; // 0 is an invalid IBAN account number and 1 is reserved for the bank
     private final int RND_BOUND = 1000000000; // Makes sure IBAN account numbers won't have more than 9 characters
     private final String COUNTRY_CODE = "NL";

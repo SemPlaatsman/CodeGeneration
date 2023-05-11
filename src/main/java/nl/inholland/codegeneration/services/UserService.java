@@ -36,6 +36,7 @@ public class UserService {
 
     public User add(User user) {
         user.setId(null);
+        user.setIsDeleted(false);
         return userRepository.save(user);
     }
 

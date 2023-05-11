@@ -1,7 +1,9 @@
 package nl.inholland.codegeneration.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -23,36 +25,37 @@ public class User {
     @Column(name = "role", nullable = false, columnDefinition = "smallint default 1")
     private Role role;
 
-    @Column(name = "username", nullable = false, unique = true, columnDefinition = "varchar(255)")
+    @Column(name = "username", nullable = false, unique = true, precision = 255)
     private String username;
 
-    @Column(name = "password", nullable = false, columnDefinition = "varchar(255)")
+    @Column(name = "password", nullable = false, precision = 255)
     private String password;
 
-    @Column(name = "firstName", nullable = false, columnDefinition = "varchar(255)")
+    @Column(name = "firstName", nullable = false, precision = 255)
     private String firstName;
 
-    @Column(name = "lastName", nullable = false, columnDefinition = "varchar(255)")
+    @Column(name = "lastName", nullable = false, precision = 255)
     private String lastName;
 
-    @Column(name = "email", nullable = false, columnDefinition = "varchar(255)")
+    @Column(name = "email", nullable = false, precision = 255)
     private String email;
 
-    @Column(name = "phoneNumber", nullable = false, columnDefinition = "varchar(255)")
+    @Column(name = "phoneNumber", nullable = false, precision = 255)
     private String phoneNumber;
 
     @Column(name = "birthdate", nullable = false)
     @Temporal(TemporalType.DATE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate birthdate;
 
-    @Column(name = "dayLimit", nullable = false, columnDefinition = "Decimal(32,2) default '1000.00'")
-    private BigDecimal dayLimit;
+    @Column(name = "dayLimit", nullable = false, precision = 32, scale = 2)
+    private BigDecimal dayLimit = new BigDecimal("1000");
 
-    @Column(name = "TransactionLimit", nullable = false, columnDefinition = "Decimal(32,2) default '200.00'")
-    private BigDecimal transactionLimit;
+    @Column(name = "transactionLimit", nullable = false, precision = 32, scale = 2)
+    private BigDecimal transactionLimit = new BigDecimal("200");
 
-    @Column(name = "isDeleted", nullable = false, columnDefinition = "boolean default false")
-    private Boolean isDeleted;
+    @Column(name = "isDeleted", nullable = false)
+    private Boolean isDeleted = false;
 
     public User update(User user) {
         this.setRole(user.getRole());

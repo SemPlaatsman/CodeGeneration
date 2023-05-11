@@ -37,10 +37,10 @@ public class AccountController {
         }
     }
 
-    @GetMapping(path = "/{ibans}" , produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAccountByIban(@PathVariable("ibans") String ibans) {
+    @GetMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getAccountByIban(@PathVariable("iban") String iban) {
         try {
-            Account account = accountService.getAccountByIban(ibans);
+            Account account = accountService.getAccountByIban(iban);
             return ResponseEntity.status(200).body(account);
 
         } catch (Exception e) {
@@ -49,7 +49,7 @@ public class AccountController {
     }
 
     // post /accounts
-    @PostMapping(produces=MediaType.APPLICATION_JSON_VALUE, consumes=MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> insertAccount(@RequestBody Account account) {
         try{
             System.out.println(account.getAbsoluteLimit());
@@ -61,14 +61,14 @@ public class AccountController {
     }
 
     // get /accounts/{id}/transaction
-    @PostMapping(path = "/transaction", produces=MediaType.APPLICATION_JSON_VALUE, consumes=MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/transaction", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Account> getTransaction(@RequestBody Account account, @RequestParam("iban") double amount) {
         System.out.println("getTransaction"+ account + amount);
         return null;
     }
 
     // get /accounts/{id}/balance
-    @PostMapping(path = "/balance", produces=MediaType.APPLICATION_JSON_VALUE, consumes=MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/balance", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Account> getBalance(@RequestBody Account account, @RequestParam("iban") double amount) {
 
         return null;

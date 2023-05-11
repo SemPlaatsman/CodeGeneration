@@ -19,7 +19,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getAll(@Valid QueryParams queryParams) {
         try {
             List<User> users = userService.getAll(queryParams);
@@ -29,7 +29,7 @@ public class UserController {
         }
     }
 
-    @GetMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getById(@PathVariable Long id) {
         try {
             User user = userService.getById(id);
@@ -59,7 +59,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(path = "/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
         try {
             userService.delete(id);

@@ -1,5 +1,6 @@
 package nl.inholland.codegeneration.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,17 +23,21 @@ public class Transaction {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime timestamp;
 
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="accountFrom", nullable = false, referencedColumnName = "IBAN")
     private Account accountFrom;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="accountTo", nullable = false, referencedColumnName = "IBAN")
+
     private Account accountTo;
 
     @Column(name = "amount", nullable = false, columnDefinition = "Decimal(32,2)")
     private BigDecimal amount;
 
+
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="userId", nullable = false)
     private User performingUser;

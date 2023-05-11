@@ -40,12 +40,8 @@ public class Account {
     private BigDecimal balance = new BigDecimal(0);
 
     @Column(name = "absoluteLimit", nullable = false, columnDefinition = "Decimal(32,2) default '1000.00'")
-
     private BigDecimal absoluteLimit = new BigDecimal(1000);
-  
 
- 
-    
     @JsonProperty("customer")
     public void setCustomerById(Long customerId) {
         // create a new customer object from the given id

@@ -131,5 +131,4 @@ public class DataSeeder implements ApplicationRunner {
                 accountRepository.findByIban("NL37INHO0849482569").orElseThrow(), new BigDecimal("12.50"),
                 userRepository.findById(9L).orElseThrow(), "Kaas"));
     }
-
 }

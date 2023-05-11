@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import nl.inholland.codegeneration.models.QueryParams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import nl.inholland.codegeneration.models.Account;
@@ -28,12 +31,14 @@ public class AccountService {
     public List<Account> getAll() {
         System.out.println();
         return accountRepository.findAll();
+
     }
 
     public Account insertAccount(Account account) {
 
         return accountRepository.save(new Account(account.getIban(), account.getAccountType(), account.getCustomer(),
                 account.getBalance(), account.getAbsoluteLimit()));
+
     }
 
     public Optional<Account> getAccountByIban(String iban) {
@@ -82,6 +87,7 @@ public class AccountService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
+
     }
 
     public List<Transaction> getTransactions(String accountID) {

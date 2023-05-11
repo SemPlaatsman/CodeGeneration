@@ -27,7 +27,6 @@ public class IBANGenerator implements IdentifierGenerator {
         String IBAN = COUNTRY_CODE + "00" + BANK_CODE + accountNumber;
         int checkDigits = calculateCheckDigits(IBAN);
         IBAN = IBAN.substring(0, COUNTRY_CODE.length()) + String.format("%02d", checkDigits) + IBAN.substring(2 + COUNTRY_CODE.length());
-        System.out.println(IBAN);
         return IBAN;
     }
 

@@ -3,10 +3,14 @@ package nl.inholland.codegeneration.controllers;
 import java.math.BigDecimal;
 import java.util.List;
 
+import jakarta.validation.Valid;
+import nl.inholland.codegeneration.models.QueryParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,21 +34,20 @@ public class AccountController {
 
     // get /accounts
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<?> getAll(@Valid QueryParams queryParams) {
         try {
-            List<Account> accounts = accountService.getAll();
+            List<Account> accounts = accountService.getAll(queryParams);
             return ResponseEntity.status(200).body(accounts);
-
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-
     }
 
-    @GetMapping(path = "/{Ibans}" , produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAccountByIban(@PathVariable("Ibans") String Ibans) {
+    @GetMapping(path = "/{ibans}" , produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getAccountByIban(@PathVariable("ibans") String ibans) {
         try {
             Account account = accountService.getAccountByIban(Ibans).get();
+
             return ResponseEntity.status(200).body(account);
 
         } catch (Exception e) {
@@ -75,7 +78,6 @@ public class AccountController {
     }
 
     
-
 
 
 

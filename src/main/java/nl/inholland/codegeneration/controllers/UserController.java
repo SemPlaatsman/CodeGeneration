@@ -1,6 +1,10 @@
 package nl.inholland.codegeneration.controllers;
 
+import jakarta.validation.Valid;
+import nl.inholland.codegeneration.models.FilterCriteria;
+import nl.inholland.codegeneration.models.QueryParams;
 import nl.inholland.codegeneration.models.User;
+import nl.inholland.codegeneration.services.FilterSpecification;
 import nl.inholland.codegeneration.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -8,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.management.Query;
 import java.util.List;
 
 @RestController
@@ -17,9 +22,9 @@ public class UserController {
     private UserService userService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAll() { //add a type where the question mark is if applicable
+    public ResponseEntity getAll(@Valid QueryParams queryParams) {
         try {
-            List<User> users = userService.getAll();
+            List<User> users = userService.getAll(queryParams);
             return ResponseEntity.status(200).body(users);
         } catch (Exception ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());

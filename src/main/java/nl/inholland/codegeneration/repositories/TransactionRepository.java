@@ -13,4 +13,5 @@ import org.springframework.stereotype.Repository;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     @Query("SELECT t FROM Transaction t WHERE t.accountFrom.iban = :iban OR t.accountTo.iban = :iban")
     List<Transaction> findAllByAccountFromIban(@Param("iban") String iban);
+
 }

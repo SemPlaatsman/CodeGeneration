@@ -1,5 +1,7 @@
 package nl.inholland.codegeneration.controllers;
 
+import jakarta.validation.Valid;
+import nl.inholland.codegeneration.models.QueryParams;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,17 +19,19 @@ public class TransactionController {
     private TransactionService transactionService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAll() { //add a type where the question mark is if applicable
+
+    public ResponseEntity getAll(@Valid QueryParams queryParams) {
         try {
-            List<Transaction> transactions = transactionService.getAll();
+            List<Transaction> transactions = transactionService.getAll(queryParams);
             return ResponseEntity.status(200).body(transactions);
         } catch (Exception ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }    
     
-    @GetMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getById(@PathVariable int id) { //add a type where the question mark is if applicable
+
+    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getById(@PathVariable int id) {
         try {
             Transaction transaction = transactionService.getById(id);
             return ResponseEntity.status(200).body(transaction);

@@ -22,7 +22,7 @@ public class TransactionService {
     }
 
     public List<Transaction> getAll(@Nullable QueryParams queryParams) {
-        return transactionRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent();
+        return transactionRepository.findAll(PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent();
     }
 
     public Transaction getById(long id) {

@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -11,7 +12,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import lombok.RequiredArgsConstructor;
 
-
+import static org.springframework.security.config.Customizer.withDefaults;
 import nl.inholland.codegeneration.security.JwtFIlter;
 
 
@@ -40,9 +41,11 @@ public class SecurityConfig{
                 .authenticationProvider(AuthenticationProvider)
                 .addFilterBefore(JwtFIlter, UsernamePasswordAuthenticationFilter.class);
     
-    
+        // http.csrf().ignoringRequestMatchers("/h2-console/**");
+
         return http.build();
     }
+    
 
     
 //change code to use filterchain isntead of this grose code

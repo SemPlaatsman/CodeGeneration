@@ -37,7 +37,6 @@ public class AuthenticateService {
 
     //registering user is by default customer van change this if you want to register a new employee you could make a diferent endpoint for that
     user.setRole(Role.Customer);
-    System.out.println(user);
     userRepository.save(user);
 
     String jwtToken =  jwtService.generateToken(user);
@@ -45,9 +44,10 @@ public class AuthenticateService {
   }
 
 public AuthenticationResponse login(AuthenticationRequest request) {
+
     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
     User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
-    
+
     String jwtToken =  jwtService.generateToken(user);
     return AuthenticationResponse.builder().token(jwtToken).build();
 

@@ -20,8 +20,10 @@ public class UserController {
     private UserService userService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity getAll(@Valid QueryParams queryParams) {
+    public ResponseEntity getAll(@RequestParam(value = "filter", required = false) String filterQuery) {
         try {
+            QueryParams queryParams = new QueryParams(User.class);
+            queryParams.setFilter(filterQuery);
             List<User> users = userService.getAll(queryParams);
             return ResponseEntity.status(200).body(users);
         } catch (Exception ex) {

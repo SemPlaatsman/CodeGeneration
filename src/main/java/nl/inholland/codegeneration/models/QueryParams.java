@@ -18,6 +18,11 @@ public class QueryParams {
     private final List<FilterCriteria> filterCriteria = new ArrayList<>();
     private int limit = 12;
     private int page = 0;
+    private Class<?> classReference;
+
+    public QueryParams(Class<?> classReference) {
+        this.classReference = classReference;
+    }
 
     public void setFilter(String filterQuery) {
 //        System.out.println(filterQuery);
@@ -31,6 +36,7 @@ public class QueryParams {
     }
 
     public boolean addFilter(FilterCriteria filterCriterion) {
+        System.out.println(this.classReference.getName());
         return this.filterCriteria.add(filterCriterion);
     }
 

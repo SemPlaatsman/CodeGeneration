@@ -12,7 +12,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import lombok.RequiredArgsConstructor;
 
-import static org.springframework.security.config.Customizer.withDefaults;
 import nl.inholland.codegeneration.security.JwtFIlter;
 
 
@@ -48,7 +47,6 @@ public class SecurityConfig{
     
 
     
-//change code to use filterchain isntead of this grose code
 
  
 }

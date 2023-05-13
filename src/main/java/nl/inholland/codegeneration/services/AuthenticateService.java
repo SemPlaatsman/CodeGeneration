@@ -45,12 +45,15 @@ public class AuthenticateService {
 
 public AuthenticationResponse login(AuthenticationRequest request) {
 
+  try {
     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-    User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
 
-    String jwtToken =  jwtService.generateToken(user);
-    return AuthenticationResponse.builder().token(jwtToken).build();
-
+  } catch (Exception e) {
+    System.out.println(e);
+  }
+  User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
+  String jwtToken =  jwtService.generateToken(user);
+  return AuthenticationResponse.builder().token(jwtToken).build();
 }
 
 

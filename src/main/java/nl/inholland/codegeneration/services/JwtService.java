@@ -41,6 +41,7 @@ public class JwtService {
         .setSubject(userDetails.getUsername())
         .setIssuedAt(new Date(System.currentTimeMillis()))
         .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) //expires in 10 hours maybe add to config
+        .signWith(getSigningKey(), SignatureAlgorithm.HS256)
         .compact(); //expires in 10 hours
     }
 

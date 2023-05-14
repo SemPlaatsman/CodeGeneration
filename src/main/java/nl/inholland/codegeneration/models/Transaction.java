@@ -24,22 +24,25 @@ public class Transaction {
     private LocalDateTime timestamp;
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @ManyToOne
-    @JoinColumn(name = "account_from", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name="accountFrom", nullable = false, referencedColumnName = "IBAN")
     private Account accountFrom;
 
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @ManyToOne
-    @JoinColumn(name = "account_to", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name="accountTo", nullable = false, referencedColumnName = "IBAN")
+
     private Account accountTo;
 
     @Column(name = "amount", nullable = false, columnDefinition = "Decimal(32,2)")
     private BigDecimal amount;
 
+
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="userId", nullable = false)
     private User performingUser;
+
+
 
     @Column(name = "description", nullable = false, columnDefinition = "varchar(255)")
     private String description;

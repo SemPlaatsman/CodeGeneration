@@ -12,6 +12,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.data.jpa.domain.Specification;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import nl.inholland.codegeneration.services.FilterSpecification;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -52,12 +59,12 @@ public class QueryParams {
         return this.filterCriteria.add(filterCriterion);
     }
 
-    public Specification buildFilter() {
+    public Specification<?> buildFilter() {
         if (filterCriteria.size() == 0) {
             return null;
         }
 
-        Specification combinedSpecification = new FilterSpecification(filterCriteria.get(0));
+        Specification<?> combinedSpecification = new FilterSpecification(filterCriteria.get(0));
         for (int i = 1; i < filterCriteria.size(); i++) {
             combinedSpecification = Specification.where(combinedSpecification).and(new FilterSpecification(filterCriteria.get(i)));
         }

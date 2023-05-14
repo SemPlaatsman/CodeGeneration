@@ -40,8 +40,7 @@ public class JwtService {
         .setClaims(claims)
         .setSubject(userDetails.getUsername())
         .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
-        .signWith(getSigningKey(),SignatureAlgorithm.HS256)
+        .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) //expires in 10 hours maybe add to config
         .compact(); //expires in 10 hours
     }
 

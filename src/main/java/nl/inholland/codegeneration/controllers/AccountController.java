@@ -3,14 +3,10 @@ package nl.inholland.codegeneration.controllers;
 import java.math.BigDecimal;
 import java.util.List;
 
-import jakarta.validation.Valid;
-import nl.inholland.codegeneration.models.QueryParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import nl.inholland.codegeneration.models.Account;
+import nl.inholland.codegeneration.models.QueryParams;
 import nl.inholland.codegeneration.models.Transaction;
 import nl.inholland.codegeneration.services.AccountService;
 
@@ -36,7 +34,7 @@ public class AccountController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAll(@Valid QueryParams queryParams) {
         try {
-            List<Account> accounts = accountService.getAll(queryParams);
+            List<Account> accounts = accountService.getAll();
             return ResponseEntity.status(200).body(accounts);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -46,7 +44,7 @@ public class AccountController {
     @GetMapping(path = "/{ibans}" , produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAccountByIban(@PathVariable("ibans") String ibans) {
         try {
-            Account account = accountService.getAccountByIban(Ibans).get();
+            Account account = accountService.getAccountByIban(ibans).get();
 
             return ResponseEntity.status(200).body(account);
 

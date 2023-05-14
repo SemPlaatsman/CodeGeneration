@@ -1,19 +1,23 @@
 package nl.inholland.codegeneration.controllers;
 
-import jakarta.validation.Valid;
-import nl.inholland.codegeneration.models.FilterCriteria;
-import nl.inholland.codegeneration.models.QueryParams;
-import nl.inholland.codegeneration.models.User;
-import nl.inholland.codegeneration.services.FilterSpecification;
-import nl.inholland.codegeneration.services.UserService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-
-import javax.management.Query;
-import java.util.List;
+import jakarta.validation.Valid;
+import nl.inholland.codegeneration.models.QueryParams;
+import nl.inholland.codegeneration.models.User;
+import nl.inholland.codegeneration.services.UserService;
 
 @RestController
 @RequestMapping(path = "/users")
@@ -22,7 +26,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity getAll(@Valid QueryParams queryParams) {
+    public ResponseEntity<?> getAll(@Valid QueryParams queryParams) {
         try {
             List<User> users = userService.getAll(queryParams);
             return ResponseEntity.status(200).body(users);

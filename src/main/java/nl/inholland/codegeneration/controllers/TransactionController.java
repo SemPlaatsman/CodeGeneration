@@ -20,7 +20,7 @@ public class TransactionController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 
-    public ResponseEntity getAll(@Valid QueryParams queryParams) {
+    public ResponseEntity<?> getAll(@Valid QueryParams queryParams) {
         try {
             List<Transaction> transactions = transactionService.getAll(queryParams);
             return ResponseEntity.status(200).body(transactions);
@@ -31,7 +31,7 @@ public class TransactionController {
     
 
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity getById(@PathVariable int id) {
+    public ResponseEntity<?> getById(@PathVariable int id) {
         try {
             Transaction transaction = transactionService.getById(id);
             return ResponseEntity.status(200).body(transaction);

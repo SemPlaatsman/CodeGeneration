@@ -34,10 +34,9 @@ import nl.inholland.codegeneration.security.JwtFIlter;
 public class SecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
-        
         "/h2-console/**",
         "/authenticate/**"
-        };
+    };
     private final JwtFIlter JwtFIlter;
     private final AuthenticationProvider AuthenticationProvider;
     
@@ -53,7 +52,7 @@ public class SecurityConfig {
                 .authenticationProvider(AuthenticationProvider)
                 .addFilterBefore(JwtFIlter, UsernamePasswordAuthenticationFilter.class);
     
-        // http.csrf().ignoringRequestMatchers("/h2-console/**");
+//        http.csrf().ignoringRequestMatchers("/h2-console/**");
 
         return http.build();
     }
@@ -70,7 +69,7 @@ public class SecurityConfig {
 //                 .build();
 //     }
   
-//   @Bean
+//     @Bean
 //     public WebSecurityCustomizer webSecurityCustomizer() {
 //         return (web) -> web.ignoring().requestMatchers("/h2-console/**");
 //     }

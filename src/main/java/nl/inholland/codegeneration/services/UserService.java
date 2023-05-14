@@ -1,9 +1,15 @@
 package nl.inholland.codegeneration.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.persistence.EntityNotFoundException;
+import nl.inholland.codegeneration.exceptions.APIException;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +27,15 @@ public class UserService {
     }
 
     public User getById(Long id) {
-        return userRepository.findById(id).orElse(null);
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null)
+            throw new EntityNotFoundException("User not found!");
+        return user;
     }
 
     public User add(User user) {
         user.setId(null);
+        user.setIsDeleted(false);
         return userRepository.save(user);
     }
 

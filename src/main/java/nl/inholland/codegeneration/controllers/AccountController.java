@@ -41,11 +41,10 @@ public class AccountController {
         }
     }
 
-    @GetMapping(path = "/{ibans}" , produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAccountByIban(@PathVariable("ibans") String ibans) {
+    @GetMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getAccountByIban(@PathVariable("iban") String iban) {
         try {
-            Account account = accountService.getAccountByIban(ibans).get();
-
+            Account account = accountService.getAccountByIban(iban).get();
             return ResponseEntity.status(200).body(account);
 
         } catch (Exception e) {
@@ -54,7 +53,7 @@ public class AccountController {
     }
 
     // post /accounts
-    @PostMapping(produces=MediaType.APPLICATION_JSON_VALUE, consumes=MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> insertAccount(@RequestBody Account account) {
         try{
         Account _account = accountService.insertAccount(account);
@@ -75,11 +74,6 @@ public class AccountController {
         }
     }
 
-    
-
-
-
-   
     @DeleteMapping(path = "/{Iban}", produces=MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteAccount(@PathVariable("Iban") String Iban) {
         try {

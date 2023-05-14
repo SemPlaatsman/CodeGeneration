@@ -1,5 +1,12 @@
 package nl.inholland.codegeneration.models;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import nl.inholland.codegeneration.services.FilterSpecification;
+import org.springframework.data.jpa.domain.Specification;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -19,8 +26,14 @@ public class QueryParams {
     private final List<FilterCriteria> filterCriteria = new ArrayList<>();
     private int limit = 12;
     private int page = 0;
+    // This class reference is used to access the fields of the class the filterCriteria needs to filter on
+    private Class<?> classReference;
 
-    public void setFilter(String filterQuery) {
+    public QueryParams(Class<?> classReference) {
+        this.classReference = classReference;
+    }
+
+    public void setFilter(String filterQuery) throws Exception {
 //        System.out.println(filterQuery);
         this.filterCriteria.clear();
         Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(\\w+?),");
@@ -31,7 +44,18 @@ public class QueryParams {
         }
     }
 
-    public boolean addFilter(FilterCriteria filterCriterion) {
+    public boolean addFilter(FilterCriteria filterCriterion) throws Exception {
+        if (!this.classReference.isAnnotationPresent(Filterable.class)) {
+            Field field = this.classReference.getDeclaredField(filterCriterion.getKey());
+            if (!field.isAnnotationPresent(Filterable.class)) {
+                throw new Exception("Invalid filter option!");
+            }
+        }
+
+//        Filterable filterable = field.getAnnotation(Filterable.class);
+//        if (filterable.role() != Role.Employee) { // TODO: Replace Role.Employee with role from JWT
+//            throw new Exception("Invalid permissions!");
+//        }
         return this.filterCriteria.add(filterCriterion);
     }
 

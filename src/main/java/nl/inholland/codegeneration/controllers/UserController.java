@@ -3,9 +3,8 @@ package nl.inholland.codegeneration.controllers;
 import java.util.List;
 import jakarta.validation.Valid;
 import nl.inholland.codegeneration.exceptions.APIException;
-import nl.inholland.codegeneration.models.FilterCriteria;
-import nl.inholland.codegeneration.models.QueryParams;
-import nl.inholland.codegeneration.models.User;
+import nl.inholland.codegeneration.models.*;
+import nl.inholland.codegeneration.services.AccountService;
 import nl.inholland.codegeneration.services.JwtService;
 import nl.inholland.codegeneration.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -27,12 +27,13 @@ import javax.management.Query;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private AccountService accountService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getAll(@RequestParam(value = "filter", required = false) String filterQuery) throws Exception {
         QueryParams queryParams = new QueryParams(User.class);
         queryParams.setFilter(filterQuery);
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<User> users = userService.getAll(queryParams);
         return ResponseEntity.status(200).body(users);
     }
@@ -41,6 +42,12 @@ public class UserController {
     public ResponseEntity getById(@PathVariable Long id) {
         User user = userService.getById(id);
         return ResponseEntity.status(200).body(user);
+    }
+
+    @GetMapping(path = "/{id}/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getAllAccountsById(@PathVariable Long id) {
+        List<Account> accounts = accountService.getAllByUserId(id);
+        return ResponseEntity.status(200).body(accounts);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

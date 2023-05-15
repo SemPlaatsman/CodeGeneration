@@ -1,6 +1,8 @@
 package nl.inholland.codegeneration.exceptions;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.query.SemanticException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.naming.directory.InvalidSearchFilterException;
 import java.time.LocalDateTime;
 
 @ControllerAdvice
@@ -53,13 +56,33 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(apiExceptionResponse, apiExceptionResponse.httpStatus());
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<APIExceptionResponse> handleException(Exception ex, WebRequest request) {
+//    @ExceptionHandler({InvalidDataAccessApiUsageException.class, SemanticException.class})
+//    public ResponseEntity<APIExceptionResponse> handleException(InvalidDataAccessApiUsageException ex, WebRequest request) {
+//        APIExceptionResponse apiExceptionResponse = new APIExceptionResponse(
+//                (ex.getMessage() != null) ? ex.getMessage() : "Bad Request!",
+//                HttpStatus.BAD_REQUEST,
+//                LocalDateTime.now()
+//        );
+//        return new ResponseEntity<>(apiExceptionResponse, apiExceptionResponse.httpStatus());
+//    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<APIExceptionResponse> handleException(IllegalStateException ex, WebRequest request) {
         APIExceptionResponse apiExceptionResponse = new APIExceptionResponse(
-                (ex.getMessage() != null) ? ex.getMessage() : "Internal Server Error!",
-                HttpStatus.INTERNAL_SERVER_ERROR,
+                (ex.getMessage() != null) ? ex.getMessage() : "Unprocessable Entity!",
+                HttpStatus.UNPROCESSABLE_ENTITY,
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(apiExceptionResponse, apiExceptionResponse.httpStatus());
     }
+
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<APIExceptionResponse> handleException(Exception ex, WebRequest request) {
+//        APIExceptionResponse apiExceptionResponse = new APIExceptionResponse(
+//                (ex.getMessage() != null) ? ex.getMessage() : "Internal Server Error!",
+//                HttpStatus.INTERNAL_SERVER_ERROR,
+//                LocalDateTime.now()
+//        );
+//        return new ResponseEntity<>(apiExceptionResponse, apiExceptionResponse.httpStatus());
+//    }
 }

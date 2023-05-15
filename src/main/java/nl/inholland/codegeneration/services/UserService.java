@@ -1,15 +1,13 @@
 package nl.inholland.codegeneration.services;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.EntityNotFoundException;
-import nl.inholland.codegeneration.exceptions.APIException;
-import org.hibernate.ObjectNotFoundException;
+import nl.inholland.codegeneration.models.Account;
+import nl.inholland.codegeneration.repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +21,7 @@ public class UserService {
     UserRepository userRepository;
 
     public List<User> getAll(@Nullable QueryParams queryParams) {
-        return userRepository.findAll(PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent();
+        return userRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent();
     }
 
     public User getById(Long id) {
@@ -40,6 +38,9 @@ public class UserService {
     }
 
     public User update(User user, Long id) {
+        if (user.getId() != id) {
+            throw new InvalidDataAccessApiUsageException("Invalid id!");
+        }
         User existingUser = this.getById(id);
         existingUser.update(user);
         return userRepository.save(existingUser);
@@ -50,6 +51,4 @@ public class UserService {
         user.setIsDeleted(true);
         userRepository.save(user);
     }
-
-
 }

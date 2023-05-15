@@ -30,7 +30,6 @@ public class Transaction {
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="accountTo", nullable = false, referencedColumnName = "IBAN")
-
     private Account accountTo;
 
     @Column(name = "amount", nullable = false, columnDefinition = "Decimal(32,2)")

@@ -4,12 +4,14 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import nl.inholland.codegeneration.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.lang.Nullable;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import nl.inholland.codegeneration.models.Account;
-import nl.inholland.codegeneration.models.Transaction;
-import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.repositories.AccountRepository;
 import nl.inholland.codegeneration.repositories.TransactionRepository;
 import nl.inholland.codegeneration.repositories.UserRepository;
@@ -28,12 +30,19 @@ public class AccountService {
     public List<Account> getAll() {
         System.out.println();
         return accountRepository.findAll();
+    }
 
+    public List<Account> getAllByUserId(Long id) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (user.getRole() == Role.CUSTOMER && user.getId() != id) {
+            throw new InsufficientAuthenticationException("Forbidden!");
+        }
+        return accountRepository.findAllByUserId(id);
     }
 
     public Account insertAccount(Account account) {
 
-        return accountRepository.save(new Account(account.getIban(), account.getAccountType(), account.getCustomer(),
+        return accountRepository.save(new Account(account.getIban(), account.getAccountType(), account.getUser(),
                 account.getBalance(), account.getAbsoluteLimit()));
 
     }
@@ -51,13 +60,13 @@ public class AccountService {
     public Account updateAccount(Account account,String Iban) throws Exception {
         try {
             Optional<Account> _account = accountRepository.findByIban(Iban);
-            Optional<User> user =  customerRepository.findById(account.getCustomer().getId());
+            Optional<User> user =  customerRepository.findById(account.getUser().getId());
             if (_account.isPresent()&&user.isPresent()) {
             
-                _account.get().setCustomer(user.get());
+                _account.get().setUser(user.get());
                 _account.get().setIban(Iban);
                 _account.get().setAccountType(account.getAccountType());
-                _account.get().setCustomer(account.getCustomer());
+                _account.get().setUser(account.getUser());
                 _account.get().setBalance(account.getBalance());
                 _account.get().setAbsoluteLimit(account.getAbsoluteLimit());
 

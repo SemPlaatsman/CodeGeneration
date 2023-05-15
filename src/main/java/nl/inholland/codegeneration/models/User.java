@@ -1,6 +1,8 @@
 package nl.inholland.codegeneration.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -96,36 +98,35 @@ public class User implements UserDetails{
         return this;
     }
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         // return true;
         return !this.getIsDeleted();
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
-
-
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return true;
     }
-
-   
-
-  
 }

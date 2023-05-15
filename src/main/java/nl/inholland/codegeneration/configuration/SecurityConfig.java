@@ -1,5 +1,6 @@
 package nl.inholland.codegeneration.configuration;
 
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -21,6 +22,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 import lombok.RequiredArgsConstructor;
@@ -43,7 +45,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests()
                 .requestMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated()
@@ -69,21 +71,21 @@ public class SecurityConfig {
 //                 .build();
 //     }
   
-//     @Bean
-//     public WebSecurityCustomizer webSecurityCustomizer() {
-//         return (web) -> web.ignoring().requestMatchers("/h2-console/**");
-//     }
+     @Bean
+     public WebSecurityCustomizer webSecurityCustomizer() {
+         return (web) -> web.ignoring().requestMatchers("/h2-console/**");
+     }
   
-  @Bean
-    public InMemoryUserDetailsManager userDetailsManager() {
-        UserDetails user = User.withDefaultPasswordEncoder()
-                .username("dev")
-                .password("dev123")
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(user);
-    }
+//    @Bean
+//    public InMemoryUserDetailsManager userDetailsManager() {
+//        UserDetails user = User.withDefaultPasswordEncoder()
+//                .username("dev")
+//                .password("dev123")
+//                .roles("ADMIN")
+//                .build();
+//
+//        return new InMemoryUserDetailsManager(user);
+//    }
     
 
     

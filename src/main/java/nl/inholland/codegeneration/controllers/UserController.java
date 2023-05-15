@@ -6,10 +6,14 @@ import nl.inholland.codegeneration.exceptions.APIException;
 import nl.inholland.codegeneration.models.FilterCriteria;
 import nl.inholland.codegeneration.models.QueryParams;
 import nl.inholland.codegeneration.models.User;
+import nl.inholland.codegeneration.services.JwtService;
 import nl.inholland.codegeneration.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -28,6 +32,7 @@ public class UserController {
     public ResponseEntity getAll(@RequestParam(value = "filter", required = false) String filterQuery) throws Exception {
         QueryParams queryParams = new QueryParams(User.class);
         queryParams.setFilter(filterQuery);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<User> users = userService.getAll(queryParams);
         return ResponseEntity.status(200).body(users);
     }

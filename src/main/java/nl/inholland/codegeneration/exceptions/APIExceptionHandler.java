@@ -1,5 +1,7 @@
 package nl.inholland.codegeneration.exceptions;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
 import org.hibernate.query.SemanticException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -46,8 +48,8 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(apiExceptionResponse, apiExceptionResponse.httpStatus());
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<APIExceptionResponse> handleException(BadCredentialsException ex, WebRequest request) {
+    @ExceptionHandler({BadCredentialsException.class, JwtException.class})
+    public ResponseEntity<APIExceptionResponse> handleException(RuntimeException ex, WebRequest request) {
         APIExceptionResponse apiExceptionResponse = new APIExceptionResponse(
                 (ex.getMessage() != null) ? ex.getMessage() : "Unauthorized!",
                 HttpStatus.UNAUTHORIZED,
@@ -56,15 +58,15 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(apiExceptionResponse, apiExceptionResponse.httpStatus());
     }
 
-//    @ExceptionHandler({InvalidDataAccessApiUsageException.class, SemanticException.class})
-//    public ResponseEntity<APIExceptionResponse> handleException(InvalidDataAccessApiUsageException ex, WebRequest request) {
-//        APIExceptionResponse apiExceptionResponse = new APIExceptionResponse(
-//                (ex.getMessage() != null) ? ex.getMessage() : "Bad Request!",
-//                HttpStatus.BAD_REQUEST,
-//                LocalDateTime.now()
-//        );
-//        return new ResponseEntity<>(apiExceptionResponse, apiExceptionResponse.httpStatus());
-//    }
+    @ExceptionHandler({InvalidDataAccessApiUsageException.class, SemanticException.class})
+    public ResponseEntity<APIExceptionResponse> handleException(InvalidDataAccessApiUsageException ex, WebRequest request) {
+        APIExceptionResponse apiExceptionResponse = new APIExceptionResponse(
+                (ex.getMessage() != null) ? ex.getMessage() : "Bad Request!",
+                HttpStatus.BAD_REQUEST,
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(apiExceptionResponse, apiExceptionResponse.httpStatus());
+    }
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<APIExceptionResponse> handleException(IllegalStateException ex, WebRequest request) {
@@ -76,13 +78,13 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(apiExceptionResponse, apiExceptionResponse.httpStatus());
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<APIExceptionResponse> handleException(Exception ex, WebRequest request) {
-//        APIExceptionResponse apiExceptionResponse = new APIExceptionResponse(
-//                (ex.getMessage() != null) ? ex.getMessage() : "Internal Server Error!",
-//                HttpStatus.INTERNAL_SERVER_ERROR,
-//                LocalDateTime.now()
-//        );
-//        return new ResponseEntity<>(apiExceptionResponse, apiExceptionResponse.httpStatus());
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<APIExceptionResponse> handleException(Exception ex, WebRequest request) {
+        APIExceptionResponse apiExceptionResponse = new APIExceptionResponse(
+                (ex.getMessage() != null) ? ex.getMessage() : "Internal Server Error!",
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(apiExceptionResponse, apiExceptionResponse.httpStatus());
+    }
 }

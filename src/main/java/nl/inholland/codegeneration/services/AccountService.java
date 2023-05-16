@@ -22,13 +22,12 @@ public class AccountService {
     private AccountRepository accountRepository;
 
     @Autowired
-    private UserRepository customerRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private TransactionRepository transactionRepository;
 
     public List<Account> getAll() {
-        System.out.println();
         return accountRepository.findAll();
     }
 
@@ -41,10 +40,8 @@ public class AccountService {
     }
 
     public Account insertAccount(Account account) {
-
         return accountRepository.save(new Account(account.getIban(), account.getAccountType(), account.getUser(),
                 account.getBalance(), account.getAbsoluteLimit()));
-
     }
 
     public Optional<Account> getAccountByIban(String iban) {
@@ -60,7 +57,7 @@ public class AccountService {
     public Account updateAccount(Account account,String Iban) throws Exception {
         try {
             Optional<Account> _account = accountRepository.findByIban(Iban);
-            Optional<User> user =  customerRepository.findById(account.getUser().getId());
+            Optional<User> user =  userRepository.findById(account.getUser().getId());
             if (_account.isPresent()&&user.isPresent()) {
             
                 _account.get().setUser(user.get());
@@ -119,5 +116,4 @@ public class AccountService {
             throw new RuntimeException(e.getMessage());
         }
     }
-
 }

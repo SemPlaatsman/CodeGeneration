@@ -3,6 +3,8 @@ package nl.inholland.codegeneration.controllers;
 import java.math.BigDecimal;
 import java.util.List;
 
+import nl.inholland.codegeneration.models.DTO.request.AccountRequestDTO;
+import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +41,12 @@ public class AccountController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping(path = "/test", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getTest(@RequestBody TransactionRequestDTO transactionRequestDTO) {
+        System.out.println(transactionRequestDTO);
+        return ResponseEntity.status(200).body(transactionRequestDTO);
     }
 
     @GetMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE)

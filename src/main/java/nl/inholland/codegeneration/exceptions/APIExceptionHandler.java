@@ -7,6 +7,7 @@ import org.hibernate.query.SemanticException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -19,9 +20,9 @@ import java.time.LocalDateTime;
 @ControllerAdvice
 public class APIExceptionHandler {
     @ExceptionHandler(APIException.class)
-    public ResponseEntity<APIExceptionResponse> handleException(APIException ex, WebRequest request) {
+    public ResponseEntity<APIExceptionResponse> handleAPIException(APIException ex, WebRequest request) {
         APIExceptionResponse apiExceptionResponse = new APIExceptionResponse(
-                (ex.getMessage() != null) ? ex.getMessage() : "Not Found!",
+                (ex.getMessage() != null) ? ex.getMessage() : "Internal Server Error!",
                 (ex.getHttpStatus() != null) ? ex.getHttpStatus() : HttpStatus.INTERNAL_SERVER_ERROR,
                 (ex.getHttpStatus() != null) ? ex.getTimestamp() : LocalDateTime.now()
         );
@@ -29,7 +30,7 @@ public class APIExceptionHandler {
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<APIExceptionResponse> handleException(EntityNotFoundException ex, WebRequest request) {
+    public ResponseEntity<APIExceptionResponse> handleNotFoundException(EntityNotFoundException ex, WebRequest request) {
         APIExceptionResponse apiExceptionResponse = new APIExceptionResponse(
                 (ex.getMessage() != null) ? ex.getMessage() : "Not Found!",
                 HttpStatus.NOT_FOUND,
@@ -38,8 +39,8 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(apiExceptionResponse, apiExceptionResponse.httpStatus());
     }
 
-    @ExceptionHandler(InsufficientAuthenticationException.class)
-    public ResponseEntity<APIExceptionResponse> handleException(InsufficientAuthenticationException ex, WebRequest request) {
+    @ExceptionHandler({InsufficientAuthenticationException.class, AccessDeniedException.class})
+    public ResponseEntity<APIExceptionResponse> handleForbiddenException(RuntimeException ex, WebRequest request) {
         APIExceptionResponse apiExceptionResponse = new APIExceptionResponse(
                 (ex.getMessage() != null) ? ex.getMessage() : "Forbidden!",
                 HttpStatus.FORBIDDEN,
@@ -49,7 +50,7 @@ public class APIExceptionHandler {
     }
 
     @ExceptionHandler({BadCredentialsException.class, JwtException.class})
-    public ResponseEntity<APIExceptionResponse> handleException(RuntimeException ex, WebRequest request) {
+    public ResponseEntity<APIExceptionResponse> handleUnauthorizedException(RuntimeException ex, WebRequest request) {
         APIExceptionResponse apiExceptionResponse = new APIExceptionResponse(
                 (ex.getMessage() != null) ? ex.getMessage() : "Unauthorized!",
                 HttpStatus.UNAUTHORIZED,
@@ -58,8 +59,8 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(apiExceptionResponse, apiExceptionResponse.httpStatus());
     }
 
-    @ExceptionHandler({InvalidDataAccessApiUsageException.class, SemanticException.class})
-    public ResponseEntity<APIExceptionResponse> handleException(InvalidDataAccessApiUsageException ex, WebRequest request) {
+    @ExceptionHandler({InvalidDataAccessApiUsageException.class, SemanticException.class, NullPointerException.class})
+    public ResponseEntity<APIExceptionResponse> handleBadRequestException(RuntimeException ex, WebRequest request) {
         APIExceptionResponse apiExceptionResponse = new APIExceptionResponse(
                 (ex.getMessage() != null) ? ex.getMessage() : "Bad Request!",
                 HttpStatus.BAD_REQUEST,
@@ -69,7 +70,7 @@ public class APIExceptionHandler {
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<APIExceptionResponse> handleException(IllegalStateException ex, WebRequest request) {
+    public ResponseEntity<APIExceptionResponse> handleUnprocessableEntityException(IllegalStateException ex, WebRequest request) {
         APIExceptionResponse apiExceptionResponse = new APIExceptionResponse(
                 (ex.getMessage() != null) ? ex.getMessage() : "Unprocessable Entity!",
                 HttpStatus.UNPROCESSABLE_ENTITY,
@@ -85,6 +86,7 @@ public class APIExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 LocalDateTime.now()
         );
+        System.out.println(ex.getClass());
         return new ResponseEntity<>(apiExceptionResponse, apiExceptionResponse.httpStatus());
     }
 }

@@ -19,6 +19,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import nl.inholland.codegeneration.services.FilterSpecification;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.naming.directory.InvalidSearchFilterException;
 
@@ -48,17 +50,25 @@ public class QueryParams {
     }
 
     public boolean addFilter(FilterCriteria filterCriterion) throws Exception {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (user != null) {
+            throw new BadCredentialsException("Unauthorized!");
+        }
+
         if (!this.classReference.isAnnotationPresent(Filterable.class)) {
             Field field = this.classReference.getDeclaredField(filterCriterion.getKey());
             if (!field.isAnnotationPresent(Filterable.class)) {
                 throw new SemanticException("Invalid filter option!");
             }
+
+            if (field.getAnnotation(Filterable.class).role() == Role.EMPLOYEE && user.getRole() != Role.EMPLOYEE) {
+                throw new BadCredentialsException("Invalid permissions!");
+            }
         }
 
-//        Filterable filterable = field.getAnnotation(Filterable.class);
-//        if (filterable.role() != Role.Employee) { // TODO: Replace Role.Employee with role from JWT
-//            throw new Exception("Invalid permissions!");
-//        }
+        if (this.classReference.getAnnotation(Filterable.class).role() == Role.EMPLOYEE && user.getRole() != Role.EMPLOYEE) {
+            throw new BadCredentialsException("Invalid permissions!");
+        }
         return this.filterCriteria.add(filterCriterion);
     }
 

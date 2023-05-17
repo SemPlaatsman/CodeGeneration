@@ -3,11 +3,16 @@ package nl.inholland.codegeneration.models;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import nl.inholland.codegeneration.exceptions.APIException;
 import nl.inholland.codegeneration.services.FilterSpecification;
 import org.hibernate.query.SemanticException;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -19,6 +24,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import nl.inholland.codegeneration.services.FilterSpecification;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -50,13 +56,14 @@ public class QueryParams {
     }
 
     public boolean addFilter(FilterCriteria filterCriterion) throws Exception {
+        Field field = this.classReference.getDeclaredField(filterCriterion.getKey());
+
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (user != null) {
             throw new BadCredentialsException("Unauthorized!");
         }
 
         if (!this.classReference.isAnnotationPresent(Filterable.class)) {
-            Field field = this.classReference.getDeclaredField(filterCriterion.getKey());
             if (!field.isAnnotationPresent(Filterable.class)) {
                 throw new SemanticException("Invalid filter option!");
             }
@@ -64,12 +71,40 @@ public class QueryParams {
             if (field.getAnnotation(Filterable.class).role() == Role.EMPLOYEE && user.getRole() != Role.EMPLOYEE) {
                 throw new BadCredentialsException("Invalid permissions!");
             }
-        }
-
-        if (this.classReference.getAnnotation(Filterable.class).role() == Role.EMPLOYEE && user.getRole() != Role.EMPLOYEE) {
+        } else if (this.classReference.getAnnotation(Filterable.class).role() == Role.EMPLOYEE && user.getRole() != Role.EMPLOYEE) {
             throw new BadCredentialsException("Invalid permissions!");
         }
+
+        filterCriterion.setValue(this.castToFieldType(field.getType(), (String) filterCriterion.getValue()));
         return this.filterCriteria.add(filterCriterion);
+    }
+
+    private Object castToFieldType(Class<?> fieldType, String value) throws Exception {
+        if (fieldType.isAssignableFrom(String.class)) {
+            return value;
+        } else if (fieldType.isAssignableFrom(Long.TYPE)) {
+            return Long.parseLong(value);
+        } else if (fieldType.isAssignableFrom(Integer.TYPE)) {
+            return Integer.parseInt(value);
+        } else if (fieldType.isAssignableFrom(BigDecimal.class)) {
+            return Integer.parseInt(value);
+        } else if (fieldType.isAssignableFrom(Double.TYPE)) {
+            return Double.parseDouble(value);
+        } else if (fieldType.isAssignableFrom(Float.TYPE)) {
+            return Float.parseFloat(value);
+        } else if (fieldType.isAssignableFrom(Short.TYPE)) {
+            return Short.parseShort(value);
+        } else if (fieldType.isAssignableFrom(Boolean.TYPE)) {
+            return Boolean.parseBoolean(value);
+        } else if (fieldType.isAssignableFrom(Character.TYPE)) {
+            return value.charAt(0);
+        } else if (fieldType.isAssignableFrom(LocalDate.class)) {
+            return LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE);
+        } else if (fieldType.isAssignableFrom(LocalDateTime.class)) {
+            return LocalDateTime.parse(value, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        } else {
+            throw new APIException("Unsupported filter field type!", HttpStatus.BAD_REQUEST, LocalDateTime.now());
+        }
     }
 
     public Specification buildFilter() {

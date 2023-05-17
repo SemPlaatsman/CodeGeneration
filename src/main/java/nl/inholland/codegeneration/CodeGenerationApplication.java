@@ -11,7 +11,7 @@ import java.util.List;
 
 
 @SpringBootApplication
-@CrossOrigin("http://localhost:5173/")
+// @CrossOrigin("http://localhost:5173/")
 public class CodeGenerationApplication {
 
 	public static void main(String[] args) {

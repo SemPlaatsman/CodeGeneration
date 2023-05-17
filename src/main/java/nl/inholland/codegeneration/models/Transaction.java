@@ -55,4 +55,4 @@ public class Transaction {
         this.setDescription(transaction.getDescription());
         return this;
     }
-}    
+}

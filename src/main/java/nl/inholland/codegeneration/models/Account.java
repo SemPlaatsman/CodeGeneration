@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
 @Entity
-@Data
+@Filterable
 @Table(name = "accounts")
 @Getter
 @Setter

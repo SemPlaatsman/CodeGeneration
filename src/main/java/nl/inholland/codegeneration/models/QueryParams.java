@@ -47,7 +47,7 @@ public class QueryParams {
     public void setFilter(String filterQuery) throws Exception {
 //        System.out.println(filterQuery);
         this.filterCriteria.clear();
-        Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(\\w+?),");
+        Pattern pattern = Pattern.compile("(\\w+?)(:|<|>|>:|<:)'([a-zA-Z0-9:.-]+?)',");
         Matcher matcher = pattern.matcher(filterQuery + ",");
         while (matcher.find()) {
 //            System.out.println("First: " + matcher.group(1) + ". Second: " + matcher.group(2) + ". Third: " + matcher.group(3));
@@ -59,7 +59,7 @@ public class QueryParams {
         Field field = this.classReference.getDeclaredField(filterCriterion.getKey());
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (user != null) {
+        if (user == null) {
             throw new BadCredentialsException("Unauthorized!");
         }
 
@@ -76,34 +76,35 @@ public class QueryParams {
         }
 
         filterCriterion.setValue(this.castToFieldType(field.getType(), (String) filterCriterion.getValue()));
+//        System.out.println(filterCriterion.getKey() + filterCriterion.getOperation() + filterCriterion.getValue() + " (" + filterCriterion.getValue().getClass() + ")");
         return this.filterCriteria.add(filterCriterion);
     }
 
     private Object castToFieldType(Class<?> fieldType, String value) throws Exception {
         if (fieldType.isAssignableFrom(String.class)) {
             return value;
-        } else if (fieldType.isAssignableFrom(Long.TYPE)) {
+        } else if (fieldType.isAssignableFrom(Long.class) || fieldType.isAssignableFrom(Long.TYPE)) {
             return Long.parseLong(value);
-        } else if (fieldType.isAssignableFrom(Integer.TYPE)) {
+        } else if (fieldType.isAssignableFrom(Integer.class) || fieldType.isAssignableFrom(Integer.TYPE)) {
             return Integer.parseInt(value);
         } else if (fieldType.isAssignableFrom(BigDecimal.class)) {
-            return Integer.parseInt(value);
-        } else if (fieldType.isAssignableFrom(Double.TYPE)) {
+            return new BigDecimal(value);
+        } else if (fieldType.isAssignableFrom(Double.class) || fieldType.isAssignableFrom(Double.TYPE)) {
             return Double.parseDouble(value);
-        } else if (fieldType.isAssignableFrom(Float.TYPE)) {
+        } else if (fieldType.isAssignableFrom(Float.class) || fieldType.isAssignableFrom(Float.TYPE)) {
             return Float.parseFloat(value);
-        } else if (fieldType.isAssignableFrom(Short.TYPE)) {
+        } else if (fieldType.isAssignableFrom(Short.class) || fieldType.isAssignableFrom(Short.TYPE)) {
             return Short.parseShort(value);
-        } else if (fieldType.isAssignableFrom(Boolean.TYPE)) {
+        } else if (fieldType.isAssignableFrom(Boolean.class) || fieldType.isAssignableFrom(Boolean.TYPE)) {
             return Boolean.parseBoolean(value);
-        } else if (fieldType.isAssignableFrom(Character.TYPE)) {
+        } else if (fieldType.isAssignableFrom(Character.class) || fieldType.isAssignableFrom(Character.TYPE)) {
             return value.charAt(0);
         } else if (fieldType.isAssignableFrom(LocalDate.class)) {
             return LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE);
         } else if (fieldType.isAssignableFrom(LocalDateTime.class)) {
             return LocalDateTime.parse(value, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         } else {
-            throw new APIException("Unsupported filter field type!", HttpStatus.BAD_REQUEST, LocalDateTime.now());
+            throw new APIException("Unsupported filter field type! " + fieldType.getName(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
         }
     }
 

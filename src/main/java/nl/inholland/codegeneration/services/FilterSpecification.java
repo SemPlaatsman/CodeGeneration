@@ -14,12 +14,20 @@ public class FilterSpecification<T> implements Specification<T> {
     private FilterCriteria filterCriteria;
     @Override
     public Predicate toPredicate (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-        if (filterCriteria.getOperation().equalsIgnoreCase(">")) {
+        if (filterCriteria.getOperation().equalsIgnoreCase(">:")) {
             return builder.greaterThanOrEqualTo(
                     root.<String>get(filterCriteria.getKey()), filterCriteria.getValue().toString());
         }
-        else if (filterCriteria.getOperation().equalsIgnoreCase("<")) {
+        else if (filterCriteria.getOperation().equalsIgnoreCase("<:")) {
             return builder.lessThanOrEqualTo(
+                    root.<String>get(filterCriteria.getKey()), filterCriteria.getValue().toString());
+        }
+        else if (filterCriteria.getOperation().equalsIgnoreCase(">")) {
+            return builder.greaterThan(
+                    root.<String>get(filterCriteria.getKey()), filterCriteria.getValue().toString());
+        }
+        else if (filterCriteria.getOperation().equalsIgnoreCase("<")) {
+            return builder.lessThan(
                     root.<String>get(filterCriteria.getKey()), filterCriteria.getValue().toString());
         }
         else if (filterCriteria.getOperation().equalsIgnoreCase(":")) {

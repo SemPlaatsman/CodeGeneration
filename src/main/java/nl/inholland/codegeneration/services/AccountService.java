@@ -27,15 +27,11 @@ public class AccountService {
     @Autowired
     private TransactionRepository transactionRepository;
 
-    public List<Account> getAll() {
-        return accountRepository.findAll();
+    public List<Account> getAll(QueryParams queryParams) {
+        return accountRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent();
     }
 
     public List<Account> getAllByUserId(Long id) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (user.getRole() == Role.CUSTOMER && user.getId() != id) {
-            throw new InsufficientAuthenticationException("Forbidden!");
-        }
         return accountRepository.findAllByUserId(id);
     }
 
@@ -45,7 +41,6 @@ public class AccountService {
     }
 
     public Optional<Account> getAccountByIban(String iban) {
-
         try {
             Optional<Account> account = accountRepository.findByIban(iban);
             return account;

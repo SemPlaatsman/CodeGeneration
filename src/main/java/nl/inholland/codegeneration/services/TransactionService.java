@@ -23,7 +23,7 @@ public class TransactionService {
     private TransactionRepository transactionRepository;
 
     public List<Transaction> getAll(@Nullable QueryParams queryParams) {
-        return transactionRepository.findAll(PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent();
+        return transactionRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent();
     }
 
     public Transaction getById(long id) {
@@ -43,9 +43,6 @@ public class TransactionService {
         }
         else if (transaction.getAccountFrom().getAccountType() == AccountType.SAVINGS && transaction.getAccountFrom().getUser().getId() == transaction.getAccountTo().getUser().getId()) {
             throw new IllegalStateException("Cannot make a transaction from a savings account to an account that is not of the same user!");
-        }
-        else if (user.getRole() == Role.CUSTOMER && transaction.getAccountFrom().getUser().getId() != user.getId()) {
-            throw new InsufficientAuthenticationException("Forbidden!");
         }
         transaction.setId(null);
         transaction.setPerformingUser(user);

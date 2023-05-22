@@ -32,7 +32,6 @@ public class UserController {
     private AccountService accountService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('CUSTOMER')")
     public ResponseEntity getAll(@RequestParam(value = "filter", required = false) String filterQuery) throws Exception {
         QueryParams queryParams = new QueryParams(User.class);
         queryParams.setFilter(filterQuery);
@@ -40,32 +39,37 @@ public class UserController {
         return ResponseEntity.status(200).body(users);
     }
 
+    @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getById(@PathVariable Long id) {
         User user = userService.getById(id);
         return ResponseEntity.status(200).body(user);
     }
 
+    @PreAuthorize("hasAuthority('EMPLOYEE') OR (hasAuthority('CUSTOMER') AND #id == authentication.principal.id)")
     @GetMapping(path = "/{id}/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getAllAccountsById(@PathVariable Long id) {
         List<Account> accounts = accountService.getAllByUserId(id);
         return ResponseEntity.status(200).body(accounts);
     }
 
+    @PreAuthorize("hasAuthority('EMPLOYEE')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity add(@RequestBody User user) {
         User addedUser = userService.add(user);
         return ResponseEntity.status(201).body(addedUser);
     }
 
+    @PreAuthorize("hasAuthority('EMPLOYEE')")
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity update(@RequestBody User user, @PathVariable Long id) {
         User updatedUser = userService.update(user, id);
         return ResponseEntity.status(200).body(updatedUser);
     }
 
+    @PreAuthorize("hasAuthority('EMPLOYEE')")
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
+    public ResponseEntity delete(@PathVariable Long id) throws APIException {
         userService.delete(id);
         return ResponseEntity.status(204).body("No Content");
     }

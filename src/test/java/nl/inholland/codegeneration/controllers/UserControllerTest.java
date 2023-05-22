@@ -2,6 +2,8 @@ package nl.inholland.codegeneration.controllers;
 
 import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.services.UserService;
+import nl.inholland.codegeneration.services.AccountService;
+import nl.inholland.codegeneration.services.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +35,9 @@ public class UserControllerTest {
     @MockBean
     private UserService userService;
 
+    @MockBean
+    private AccountService accountService;
+
     @BeforeEach
     void setUp() {
 
@@ -46,5 +51,43 @@ public class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
+    }
+
+    @Test
+    void getById() throws Exception {
+        when(userService.getById(1L)).thenReturn(new User());
+
+        mockMvc.perform(get("/users/1"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void add() throws Exception {
+        when(userService.add(any(User.class))).thenReturn(new User());
+
+        mockMvc.perform(post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void update() throws Exception {
+        when(userService.update(any(User.class), any(Long.class))).thenReturn(new User());
+
+        mockMvc.perform(post("/users/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void delete() throws Exception {
+        mockMvc.perform(post("/users/1/delete"))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 }

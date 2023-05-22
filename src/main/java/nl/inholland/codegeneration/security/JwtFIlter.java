@@ -2,6 +2,7 @@ package nl.inholland.codegeneration.security;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,11 +20,18 @@ import lombok.RequiredArgsConstructor;
 import nl.inholland.codegeneration.services.JwtService;
 
 @Component
-@RequiredArgsConstructor
+// @RequiredArgsConstructor
 public class JwtFIlter extends OncePerRequestFilter {
 
     private final JwtService jwtservice;
     private final UserDetailsService userDetailsService;
+
+    @Autowired
+    public JwtFIlter(JwtService jwtservice, UserDetailsService userDetailsService) {
+        this.jwtservice = jwtservice;
+        this.userDetailsService = userDetailsService;
+    }
+
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {

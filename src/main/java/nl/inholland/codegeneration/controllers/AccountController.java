@@ -8,14 +8,7 @@ import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import nl.inholland.codegeneration.models.Account;
@@ -34,9 +27,11 @@ public class AccountController {
 
     // get /accounts
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAll(@Valid QueryParams queryParams) {
+    public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery) throws Exception {
         try {
-            List<Account> accounts = accountService.getAll();
+            QueryParams queryParams = new QueryParams(Transaction.class);
+            queryParams.setFilter(filterQuery);
+            List<Account> accounts = accountService.getAll(queryParams);
             return ResponseEntity.status(200).body(accounts);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -45,7 +40,7 @@ public class AccountController {
 
     @GetMapping(path = "/test", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getTest(@RequestBody TransactionRequestDTO transactionRequestDTO) {
-        System.out.println(transactionRequestDTO);
+//        System.out.println(transactionRequestDTO);
         return ResponseEntity.status(200).body(transactionRequestDTO);
     }
 
@@ -85,7 +80,7 @@ public class AccountController {
     @DeleteMapping(path = "/{Iban}", produces=MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteAccount(@PathVariable("Iban") String Iban) {
         try {
-            System.out.println("deleteAccount"+Iban);
+//            System.out.println("deleteAccount"+Iban);
             accountService.deleteAccount(Iban);
             return  ResponseEntity.status(204).body(null);
         } catch (Exception e) {

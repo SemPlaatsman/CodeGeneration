@@ -1,13 +1,16 @@
 package nl.inholland.codegeneration.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.EntityNotFoundException;
+import nl.inholland.codegeneration.exceptions.APIException;
 import nl.inholland.codegeneration.models.Account;
 import nl.inholland.codegeneration.repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -46,9 +49,12 @@ public class UserService {
         return userRepository.save(existingUser);
     }
 
-    public void delete(Long id) {
+    public void delete(Long id) throws APIException {
         User user = this.getById(id);
         user.setIsDeleted(true);
-        userRepository.save(user);
+        User deletedUser = userRepository.save(user);
+        if (!deletedUser.getIsDeleted()) {
+            throw new APIException("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR, LocalDateTime.now());
+        }
     }
 }

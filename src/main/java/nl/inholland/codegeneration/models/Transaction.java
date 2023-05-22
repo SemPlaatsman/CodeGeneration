@@ -8,9 +8,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "transactions")
 @Getter
 @Setter
+@Table(name = "transactions")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Transaction {
@@ -55,4 +55,4 @@ public class Transaction {
         this.setDescription(transaction.getDescription());
         return this;
     }
-}    
+}

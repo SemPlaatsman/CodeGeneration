@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -48,10 +49,10 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(apiExceptionResponseDTO, apiExceptionResponseDTO.httpStatus());
     }
 
-    @ExceptionHandler({BadCredentialsException.class, JwtException.class})
+    @ExceptionHandler({BadCredentialsException.class, JwtException.class, UsernameNotFoundException.class})
     public ResponseEntity<APIExceptionResponseDTO> handleUnauthorizedException(RuntimeException ex, WebRequest request) {
         APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO(
-                (ex.getMessage() != null) ? ex.getMessage() : "Unauthorized!",
+                (ex.getMessage() != null) ? ex.getMessage() + "BITCH" : "Unauthorized!",
                 HttpStatus.UNAUTHORIZED,
                 LocalDateTime.now()
         );

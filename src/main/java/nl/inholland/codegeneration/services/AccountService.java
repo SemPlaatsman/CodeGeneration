@@ -37,7 +37,7 @@ public class AccountService {
 
     public Account insertAccount(Account account) {
         return accountRepository.save(new Account(account.getIban(), account.getAccountType(), account.getUser(),
-                account.getBalance(), account.getAbsoluteLimit()));
+                account.getBalance(), account.getAbsoluteLimit(), null));
     }
 
     public Optional<Account> getAccountByIban(String iban) {
@@ -85,7 +85,6 @@ public class AccountService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
-
     }
 
     public List<Transaction> getTransactions(String accountID) {

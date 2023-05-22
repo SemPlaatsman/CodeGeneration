@@ -62,35 +62,35 @@ public class DataSeeder implements ApplicationRunner {
 
         // Accounts
         accountRepository.save(new Account(null, AccountType.CURRENT, userRepository.findById(1L).orElseThrow(),
-                new BigDecimal("120"), new BigDecimal("-1000")));
+                new BigDecimal("120"), new BigDecimal("-1000"), false));
         accountRepository.save(new Account(null, AccountType.SAVINGS, userRepository.findById(1L).orElseThrow(),
-                new BigDecimal("436000"), new BigDecimal("-1000")));
+                new BigDecimal("436000"), new BigDecimal("-1000"), false));
         accountRepository.save(new Account(null, AccountType.CURRENT, userRepository.findById(2L).orElseThrow(),
-                new BigDecimal("520"), new BigDecimal("-2400")));
+                new BigDecimal("520"), new BigDecimal("-2400"), false));
         accountRepository.save(new Account(null, AccountType.CURRENT, userRepository.findById(3L).orElseThrow(),
-                new BigDecimal("11"), new BigDecimal("-2600")));
+                new BigDecimal("11"), new BigDecimal("-2600"), false));
         accountRepository.save(new Account(null, AccountType.CURRENT, userRepository.findById(4L).orElseThrow(),
-                new BigDecimal("-25"), new BigDecimal("-300")));
+                new BigDecimal("-25"), new BigDecimal("-300"), false));
         accountRepository.save(new Account(null, AccountType.SAVINGS, userRepository.findById(4L).orElseThrow(),
-                new BigDecimal("300"), new BigDecimal("-1200")));
+                new BigDecimal("300"), new BigDecimal("-1200"), false));
         accountRepository.save(new Account(null, AccountType.SAVINGS, userRepository.findById(4L).orElseThrow(),
-                new BigDecimal("12000000"), new BigDecimal("-2600")));
+                new BigDecimal("12000000"), new BigDecimal("-2600"), false));
         accountRepository.save(new Account(null, AccountType.CURRENT, userRepository.findById(5L).orElseThrow(),
-                new BigDecimal("110"), new BigDecimal("-2500")));
+                new BigDecimal("110"), new BigDecimal("-2500"), false));
         accountRepository.save(new Account(null, AccountType.CURRENT, userRepository.findById(6L).orElseThrow(),
-                new BigDecimal("1000"), new BigDecimal("-1000")));
+                new BigDecimal("1000"), new BigDecimal("-1000"), false));
         accountRepository.save(new Account(null, AccountType.SAVINGS, userRepository.findById(6L).orElseThrow(),
-                new BigDecimal("1000"), new BigDecimal("-1000")));
+                new BigDecimal("1000"), new BigDecimal("-1000"), false));
         accountRepository.save(new Account(null, AccountType.CURRENT, userRepository.findById(7L).orElseThrow(),
-                new BigDecimal("-1100"), new BigDecimal("-2200")));
+                new BigDecimal("-1100"), new BigDecimal("-2200"), false));
         accountRepository.save(new Account(null, AccountType.SAVINGS, userRepository.findById(7L).orElseThrow(),
-                new BigDecimal("1200"), new BigDecimal("-500")));
+                new BigDecimal("1200"), new BigDecimal("-500"), false));
         accountRepository.save(new Account(null, AccountType.CURRENT, userRepository.findById(8L).orElseThrow(),
-                new BigDecimal("30000"), new BigDecimal("-6000")));
+                new BigDecimal("30000"), new BigDecimal("-6000"), false));
         accountRepository.save(new Account(null, AccountType.CURRENT, userRepository.findById(9L).orElseThrow(),
-                new BigDecimal("340"), new BigDecimal("-1500")));
+                new BigDecimal("340"), new BigDecimal("-1500"), false));
         accountRepository.save(new Account(null, AccountType.SAVINGS, userRepository.findById(9L).orElseThrow(),
-                new BigDecimal("600"), new BigDecimal("-1000")));
+                new BigDecimal("600"), new BigDecimal("-1000"), false));
 
         List<Account> accounts = accountRepository.findAll();
         // Transactions

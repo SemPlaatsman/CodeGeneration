@@ -7,7 +7,9 @@ import java.util.List;
 import nl.inholland.codegeneration.exceptions.APIException;
 import nl.inholland.codegeneration.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,16 +34,15 @@ public class TransactionService {
 
     public Transaction add(Transaction transaction) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (transaction.getAccountFrom().getAbsoluteLimit().compareTo(transaction.getAccountFrom().getBalance().subtract(transaction.getAmount())) > 0) {
+        if (transaction.getAccountFrom().getIsDeleted() || transaction.getAccountTo().getIsDeleted()) {
+            throw new InvalidDataAccessApiUsageException("Invalid bank account provided!");
+        } else if (transaction.getAccountFrom().getAbsoluteLimit().compareTo(transaction.getAccountFrom().getBalance().subtract(transaction.getAmount())) > 0) {
             throw new IllegalStateException("Insufficient balance!");
-        }
-        else if (transactionRepository.findDailyTransactionsValueOfUser(transaction.getAccountFrom().getUser().getId()).add(transaction.getAmount()).compareTo(transaction.getAccountFrom().getUser().getDayLimit()) > 0) {
+        } else if (transactionRepository.findDailyTransactionsValueOfUser(transaction.getAccountFrom().getUser().getId()).add(transaction.getAmount()).compareTo(transaction.getAccountFrom().getUser().getDayLimit()) > 0) {
             throw new IllegalStateException("Amount cannot surpass day limit!");
-        }
-        else if (transaction.getAmount().compareTo(user.getTransactionLimit()) > 0) {
+        } else if (transaction.getAmount().compareTo(user.getTransactionLimit()) > 0) {
             throw new IllegalStateException("Amount cannot surpass transaction limit!");
-        }
-        else if (transaction.getAccountFrom().getAccountType() == AccountType.SAVINGS && transaction.getAccountFrom().getUser().getId() == transaction.getAccountTo().getUser().getId()) {
+        } else if (transaction.getAccountFrom().getAccountType() == AccountType.SAVINGS && transaction.getAccountFrom().getUser().getId() == transaction.getAccountTo().getUser().getId()) {
             throw new IllegalStateException("Cannot make a transaction from a savings account to an account that is not of the same user!");
         }
         transaction.setId(null);

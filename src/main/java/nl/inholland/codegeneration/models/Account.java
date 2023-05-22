@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
 @Entity
-@Filterable
 @Table(name = "accounts")
 @Getter
 @Setter
@@ -39,6 +38,9 @@ public class Account {
 
     @Column(name = "absoluteLimit", nullable = false, precision = 32, scale = 2)
     private BigDecimal absoluteLimit = new BigDecimal(0);
+
+    @Column(name = "isDeleted", nullable = false)
+    private Boolean isDeleted = false;
 
     @JsonProperty("user")
     public void setUserById(Long userId) {

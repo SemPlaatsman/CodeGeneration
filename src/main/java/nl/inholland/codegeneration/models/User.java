@@ -49,7 +49,6 @@ public class User implements UserDetails {
     // @ElementCollection(fetch = FetchType.EAGER)
     // private List<Role> role;
 
-
     @Column(name = "username", nullable = false, unique = true, precision = 255)
     private String username;
 

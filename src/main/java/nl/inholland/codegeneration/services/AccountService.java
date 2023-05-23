@@ -12,6 +12,7 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import ch.qos.logback.core.encoder.EchoEncoder;
 import nl.inholland.codegeneration.repositories.AccountRepository;
 import nl.inholland.codegeneration.repositories.TransactionRepository;
 import nl.inholland.codegeneration.repositories.UserRepository;
@@ -50,9 +51,15 @@ public class AccountService {
     }
 
     public Account updateAccount(Account account,String Iban) throws Exception {
+
+
         try {
             Optional<Account> _account = accountRepository.findByIban(Iban);
+            if(account.getUser()==null){
+                throw new Exception();
+            }
             Optional<User> user =  userRepository.findById(account.getUser().getId());
+          
             if (_account.isPresent()&&user.isPresent()) {
             
                 _account.get().setUser(user.get());

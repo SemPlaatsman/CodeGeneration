@@ -8,6 +8,7 @@ import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -26,6 +27,7 @@ public class AccountController {
   
 
     // get /accounts
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery) throws Exception {
         try {
@@ -37,16 +39,18 @@ public class AccountController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
+//what is this?
     @GetMapping(path = "/test", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getTest(@RequestBody TransactionRequestDTO transactionRequestDTO) {
 //        System.out.println(transactionRequestDTO);
         return ResponseEntity.status(200).body(transactionRequestDTO);
     }
 
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     @GetMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAccountByIban(@PathVariable("iban") String iban) {
         try {
+
             Account account = accountService.getAccountByIban(iban).get();
             return ResponseEntity.status(200).body(account);
 
@@ -56,11 +60,14 @@ public class AccountController {
     }
 
     // post /accounts
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> insertAccount(@RequestBody Account account) {
         try{
-        Account _account = accountService.insertAccount(account);
-        return ResponseEntity.status(201).body(_account);
+
+            Account _account = accountService.insertAccount(account);
+            return ResponseEntity.status(201).body(_account);
+
         }catch(Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -77,6 +84,7 @@ public class AccountController {
         }
     }
 
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     @DeleteMapping(path = "/{Iban}", produces=MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteAccount(@PathVariable("Iban") String Iban) {
         try {
@@ -90,6 +98,7 @@ public class AccountController {
 
 
     // /accounts/{iban}/transactions
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     @GetMapping(path = "/{Iban}/transactions", produces=MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getTransactions(@PathVariable("Iban") String Iban) {
         try {
@@ -102,6 +111,7 @@ public class AccountController {
     }
 
     // get /accounts/{id}/balance
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     @GetMapping(path = "/{Iban}/balance", produces=MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BigDecimal> getBalance(@PathVariable("Iban") String Iban) {
         try {

@@ -8,9 +8,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "transactions")
 @Getter
 @Setter
+@Table(name = "transactions")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Transaction {
@@ -19,20 +19,23 @@ public class Transaction {
     @Column(name = "id")
     private Long id;
 
+    @Filterable
     @Column(name = "timestamp", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime timestamp;
 
+    @Filterable
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="accountFrom", nullable = false, referencedColumnName = "IBAN")
     private Account accountFrom;
 
+    @Filterable
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="accountTo", nullable = false, referencedColumnName = "IBAN")
-
     private Account accountTo;
 
+    @Filterable
     @Column(name = "amount", nullable = false, columnDefinition = "Decimal(32,2)")
     private BigDecimal amount;
 
@@ -56,4 +59,4 @@ public class Transaction {
         this.setDescription(transaction.getDescription());
         return this;
     }
-}    
+}

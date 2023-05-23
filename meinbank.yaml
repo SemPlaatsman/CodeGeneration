@@ -325,28 +325,28 @@ paths:
               example:
                 - id: 97
                   iban: NL02INHO0000000002
-                  customerId: 1
+                  userId: 1
                   balance: 130.23
                   absoluteLimit: -2000
                   role: Current
                   isDeleted: false
                 - id: 101
                   iban: NL34INHO0000000034
-                  customerId: 1
+                  userId: 1
                   balance: 927
                   absoluteLimit: -1000
                   role: Current
                   isDeleted: false
                 - id: 102
                   iban: NL25INHO0000565632
-                  customerId: 1
+                  userId: 1
                   balance: -187.01
                   absoluteLimit: -2000
                   role: Current
                   isDeleted: false
                 - id: 134
                   iban: NL62INHO0062924932
-                  customerId: 1
+                  userId: 1
                   balance: 72382130.23
                   absoluteLimit: -2000
                   role: Savings
@@ -397,28 +397,28 @@ paths:
               example:
                 - id: 97
                   iban: NL02INHO0000000002
-                  customerId: 1
+                  userId: 1
                   balance: 130.23
                   absoluteLimit: -2000
                   role: Current
                   isDeleted: false
                 - id: 101
                   iban: NL34INHO0000000034
-                  customerId: 1
+                  userId: 1
                   balance: 927
                   absoluteLimit: -1000
                   role: Current
                   isDeleted: false
                 - id: 102
                   iban: NL25INHO0000565632
-                  customerId: 1
+                  userId: 1
                   balance: -187.01
                   absoluteLimit: -2000
                   role: Current
                   isDeleted: false
                 - id: 134
                   iban: NL62INHO0062924932
-                  customerId: 1
+                  userId: 1
                   balance: 72382130.23
                   absoluteLimit: -2000
                   role: Savings
@@ -443,7 +443,7 @@ paths:
               $ref: "#/components/schemas/Account"
             example:
               iban: NL02INHO0000000002
-              customerId: 1
+              userId: 1
               balance: 130.23
               absoluteLimit: -2000
               role: Current
@@ -499,7 +499,7 @@ paths:
                 $ref: "#/components/schemas/Account"
               example:
                 iban: NL02INHO0000000002
-                customerId: 1
+                userId: 1
                 balance: 130.23
                 absoluteLimit: -2000
                 role: Current
@@ -529,7 +529,7 @@ paths:
               $ref: "#/components/schemas/Account"
             example:
               iban: NL02INHO0000000002
-              customerId: 1
+              userId: 1
               balance: 130.23
               absoluteLimit: -2000
               role: Current
@@ -543,7 +543,7 @@ paths:
                 $ref: "#/components/schemas/Account"
               example:
                 iban: NL02INHO0000000002
-                customerId: 1
+                userId: 1
                 balance: 130.23
                 absoluteLimit: -2000
                 role: Current
@@ -1025,7 +1025,7 @@ components:
       type: object
       description: This object is used as a base class for the SavingsAccount and CurrentAccount classes
       required:
-        - customerId
+        - userId
         - accountType
       properties:
         id:
@@ -1038,7 +1038,7 @@ components:
           minLength: 18
           maxLength: 18
           pattern: "/NL[0-9]{2}INHO0[0-9]{9}/gs"
-        customerId:
+        userId:
           $ref: "#/components/schemas/User"
         balance:
           type: number

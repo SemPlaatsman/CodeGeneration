@@ -4,12 +4,14 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import nl.inholland.codegeneration.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.lang.Nullable;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import nl.inholland.codegeneration.models.Account;
-import nl.inholland.codegeneration.models.Transaction;
-import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.repositories.AccountRepository;
 import nl.inholland.codegeneration.repositories.TransactionRepository;
 import nl.inholland.codegeneration.repositories.UserRepository;
@@ -20,26 +22,25 @@ public class AccountService {
     private AccountRepository accountRepository;
 
     @Autowired
-    private UserRepository customerRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private TransactionRepository transactionRepository;
 
-    public List<Account> getAll() {
-        System.out.println();
-        return accountRepository.findAll();
+    public List<Account> getAll(QueryParams queryParams) {
+        return accountRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent();
+    }
 
+    public List<Account> getAllByUserId(Long id) {
+        return accountRepository.findAllByUserId(id);
     }
 
     public Account insertAccount(Account account) {
-
-        return accountRepository.save(new Account(account.getIban(), account.getAccountType(), account.getCustomer(),
-                account.getBalance(), account.getAbsoluteLimit()));
-
+        return accountRepository.save(new Account(account.getIban(), account.getAccountType(), account.getUser(),
+                account.getBalance(), account.getAbsoluteLimit(), null));
     }
 
     public Optional<Account> getAccountByIban(String iban) {
-
         try {
             Optional<Account> account = accountRepository.findByIban(iban);
             return account;
@@ -51,13 +52,13 @@ public class AccountService {
     public Account updateAccount(Account account,String Iban) throws Exception {
         try {
             Optional<Account> _account = accountRepository.findByIban(Iban);
-            Optional<User> user =  customerRepository.findById(account.getCustomer().getId());
+            Optional<User> user =  userRepository.findById(account.getUser().getId());
             if (_account.isPresent()&&user.isPresent()) {
             
-                _account.get().setCustomer(user.get());
+                _account.get().setUser(user.get());
                 _account.get().setIban(Iban);
                 _account.get().setAccountType(account.getAccountType());
-                _account.get().setCustomer(account.getCustomer());
+                _account.get().setUser(account.getUser());
                 _account.get().setBalance(account.getBalance());
                 _account.get().setAbsoluteLimit(account.getAbsoluteLimit());
 
@@ -84,7 +85,6 @@ public class AccountService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
-
     }
 
     public List<Transaction> getTransactions(String accountID) {
@@ -110,5 +110,4 @@ public class AccountService {
             throw new RuntimeException(e.getMessage());
         }
     }
-
 }

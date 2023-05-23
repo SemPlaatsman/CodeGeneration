@@ -3,19 +3,21 @@ package nl.inholland.codegeneration.services;
 import java.math.BigInteger;
 import java.util.Random;
 
+import nl.inholland.codegeneration.repositories.AccountRepository;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.IdentifierGenerationException;
 import org.hibernate.id.IdentifierGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 // IBAN Generator class based on: https://en.wikipedia.org/wiki/International_Bank_Account_Number#Algorithms
 @Component
 public class IBANGenerator implements IdentifierGenerator {
-    private final Random RND = new Random(126); // Possibly replace with seed from e.g. config file
+    private static final Random RND = new Random(94837L); // Possibly replace with seed from e.g. config file
     private final int RND_ORIGIN = 2; // 0 is an invalid IBAN account number and 1 is reserved for the bank
     private final int RND_BOUND = 1000000000; // Makes sure IBAN account numbers won't have more than 9 characters
-    private final String COUNTRY_CODE = "NL";
+    private final String COUNTRY_CODE = "NL"; // Country code of the IBAN provided in the project guide
     private final String BANK_CODE = "INHO0"; // Trails with zero based on IBAN standard provided in project guide
     private final int IBAN_LENGTH = 18; // (Country code) + (Check digits) + (Bank code) + (Account number) = 18
     private final int MODULO_OPERATOR = 97; // Standard modulo operator used in IBAN calculation algorithms
@@ -23,10 +25,13 @@ public class IBANGenerator implements IdentifierGenerator {
     // Generate a random IBAN
     @Override
     public Object generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
-        String accountNumber = String.format("%09d", RND.nextInt(RND_ORIGIN, RND_BOUND));
-        String IBAN = COUNTRY_CODE + "00" + BANK_CODE + accountNumber;
-        int checkDigits = calculateCheckDigits(IBAN);
-        IBAN = IBAN.substring(0, COUNTRY_CODE.length()) + String.format("%02d", checkDigits) + IBAN.substring(2 + COUNTRY_CODE.length());
+        String IBAN;
+        do {
+            String accountNumber = String.format("%09d", RND.nextInt(RND_ORIGIN, RND_BOUND));
+            IBAN = COUNTRY_CODE + "00" + BANK_CODE + accountNumber;
+            int checkDigits = calculateCheckDigits(IBAN);
+            IBAN = IBAN.substring(0, COUNTRY_CODE.length()) + String.format("%02d", checkDigits) + IBAN.substring(2 + COUNTRY_CODE.length());
+        } while (!this.validateIBAN(IBAN));
         return IBAN;
     }
 

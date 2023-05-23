@@ -12,15 +12,12 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
 @Entity
-@Data
 @Table(name = "accounts")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 @JsonDeserialize(as = Account.class)
-
 public class Account {
     @Id
     @GenericGenerator(name = "ibangen", strategy = "nl.inholland.codegeneration.services.IBANGenerator")
@@ -33,20 +30,23 @@ public class Account {
     private AccountType accountType = AccountType.CURRENT;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    private User customer;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
     
-    @Column(name = "balance", nullable = false, columnDefinition = "Decimal(32,2) default '0.00'")
+    @Column(name = "balance", nullable = false, precision = 32, scale = 2)
     private BigDecimal balance = new BigDecimal(0);
 
-    @Column(name = "absoluteLimit", nullable = false, columnDefinition = "Decimal(32,2) default '1000.00'")
-    private BigDecimal absoluteLimit = new BigDecimal(1000);
+    @Column(name = "absoluteLimit", nullable = false, precision = 32, scale = 2)
+    private BigDecimal absoluteLimit = new BigDecimal(0);
 
-    @JsonProperty("customer")
-    public void setCustomerById(Long customerId) {
-        // create a new customer object from the given id
-        User newCustomer = new User();
-        newCustomer.setId(customerId);
-        this.customer = newCustomer;
+    @Column(name = "isDeleted", nullable = false)
+    private Boolean isDeleted = false;
+
+    @JsonProperty("user")
+    public void setUserById(Long userId) {
+        // create a new user object from the given id
+        User newUser = new User();
+        newUser.setId(userId);
+        this.user = newUser;
     }
 }

@@ -1,5 +1,11 @@
 package nl.inholland.codegeneration.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -25,13 +31,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Data
 @Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User implements UserDetails{
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -44,36 +49,36 @@ public class User implements UserDetails{
     // @ElementCollection(fetch = FetchType.EAGER)
     // private List<Role> role;
 
-
-    @Column(name = "username", nullable = false, unique = true, columnDefinition = "varchar(255)")
+    @Column(name = "username", nullable = false, unique = true, precision = 255)
     private String username;
 
-    @Column(name = "password", nullable = false, columnDefinition = "varchar(255)")
+    @Column(name = "password", nullable = false, precision = 255)
     private String password;
 
-    @Column(name = "firstName", nullable = false, columnDefinition = "varchar(255)")
+    @Column(name = "firstName", nullable = false, precision = 255)
     private String firstName;
 
-    @Column(name = "lastName", nullable = false, columnDefinition = "varchar(255)")
+    @Column(name = "lastName", nullable = false, precision = 255)
     private String lastName;
 
-    @Column(name = "email", nullable = false, columnDefinition = "varchar(255)")
+    @Column(name = "email", nullable = false, precision = 255)
     private String email;
 
-    @Column(name = "phoneNumber", nullable = false, columnDefinition = "varchar(255)")
+    @Column(name = "phoneNumber", nullable = false, precision = 255)
     private String phoneNumber;
 
     @Column(name = "birthdate", nullable = false)
     @Temporal(TemporalType.DATE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate birthdate;
 
-    @Column(name = "dayLimit", nullable = false, columnDefinition = "Decimal(32,2) default '0'")
-    private BigDecimal dayLimit = new BigDecimal(0);
+    @Column(name = "dayLimit", nullable = false, precision = 32, scale = 2)
+    private BigDecimal dayLimit = new BigDecimal("1000");
 
-    @Column(name = "TransactionLimit", nullable = false, columnDefinition = "Decimal(32,2) default '0'")
-    private BigDecimal transactionLimit = new BigDecimal(0);
+    @Column(name = "transactionLimit", nullable = false, precision = 32, scale = 2)
+    private BigDecimal transactionLimit = new BigDecimal("200");
 
-    @Column(name = "isDeleted", nullable = false, columnDefinition = "boolean default false")
+    @Column(name = "isDeleted", nullable = false)
     private Boolean isDeleted = false;
 
     public User update(User user) {
@@ -90,36 +95,34 @@ public class User implements UserDetails{
         return this;
     }
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
-
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         // return true;
         return !this.getIsDeleted();
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
-
-
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return true;
     }
-
-   
-
-  
 }

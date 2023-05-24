@@ -73,6 +73,8 @@ public class QueryParams {
     }
 
     private Object castToFieldType(Class<?> fieldType, String value) throws Exception {
+        //why not use multiple if statements? it breaks out of the method anyway when the return is called
+
         if (fieldType.isAssignableFrom(String.class)) {
             return value;
         } else if (fieldType.isAssignableFrom(Long.class) || fieldType.isAssignableFrom(Long.TYPE)) {

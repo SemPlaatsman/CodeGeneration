@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import nl.inholland.codegeneration.models.Account;
 import nl.inholland.codegeneration.models.QueryParams;
 import nl.inholland.codegeneration.models.Transaction;
-import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import nl.inholland.codegeneration.services.AccountService;
 
 @RestController

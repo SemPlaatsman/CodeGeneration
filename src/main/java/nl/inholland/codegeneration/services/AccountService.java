@@ -4,15 +4,14 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import nl.inholland.codegeneration.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.lang.Nullable;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import ch.qos.logback.core.encoder.EchoEncoder;
+import nl.inholland.codegeneration.models.Account;
+import nl.inholland.codegeneration.models.QueryParams;
+import nl.inholland.codegeneration.models.Transaction;
+import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.repositories.AccountRepository;
 import nl.inholland.codegeneration.repositories.TransactionRepository;
 import nl.inholland.codegeneration.repositories.UserRepository;

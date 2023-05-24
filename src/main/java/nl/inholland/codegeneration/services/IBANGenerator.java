@@ -3,12 +3,10 @@ package nl.inholland.codegeneration.services;
 import java.math.BigInteger;
 import java.util.Random;
 
-import nl.inholland.codegeneration.repositories.AccountRepository;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.IdentifierGenerationException;
 import org.hibernate.id.IdentifierGenerator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 // IBAN Generator class based on: https://en.wikipedia.org/wiki/International_Bank_Account_Number#Algorithms

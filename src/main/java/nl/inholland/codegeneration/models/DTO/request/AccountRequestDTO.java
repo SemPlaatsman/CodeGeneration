@@ -1,8 +1,5 @@
 package nl.inholland.codegeneration.models.DTO.request;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.math.BigDecimal;
 
 //@JsonIgnoreProperties(ignoreUnknown = true)

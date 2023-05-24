@@ -3,18 +3,24 @@ package nl.inholland.codegeneration.controllers;
 import java.math.BigDecimal;
 import java.util.List;
 
-import nl.inholland.codegeneration.models.DTO.request.AccountRequestDTO;
-import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
 import nl.inholland.codegeneration.models.Account;
 import nl.inholland.codegeneration.models.QueryParams;
 import nl.inholland.codegeneration.models.Transaction;
+import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import nl.inholland.codegeneration.services.AccountService;
 
 @RestController
@@ -27,7 +33,7 @@ public class AccountController {
   
 
     // get /accounts
-    @PreAuthorize("hasAuthority('CUSTOMER')")
+    @PreAuthorize("hasAuthority('CUSTOMER') AND hasAuthority('EMPLOYEE')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery) throws Exception {
         try {
@@ -39,14 +45,10 @@ public class AccountController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-//what is this?
-    @GetMapping(path = "/test", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getTest(@RequestBody TransactionRequestDTO transactionRequestDTO) {
-//        System.out.println(transactionRequestDTO);
-        return ResponseEntity.status(200).body(transactionRequestDTO);
-    }
 
-    @PreAuthorize("hasAuthority('CUSTOMER')")
+
+    // get /accounts/{Iban}
+    @PreAuthorize("hasAuthority('CUSTOMER') AND hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAccountByIban(@PathVariable("iban") String iban) {
         try {
@@ -74,6 +76,7 @@ public class AccountController {
     }
     
     // put /accounts/{Ibans}
+    @PreAuthorize("hasAuthority('EMPLOYEE')")
     @PutMapping(path = "/{Iban}", produces=MediaType.APPLICATION_JSON_VALUE, consumes=MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateAccount(@RequestBody Account account, @PathVariable("Iban") String Iban) {
         try{
@@ -84,11 +87,11 @@ public class AccountController {
         }
     }
 
+    // delete /accounts/{Iban}
     @PreAuthorize("hasAuthority('CUSTOMER')")
     @DeleteMapping(path = "/{Iban}", produces=MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteAccount(@PathVariable("Iban") String Iban) {
         try {
-//            System.out.println("deleteAccount"+Iban);
             accountService.deleteAccount(Iban);
             return  ResponseEntity.status(204).body(null);
         } catch (Exception e) {

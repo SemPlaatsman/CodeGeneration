@@ -1,13 +1,5 @@
 package nl.inholland.codegeneration.models;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import nl.inholland.codegeneration.exceptions.APIException;
-import nl.inholland.codegeneration.services.FilterSpecification;
-import org.hibernate.query.SemanticException;
-import org.springframework.data.jpa.domain.Specification;
-
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,17 +10,17 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.hibernate.query.SemanticException;
 import org.springframework.data.jpa.domain.Specification;
-
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import nl.inholland.codegeneration.services.FilterSpecification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import javax.naming.directory.InvalidSearchFilterException;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import nl.inholland.codegeneration.exceptions.APIException;
+import nl.inholland.codegeneration.services.FilterSpecification;
 
 @Getter
 @Setter

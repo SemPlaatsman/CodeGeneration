@@ -2,6 +2,8 @@ package nl.inholland.codegeneration.controllers;
 
 import java.util.List;
 
+import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
+import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +32,7 @@ public class TransactionController {
     public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery) throws Exception {
         QueryParams queryParams = new QueryParams(Transaction.class);
         queryParams.setFilter(filterQuery);
-        List<Transaction> transactions = transactionService.getAll(queryParams);
+        List<TransactionResponseDTO> transactions = transactionService.getAll(queryParams);
         return ResponseEntity.status(200).body(transactions);
     }
 
@@ -38,14 +40,14 @@ public class TransactionController {
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getById(@PathVariable int id) {
-        Transaction transaction = transactionService.getById(id);
+        TransactionResponseDTO transaction = transactionService.getById(id);
         return ResponseEntity.status(200).body(transaction);
     }
 
     @PreAuthorize("hasAuthority('EMPLOYEE') OR (hasAuthority('CUSTOMER') AND #transaction.accountFrom.user.id == authentication.principal.id)")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> add(@RequestBody Transaction transaction) {
-        Transaction addedTransaction = transactionService.add(transaction);
+        TransactionResponseDTO addedTransaction = transactionService.add(transaction);
         return ResponseEntity.status(201).body(addedTransaction);
     }
     

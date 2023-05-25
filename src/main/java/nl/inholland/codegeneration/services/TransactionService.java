@@ -2,10 +2,16 @@ package nl.inholland.codegeneration.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
+import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.codegeneration.exceptions.APIException;
 import nl.inholland.codegeneration.models.*;
+import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
+import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
+import nl.inholland.codegeneration.services.mappers.TransactionResponseDTOMapper;
+import nl.inholland.codegeneration.services.mappers.UserResponseDTOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
@@ -23,16 +29,19 @@ import javax.naming.InsufficientResourcesException;
 public class TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private TransactionResponseDTOMapper transactionResponseDTOMapper;
 
-    public List<Transaction> getAll(@Nullable QueryParams queryParams) {
-        return transactionRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent();
+    public List<TransactionResponseDTO> getAll(@Nullable QueryParams queryParams) {
+        return (List<TransactionResponseDTO>) transactionRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent().stream().map(transactionResponseDTOMapper).collect(Collectors.toList());
     }
 
-    public Transaction getById(long id) {
-        return transactionRepository.findById(id).orElse(null);
+    public TransactionResponseDTO getById(long id) {
+        Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Transaction not found!"));
+        return transactionResponseDTOMapper.apply(transaction);
     }
 
-    public Transaction add(Transaction transaction) {
+    public TransactionResponseDTO add(Transaction transaction) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (transaction.getAccountFrom().getIsDeleted() || transaction.getAccountTo().getIsDeleted()) {
             throw new InvalidDataAccessApiUsageException("Invalid bank account provided!");
@@ -48,7 +57,7 @@ public class TransactionService {
         transaction.setId(null);
         transaction.setPerformingUser(user);
         transaction.setTimestamp(LocalDateTime.now());
-        return transactionRepository.save(transaction);
+        return transactionResponseDTOMapper.apply(transactionRepository.save(transaction));
     }
 
 //    public Transaction update(Transaction transaction, long id) {

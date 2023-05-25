@@ -4,8 +4,18 @@ import org.springframework.security.core.GrantedAuthority;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Role implements GrantedAuthority{
-    EMPLOYEE,
-    CUSTOMER;
+    EMPLOYEE(0),
+    CUSTOMER(1);
+
+    private final int value;
+
+    private Role(int value) {
+        this.value = value;
+    }
+
+    public int getValue() {
+        return value;
+    }
 
     @Override
     public String getAuthority() {

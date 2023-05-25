@@ -1,5 +1,7 @@
 package nl.inholland.codegeneration.models.DTO.response;
 
+import nl.inholland.codegeneration.models.Account;
+
 import java.math.BigDecimal;
 
 public record AccountResponseDTO(
@@ -9,4 +11,7 @@ public record AccountResponseDTO(
     BigDecimal balance,
     BigDecimal absoluteLimit
 ) {
+    public AccountResponseDTO(Account account) {
+        this(account.getIban(), account.getAccountType().getValue(), account.getUser().getUsername(), account.getBalance(), account.getAbsoluteLimit());
+    }
 }

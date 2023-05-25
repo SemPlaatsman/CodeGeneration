@@ -2,7 +2,10 @@ package nl.inholland.codegeneration.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
+import nl.inholland.codegeneration.services.mappers.UserResponseDTOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
@@ -22,40 +25,39 @@ import nl.inholland.codegeneration.repositories.UserRepository;
 @Service
 public class UserService {
     @Autowired
-    UserRepository userRepository;
-
+    private UserRepository userRepository;
     @Autowired
-    AccountRepository accountRepository;
+    private AccountRepository accountRepository;
+    @Autowired
+    private UserResponseDTOMapper userResponseDTOMapper;
 
-    public List<User> getAll(@Nullable QueryParams queryParams) {
-        return userRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent();
+    public List<UserResponseDTO> getAll(@Nullable QueryParams queryParams) {
+        return (List<UserResponseDTO>) userRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent().stream().map(userResponseDTOMapper).collect(Collectors.toList());
     }
 
-    public User getById(Long id) {
-        User user = userRepository.findById(id).orElse(null);
-        if (user == null)
-            throw new EntityNotFoundException("User not found!");
-        return user;
+    public UserResponseDTO getById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found!"));
+        return userResponseDTOMapper.apply(user);
     }
 
-    public User add(User user) {
+    public UserResponseDTO add(User user) {
         user.setId(null);
         user.setIsDeleted(false);
-        return userRepository.save(user);
+        return userResponseDTOMapper.apply(userRepository.save(user));
     }
 
-    public User update(User user, Long id) {
+    public UserResponseDTO update(User user, Long id) {
         if (user.getId() != id) {
             throw new InvalidDataAccessApiUsageException("Invalid id!");
         }
-        User existingUser = this.getById(id);
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found!"));
         existingUser.update(user);
-        return userRepository.save(existingUser);
+        return userResponseDTOMapper.apply(userRepository.save(existingUser));
     }
 
     @Transactional(rollbackOn = Exception.class)
     public void delete(Long id) throws APIException {
-        User user = this.getById(id);
+        User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found!"));
         user.setIsDeleted(true);
         User deletedUser = userRepository.save(user);
         List<Account> accounts = accountRepository.findAllByUserId(id);

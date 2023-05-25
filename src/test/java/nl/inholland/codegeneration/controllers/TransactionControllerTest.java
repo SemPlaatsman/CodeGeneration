@@ -1,7 +1,8 @@
 package nl.inholland.codegeneration.controllers;
 
 import nl.inholland.codegeneration.configuration.apiTestConfiguration;
-import nl.inholland.codegeneration.models.User;
+import nl.inholland.codegeneration.models.Transaction;
+import nl.inholland.codegeneration.services.TransactionService;
 import nl.inholland.codegeneration.services.UserService;
 import nl.inholland.codegeneration.services.AccountService;
 import nl.inholland.codegeneration.services.JwtService;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -33,11 +35,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(UserController.class)
 @Import(apiTestConfiguration.class)
-public class UserControllerTest {
-
+public class TransactionControllerTest {
+    
     @Autowired
     private MockMvc mockMvc;
 
+    @MockBean
+    private TransactionService transactionService;
+    
     @MockBean
     private UserService userService;
 
@@ -48,59 +53,50 @@ public class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        // TODO: Replace this with actual logic to generate or get the token
+         // TODO: Replace this with actual logic to generate or get the token
         // this.token = "Bearer " + jwtService.createToken("Your User details");
 
         // If the token is static, you can directly assign it like this:
-        // this.token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg0Nzg0OTU5LCJleHAiOjE2ODQ4MjA5NTl9.Tcrz5wvxcAVmgudWcbVjbiDlMM2mRJSvvBjQDQEWp-Q";
+        this.token = "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg0Nzg0OTU5LCJleHAiOjE2ODQ4MjA5NTl9.Tcrz5wvxcAVmgudWcbVjbiDlMM2mRJSvvBjQDQEWp-Q";
     }
 
     @Test
     public void getAll() throws Exception {
-        when(userService.getAll(null)).thenReturn(List.of(new User(), new User()));
+        when(transactionService.getAll(null)).thenReturn(List.of(new Transaction(), new Transaction()));
 
-        mockMvc.perform(get("/users")
-                .header(HttpHeaders.AUTHORIZATION, this.token))
+        mockMvc.perform(get("/transactions")
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)));
     }
 
     @Test
     public void getById() throws Exception {
-        when(userService.getById(1L)).thenReturn(new User());
+        when(transactionService.getById(1)).thenReturn(new Transaction());
 
-        mockMvc.perform(get("/users/1")
-                .header(HttpHeaders.AUTHORIZATION, this.token))
-                .andDo(print());
+        mockMvc.perform(get("/transactions/1")
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
     public void add() throws Exception {
-        when(userService.add(any(User.class))).thenReturn(new User());
+        Transaction transaction = new Transaction();
+        BigDecimal amount = new BigDecimal(100);
+        transaction.setAmount(amount);
 
-        mockMvc.perform(post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, this.token)
-                .content("{}"))
-                .andDo(print());
-    }
+        when(transactionService.add(any(Transaction.class))).thenReturn(transaction);
 
-    @Test
-    public void update() throws Exception {
-        when(userService.update(any(User.class), any(Long.class))).thenReturn(new User());
-
-        mockMvc.perform(post("/users/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, this.token)
-                .content("{}"))
-                .andDo(print());
-    }
-    
-    @Test
-    public void delete() throws Exception {
-        mockMvc.perform(post("/users/1/delete")
-                .header(HttpHeaders.AUTHORIZATION, this.token))
+        mockMvc.perform(post("/transactions")
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .content("{\"amount\": 100}")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.amount").value(100));
     }
 }

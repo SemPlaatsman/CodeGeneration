@@ -59,7 +59,7 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(apiExceptionResponseDTO, apiExceptionResponseDTO.httpStatus());
     }
 
-    @ExceptionHandler({InvalidDataAccessApiUsageException.class, SemanticException.class, NullPointerException.class})
+    @ExceptionHandler({InvalidDataAccessApiUsageException.class, SemanticException.class, NullPointerException.class, IllegalArgumentException.class})
     public ResponseEntity<APIExceptionResponseDTO> handleBadRequestException(RuntimeException ex, WebRequest request) {
         APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO(
                 (ex.getMessage() != null) ? ex.getMessage() : "Bad Request!",

@@ -4,8 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
-import nl.inholland.codegeneration.services.mappers.UserResponseDTOMapper;
+import nl.inholland.codegeneration.services.mappers.UserDTOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
@@ -29,30 +30,32 @@ public class UserService {
     @Autowired
     private AccountRepository accountRepository;
     @Autowired
-    private UserResponseDTOMapper userResponseDTOMapper;
+    private UserDTOMapper userDTOMapper;
 
     public List<UserResponseDTO> getAll(@Nullable QueryParams queryParams) {
-        return (List<UserResponseDTO>) userRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent().stream().map(userResponseDTOMapper).collect(Collectors.toList());
+        return (List<UserResponseDTO>) userRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent().stream().map(userDTOMapper.toResponseDTO).collect(Collectors.toList());
     }
 
     public UserResponseDTO getById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found!"));
-        return userResponseDTOMapper.apply(user);
+        return userDTOMapper.toResponseDTO.apply(user);
     }
 
-    public UserResponseDTO add(User user) {
+    public UserResponseDTO add(UserRequestDTO userRequestDTO) {
+        User user = userDTOMapper.toUser.apply(userRequestDTO);
         user.setId(null);
         user.setIsDeleted(false);
-        return userResponseDTOMapper.apply(userRepository.save(user));
+        return userDTOMapper.toResponseDTO.apply(userRepository.save(user));
     }
 
-    public UserResponseDTO update(User user, Long id) {
+    public UserResponseDTO update(UserRequestDTO userRequestDTO, Long id) {
+        User user = userDTOMapper.toUser.apply(userRequestDTO);
         if (user.getId() != id) {
             throw new InvalidDataAccessApiUsageException("Invalid id!");
         }
         User existingUser = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found!"));
         existingUser.update(user);
-        return userResponseDTOMapper.apply(userRepository.save(existingUser));
+        return userDTOMapper.toResponseDTO.apply(userRepository.save(existingUser));
     }
 
     @Transactional(rollbackOn = Exception.class)

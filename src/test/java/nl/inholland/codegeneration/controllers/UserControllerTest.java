@@ -48,52 +48,52 @@ public class UserControllerTest {
         // this.token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg0Nzg0OTU5LCJleHAiOjE2ODQ4MjA5NTl9.Tcrz5wvxcAVmgudWcbVjbiDlMM2mRJSvvBjQDQEWp-Q";
     }
 
-//    @Test
-//    public void getAll() throws Exception {
-//        when(userService.getAll(null)).thenReturn(List.of(new User(), new User()));
-//
-//        mockMvc.perform(get("/users")
-//                .header(HttpHeaders.AUTHORIZATION, this.token))
-//                .andDo(print())
-//                .andExpect(status().isOk());
-//    }
-//
-//    @Test
-//    public void getById() throws Exception {
-//        when(userService.getById(1L)).thenReturn(new User());
-//
-//        mockMvc.perform(get("/users/1")
-//                .header(HttpHeaders.AUTHORIZATION, this.token))
-//                .andDo(print());
-//    }
-//
-//    @Test
-//    public void add() throws Exception {
-//        when(userService.add(any(User.class))).thenReturn(new User());
-//
-//        mockMvc.perform(post("/users")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .header(HttpHeaders.AUTHORIZATION, this.token)
-//                .content("{}"))
-//                .andDo(print());
-//    }
-//
-//    @Test
-//    public void update() throws Exception {
-//        when(userService.update(any(User.class), any(Long.class))).thenReturn(new User());
-//
-//        mockMvc.perform(post("/users/1")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .header(HttpHeaders.AUTHORIZATION, this.token)
-//                .content("{}"))
-//                .andDo(print());
-//    }
-//
-//    @Test
-//    public void delete() throws Exception {
-//        mockMvc.perform(post("/users/1/delete")
-//                .header(HttpHeaders.AUTHORIZATION, this.token))
-//                .andDo(print())
-//                .andExpect(status().isOk());
-//    }
+    @Test
+    public void getAll() throws Exception {
+        when(userService.getAll(null)).thenReturn(List.of(new User(), new User()));
+
+        mockMvc.perform(get("/users")
+                .header(HttpHeaders.AUTHORIZATION, this.token))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getById() throws Exception {
+        when(userService.getById(1L)).thenReturn(new User());
+
+        mockMvc.perform(get("/users/1")
+                .header(HttpHeaders.AUTHORIZATION, this.token))
+                .andDo(print());
+    }
+
+    @Test
+    public void add() throws Exception {
+        when(userService.add(any(User.class))).thenReturn(new User());
+
+        mockMvc.perform(post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, this.token)
+                .content("{}"))
+                .andDo(print());
+    }
+
+    @Test
+    public void update() throws Exception {
+        when(userService.update(any(User.class), any(Long.class))).thenReturn(new User());
+
+        mockMvc.perform(post("/users/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, this.token)
+                .content("{}"))
+                .andDo(print());
+    }
+
+    @Test
+    public void delete() throws Exception {
+        mockMvc.perform(post("/users/1/delete")
+                .header(HttpHeaders.AUTHORIZATION, this.token))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
 }

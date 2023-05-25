@@ -39,15 +39,15 @@ public class TransactionController {
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getById(@PathVariable int id) {
+    public ResponseEntity<?> getById(@PathVariable Long id) {
         TransactionResponseDTO transaction = transactionService.getById(id);
         return ResponseEntity.status(200).body(transaction);
     }
 
     @PreAuthorize("hasAuthority('EMPLOYEE') OR (hasAuthority('CUSTOMER') AND #transaction.accountFrom.user.id == authentication.principal.id)")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> add(@RequestBody Transaction transaction) {
-        TransactionResponseDTO addedTransaction = transactionService.add(transaction);
+    public ResponseEntity<?> add(@RequestBody TransactionRequestDTO transactionRequestDTO) {
+        TransactionResponseDTO addedTransaction = transactionService.add(transactionRequestDTO);
         return ResponseEntity.status(201).body(addedTransaction);
     }
     

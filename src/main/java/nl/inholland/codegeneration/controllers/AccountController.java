@@ -32,7 +32,6 @@ public class AccountController {
   
 
     // get /accounts
-    @PreAuthorize("hasAuthority('CUSTOMER') AND hasAuthority('EMPLOYEE')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery) throws Exception {
         try {

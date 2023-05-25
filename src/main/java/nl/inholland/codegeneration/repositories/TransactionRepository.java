@@ -4,6 +4,7 @@ import nl.inholland.codegeneration.models.Transaction;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -17,5 +18,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
     List<Transaction> findAllByAccountFromIban(@Param("iban") String iban);
 
     @Query(value = "SELECT SUM(t.amount) FROM Transaction t WHERE TRUNC(t.timestamp) = CURDATE() AND t.accountFrom.user.id = :id")
-    BigDecimal findDailyTransactionsValueOfUser(@Param("id") Long id);
+    Optional<BigDecimal> findDailyTransactionsValueOfUser(@Param("id") Long id);
 }

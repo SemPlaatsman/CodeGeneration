@@ -32,6 +32,10 @@ public class AccountService {
     }
 
     public List<Account> getAllByUserId(Long id) {
+        if(!userRepository.existsById(id)){
+            throw new RuntimeException("User not found");
+        }
+
         return accountRepository.findAllByUserId(id);
     }
 
@@ -43,7 +47,11 @@ public class AccountService {
     public Optional<Account> getAccountByIban(String iban) {
         try {
             Optional<Account> account = accountRepository.findByIban(iban);
+            if(account.isPresent()){
             return account;
+            }else{
+                throw new Exception("Account not found");
+            }
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }

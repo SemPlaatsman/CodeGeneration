@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import nl.inholland.codegeneration.models.Account;
 import nl.inholland.codegeneration.models.QueryParams;
 import nl.inholland.codegeneration.models.Transaction;
+import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.services.AccountService;
 
 @RestController
@@ -32,7 +34,7 @@ public class AccountController {
   
 
     // get /accounts
-    @PreAuthorize("hasAuthority('CUSTOMER') AND hasAuthority('EMPLOYEE')")
+    @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery) throws Exception {
         try {
@@ -47,12 +49,17 @@ public class AccountController {
 
 
     // get /accounts/{Iban}
-    @PreAuthorize("hasAuthority('CUSTOMER') AND hasAuthority('EMPLOYEE')")
+    @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAccountByIban(@PathVariable("iban") String iban) {
         try {
+             //    principal;
+            User user = (User)  SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-            Account account = accountService.getAccountByIban(iban).get();
+            Account account = accountService.getAccountByIban(iban).orElseThrow();
+            if(account.getUser() !=  user){
+                throw new Exception("Account not found");
+            }
             return ResponseEntity.status(200).body(account);
 
         } catch (Exception e) {

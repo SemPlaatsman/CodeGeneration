@@ -3,11 +3,6 @@ package nl.inholland.codegeneration.services;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
-import nl.inholland.codegeneration.exceptions.APIException;
-import nl.inholland.codegeneration.models.Account;
-import nl.inholland.codegeneration.repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
@@ -15,8 +10,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import nl.inholland.codegeneration.exceptions.APIException;
+import nl.inholland.codegeneration.models.Account;
 import nl.inholland.codegeneration.models.QueryParams;
 import nl.inholland.codegeneration.models.User;
+import nl.inholland.codegeneration.repositories.AccountRepository;
 import nl.inholland.codegeneration.repositories.UserRepository;
 
 @Service

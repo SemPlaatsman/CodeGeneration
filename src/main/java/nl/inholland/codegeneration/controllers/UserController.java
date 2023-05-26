@@ -49,7 +49,7 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('EMPLOYEE') OR (hasAuthority('CUSTOMER') AND #id == authentication.principal.id)")
     @GetMapping(path = "/{id}/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity getAllAccountsById(@PathVariable Long id) {
+    public ResponseEntity getAllAccountsById(@PathVariable Long id) throws APIException {
         List<Account> accounts = accountService.getAllByUserId(id);
         return ResponseEntity.status(200).body(accounts);
     }

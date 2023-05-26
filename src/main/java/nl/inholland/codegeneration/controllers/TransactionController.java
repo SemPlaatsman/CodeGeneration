@@ -2,6 +2,7 @@ package nl.inholland.codegeneration.controllers;
 
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +23,9 @@ import nl.inholland.codegeneration.services.TransactionService;
 
 @RestController
 @RequestMapping(path = "/transactions")
+@RequiredArgsConstructor
 public class TransactionController {
-
-    @Autowired
-    private TransactionService transactionService;
+    private final TransactionService transactionService;
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

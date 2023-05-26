@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
 import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
 import nl.inholland.codegeneration.services.mappers.UserDTOMapper;
@@ -24,13 +25,11 @@ import nl.inholland.codegeneration.repositories.AccountRepository;
 import nl.inholland.codegeneration.repositories.UserRepository;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private AccountRepository accountRepository;
-    @Autowired
-    private UserDTOMapper userDTOMapper;
+    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
+    private final UserDTOMapper userDTOMapper;
 
     public List<UserResponseDTO> getAll(@Nullable QueryParams queryParams) {
         return (List<UserResponseDTO>) userRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent().stream().map(userDTOMapper.toResponseDTO).collect(Collectors.toList());

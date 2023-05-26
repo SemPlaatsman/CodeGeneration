@@ -2,6 +2,7 @@ package nl.inholland.codegeneration.controllers;
 
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +28,10 @@ import nl.inholland.codegeneration.services.UserService;
 
 @RestController
 @RequestMapping(path = "/users")
+@RequiredArgsConstructor
 public class UserController {
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private AccountService accountService;
+    private final UserService userService;
+    private final AccountService accountService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getAll(@RequestParam(value = "filter", required = false) String filterQuery) throws Exception {

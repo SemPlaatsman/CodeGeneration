@@ -1,6 +1,7 @@
 package nl.inholland.codegeneration.services.mappers;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
 import nl.inholland.codegeneration.models.Transaction;
@@ -14,8 +15,13 @@ import java.util.function.Function;
 
 @Service
 public class TransactionDTOMapper {
-    @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    public TransactionDTOMapper(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
+
     public Function<TransactionRequestDTO, Transaction> toTransaction = (transactionRequestDTO) -> {
         Transaction transaction = new Transaction();
         transaction.setAccountFrom(accountRepository.findById(transactionRequestDTO.accountFromIban()).orElseThrow(() -> new EntityNotFoundException("Transaction not found!")));

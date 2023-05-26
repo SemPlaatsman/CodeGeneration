@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -17,15 +18,11 @@ import nl.inholland.codegeneration.repositories.TransactionRepository;
 import nl.inholland.codegeneration.repositories.UserRepository;
 
 @Service
+@RequiredArgsConstructor
 public class AccountService {
-    @Autowired
-    private AccountRepository accountRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private TransactionRepository transactionRepository;
+    private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
+    private final TransactionRepository transactionRepository;
 
     public List<Account> getAll(QueryParams queryParams) {
         return accountRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent();

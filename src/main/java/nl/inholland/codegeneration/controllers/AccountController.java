@@ -3,6 +3,7 @@ package nl.inholland.codegeneration.controllers;
 import java.math.BigDecimal;
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,14 +25,12 @@ import nl.inholland.codegeneration.services.AccountService;
 
 @RestController
 @RequestMapping(path = "/accounts")
+@RequiredArgsConstructor
 public class AccountController {
-
-    @Autowired
-    private  AccountService accountService;
-
-  
+    private final AccountService accountService;
 
     // get /accounts
+    @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery) throws Exception {
         try {
@@ -44,9 +43,8 @@ public class AccountController {
         }
     }
 
-
-    // get /accounts/{Iban}
-    @PreAuthorize("hasAuthority('CUSTOMER') AND hasAuthority('EMPLOYEE')")
+    // get /accounts/{iban}
+    @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAccountByIban(@PathVariable("iban") String iban) {
         try {
@@ -73,24 +71,24 @@ public class AccountController {
         }
     }
     
-    // put /accounts/{Ibans}
+    // put /accounts/{iban}
     @PreAuthorize("hasAuthority('EMPLOYEE')")
-    @PutMapping(path = "/{Iban}", produces=MediaType.APPLICATION_JSON_VALUE, consumes=MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateAccount(@RequestBody Account account, @PathVariable("Iban") String Iban) {
+    @PutMapping(path = "/{iban}", produces=MediaType.APPLICATION_JSON_VALUE, consumes=MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateAccount(@RequestBody Account account, @PathVariable("iban") String iban) {
         try{
-        Account _account = accountService.updateAccount(account, Iban);
+        Account _account = accountService.updateAccount(account, iban);
         return ResponseEntity.status(200).body(_account);
         }catch(Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    // delete /accounts/{Iban}
+    // delete /accounts/{iban}
     @PreAuthorize("hasAuthority('CUSTOMER')")
-    @DeleteMapping(path = "/{Iban}", produces=MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> deleteAccount(@PathVariable("Iban") String Iban) {
+    @DeleteMapping(path = "/{iban}", produces=MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> deleteAccount(@PathVariable("iban") String iban) {
         try {
-            accountService.deleteAccount(Iban);
+            accountService.deleteAccount(iban);
             return  ResponseEntity.status(204).body(null);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -100,10 +98,10 @@ public class AccountController {
 
     // /accounts/{iban}/transactions
     @PreAuthorize("hasAuthority('CUSTOMER')")
-    @GetMapping(path = "/{Iban}/transactions", produces=MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getTransactions(@PathVariable("Iban") String Iban) {
+    @GetMapping(path = "/{iban}/transactions", produces=MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getTransactions(@PathVariable("iban") String iban) {
         try {
-            List<Transaction> accounts = accountService.getTransactions(Iban);
+            List<Transaction> accounts = accountService.getTransactions(iban);
             return ResponseEntity.status(200).body(accounts);
 
         } catch (Exception e) {
@@ -113,10 +111,10 @@ public class AccountController {
 
     // get /accounts/{id}/balance
     @PreAuthorize("hasAuthority('CUSTOMER')")
-    @GetMapping(path = "/{Iban}/balance", produces=MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BigDecimal> getBalance(@PathVariable("Iban") String Iban) {
+    @GetMapping(path = "/{iban}/balance", produces=MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<BigDecimal> getBalance(@PathVariable("iban") String iban) {
         try {
-            BigDecimal balance = accountService.getBalance(Iban);
+            BigDecimal balance = accountService.getBalance(iban);
             return ResponseEntity.status(200).body(balance);
 
         } catch (Exception e) {

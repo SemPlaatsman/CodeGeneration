@@ -66,13 +66,11 @@ public class AccountController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> insertAccount(@RequestBody Account account) throws APIException {
 
-        Optional<User> user = (Optional<User>) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User _user = user.orElseThrow(() -> new APIException("User not found", HttpStatus.UNAUTHORIZED, LocalDateTime.now()));
-    
-        CustomerIbanCheck(_user, account.getIban());
-
-        account.setUser(_user);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        account.setUser(user);
         Account _account = accountService.insertAccount(account);
+        CustomerIbanCheck(user, _account.getIban());
+
         return ResponseEntity.status(201).body(_account);
 
     }
@@ -91,6 +89,8 @@ public class AccountController {
     @PreAuthorize("hasAuthority('CUSTOMER')")
     @DeleteMapping(path = "/{Iban}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteAccount(@PathVariable("Iban") String Iban) throws APIException {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CustomerIbanCheck(user, Iban);
         accountService.deleteAccount(Iban);
         return ResponseEntity.status(204).body(null);
 

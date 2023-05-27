@@ -1,14 +1,18 @@
 package nl.inholland.codegeneration.services;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.apiguardian.api.API;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import nl.inholland.codegeneration.exceptions.APIException;
 import nl.inholland.codegeneration.models.Account;
 import nl.inholland.codegeneration.models.QueryParams;
 import nl.inholland.codegeneration.models.Transaction;
@@ -28,31 +32,41 @@ public class AccountService {
         return accountRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent();
     }
 
-    public List<Account> getAllByUserId(Long id) {
+    public List<Account> getAllByUserId(Long id) throws APIException {
+        if(!userRepository.existsById(id)){
+            throw new APIException("not users found", HttpStatus.NOT_FOUND, LocalDateTime.now());
+        }
+
         return accountRepository.findAllByUserId(id);
     }
 
-    public Account insertAccount(Account account) {
-        return accountRepository.save(new Account(account.getIban(), account.getAccountType(), account.getUser(),
-                account.getBalance(), account.getAbsoluteLimit(), false));
+    public Account insertAccount(Account account) throws APIException {
+       if(account.getUser().getIsDeleted() ==true){
+        throw new APIException("unauthorized", HttpStatus.UNAUTHORIZED, LocalDateTime.now());
+       }
+        return accountRepository.save(
+            new Account(null, account.getAccountType(), account.getUser(),null, account.getAbsoluteLimit(),null)
+            );
+
     }
 
-    public Optional<Account> getAccountByIban(String iban) {
-        try {
+    public Optional<Account> getAccountByIban(String iban) throws APIException {
             Optional<Account> account = accountRepository.findByIban(iban);
+            if(account.isPresent()){
             return account;
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+            }else{
+                throw new APIException("Account not found", HttpStatus.NOT_FOUND, LocalDateTime.now());
+            }
+       
     }
 
-    public Account updateAccount(Account account,String Iban) throws Exception {
+    public Account updateAccount(Account account,String Iban) throws APIException {
 
+            System.out.println(account.getIsDeleted());
 
-        try {
             Optional<Account> _account = accountRepository.findByIban(Iban);
             if(account.getUser()==null){
-                throw new Exception();
+                throw new APIException("Iban", HttpStatus.UNAUTHORIZED, LocalDateTime.now());
             }
             Optional<User> user =  userRepository.findById(account.getUser().getId());
           
@@ -68,49 +82,41 @@ public class AccountService {
 
                 return accountRepository.save(_account.get());
             } else {
-                throw new Exception("Account not found");
+                throw new APIException("Account not for this user", HttpStatus.UNAUTHORIZED, LocalDateTime.now());
             }
 
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
+        
 
     }
 
-    public void deleteAccount(String iban) {
-        try {
+    public void deleteAccount(String iban) throws APIException {
           Optional<Account> _account =  accountRepository.findByIban(iban);
             if(_account.isPresent()){
                 accountRepository.delete(_account.get());
             }else{
-                throw new Exception("Account not found");
+                throw new APIException("account whit iban: "+iban+" not found", HttpStatus.NOT_FOUND, LocalDateTime.now());
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+      
     }
 
-    public List<Transaction> getTransactions(String accountID) {
-        try {
+    public List<Transaction> getTransactions(String accountID) throws APIException {
             List<Transaction> accounts =  transactionRepository.findAllByAccountFromIban(accountID);
+            if(accounts.isEmpty()){
+                throw new APIException("No transactions for "+accountID,HttpStatus.NOT_FOUND, LocalDateTime.now());
+            }
             return accounts;
 
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+        
     }
 
-    public BigDecimal getBalance(String accountID) {
+    public BigDecimal getBalance(String accountID) throws APIException {
 
-        try {
             Optional<Account> account = accountRepository.findByIban(accountID);
             if (account.isPresent()) {
                 return account.get().getBalance();
             } else {
-                throw new Exception("Account not found");
+                throw new APIException("Account not found", HttpStatus.NOT_FOUND, LocalDateTime.now());
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+       
     }
 }

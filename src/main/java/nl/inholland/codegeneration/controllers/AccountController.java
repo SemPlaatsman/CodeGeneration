@@ -64,10 +64,14 @@ public class AccountController {
     // post /accounts
     @PreAuthorize("hasAuthority('CUSTOMER')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> insertAccount(@RequestBody Account account) {
+    public ResponseEntity<?> insertAccount(@RequestBody Account account) throws APIException {
 
-       Optional<User> user = (Optional<User>) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        account.setUser((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Optional<User> user = (Optional<User>) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User _user = user.orElseThrow(() -> new APIException("User not found", HttpStatus.UNAUTHORIZED, LocalDateTime.now()));
+    
+        CustomerIbanCheck(_user, account.getIban());
+
+        account.setUser(_user);
         Account _account = accountService.insertAccount(account);
         return ResponseEntity.status(201).body(_account);
 
@@ -115,10 +119,9 @@ public class AccountController {
 
     }
 
-
     private Account CustomerIbanCheck(User user, String Iban) throws APIException {
         Account account = accountService.getAccountByIban(Iban)
-                .orElseThrow( () ->new APIException("Account not found", HttpStatus.NOT_FOUND,LocalDateTime.now()));
+                .orElseThrow(() -> new APIException("Account not found", HttpStatus.NOT_FOUND, LocalDateTime.now()));
         if (account.getUser() != user && user.getRole() == Role.CUSTOMER) {
             throw new APIException("no acces", HttpStatus.FORBIDDEN, null);
         }

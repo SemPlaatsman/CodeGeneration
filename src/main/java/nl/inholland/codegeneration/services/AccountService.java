@@ -43,10 +43,12 @@ public class AccountService {
         return accountRepository.findAllByUserId(id);
     }
 
-    public Account insertAccount(Account account) {
-        System.out.println(account);
+    public Account insertAccount(Account account) throws APIException {
+       if(account.getUser().getIsDeleted() ==true){
+        throw new APIException("unauthorized", HttpStatus.UNAUTHORIZED, LocalDateTime.now());
+       }
         return accountRepository.save(
-            new Account(account.getIban(), account.getAccountType(), account.getUser(),account.getBalance(), account.getAbsoluteLimit(),false)
+            new Account(null, account.getAccountType(), account.getUser(),null, account.getAbsoluteLimit(),null)
             );
     }
 

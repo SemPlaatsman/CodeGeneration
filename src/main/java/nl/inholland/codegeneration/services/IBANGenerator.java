@@ -39,7 +39,7 @@ public class IBANGenerator implements IdentifierGenerator {
     }
 
     // Convert an IBAN into a remainder int using the method provided in https://en.wikipedia.org/wiki/International_Bank_Account_Number#Algorithms
-    private int calculateMod97(String IBAN) throws IdentifierGenerationException {
+    int calculateMod97(String IBAN) throws IdentifierGenerationException {
         if (IBAN.length() != IBAN_LENGTH) {
             throw new IdentifierGenerationException("Something went wrong while generating a new IBAN");
         }

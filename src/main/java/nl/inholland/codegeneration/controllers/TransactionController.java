@@ -2,6 +2,9 @@ package nl.inholland.codegeneration.controllers;
 
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
+import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
+import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,32 +23,31 @@ import nl.inholland.codegeneration.services.TransactionService;
 
 @RestController
 @RequestMapping(path = "/transactions")
+@RequiredArgsConstructor
 public class TransactionController {
-
-    @Autowired
-    private TransactionService transactionService;
+    private final TransactionService transactionService;
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery) throws Exception {
         QueryParams queryParams = new QueryParams(Transaction.class);
         queryParams.setFilter(filterQuery);
-        List<Transaction> transactions = transactionService.getAll(queryParams);
+        List<TransactionResponseDTO> transactions = transactionService.getAll(queryParams);
         return ResponseEntity.status(200).body(transactions);
     }
 
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getById(@PathVariable int id) {
-        Transaction transaction = transactionService.getById(id);
+    public ResponseEntity<?> getById(@PathVariable Long id) {
+        TransactionResponseDTO transaction = transactionService.getById(id);
         return ResponseEntity.status(200).body(transaction);
     }
 
     @PreAuthorize("hasAuthority('EMPLOYEE') OR (hasAuthority('CUSTOMER') AND #transaction.accountFrom.user.id == authentication.principal.id)")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> add(@RequestBody Transaction transaction) {
-        Transaction addedTransaction = transactionService.add(transaction);
+    public ResponseEntity<?> add(@RequestBody TransactionRequestDTO transactionRequestDTO) {
+        TransactionResponseDTO addedTransaction = transactionService.add(transactionRequestDTO);
         return ResponseEntity.status(201).body(addedTransaction);
     }
     

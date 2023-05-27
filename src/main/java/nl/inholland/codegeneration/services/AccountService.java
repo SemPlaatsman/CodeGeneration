@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apiguardian.api.API;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -21,15 +22,11 @@ import nl.inholland.codegeneration.repositories.TransactionRepository;
 import nl.inholland.codegeneration.repositories.UserRepository;
 
 @Service
+@RequiredArgsConstructor
 public class AccountService {
-    @Autowired
-    private AccountRepository accountRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private TransactionRepository transactionRepository;
+    private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
+    private final TransactionRepository transactionRepository;
 
     public List<Account> getAll(QueryParams queryParams) {
         return accountRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent();
@@ -50,6 +47,7 @@ public class AccountService {
         return accountRepository.save(
             new Account(null, account.getAccountType(), account.getUser(),null, account.getAbsoluteLimit(),null)
             );
+
     }
 
     public Optional<Account> getAccountByIban(String iban) throws APIException {

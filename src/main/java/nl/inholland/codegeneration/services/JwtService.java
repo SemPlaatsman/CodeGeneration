@@ -18,8 +18,8 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 
-    
-    private static final String SecretKey ="566D5971337336763979244226452948404D635166546A576E5A723475377721";// get this key from key file 
+    // TODO: Error handling
+    private static final String SecretKey ="566D5971337336763979244226452948404D635166546A576E5A723475377721";// TODO: get this key from key file
 
     public String extractUsername(String jwt) {
         return extractClaim(jwt, Claims::getSubject);
@@ -34,8 +34,7 @@ public class JwtService {
         return generateToken(new HashMap<>(), userDetails);
     }
 
-    public String generateToken(Map<String, Object> claims, UserDetails userDetails)
-    {
+    public String generateToken(Map<String, Object> claims, UserDetails userDetails) {
         return Jwts.builder()
         .setClaims(claims)
         .setSubject(userDetails.getUsername())
@@ -51,10 +50,10 @@ public class JwtService {
     }
 
     private  boolean isTokenExpired(String jwt) {
-        return extractExpriration(jwt).before(new Date());
+        return extractExpiration(jwt).before(new Date());
     }
 
-    private Date extractExpriration(String jwt) {
+    private Date extractExpiration(String jwt) {
         return extractClaim(jwt, Claims::getExpiration);
     };
 

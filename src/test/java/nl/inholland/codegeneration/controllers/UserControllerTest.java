@@ -93,7 +93,7 @@ public class UserControllerTest {
                 .content("{}"))
                 .andDo(print());
     }
-    
+
     @Test
     public void delete() throws Exception {
         mockMvc.perform(post("/users/1/delete")

@@ -9,13 +9,15 @@ import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.Transaction;
 import nl.inholland.codegeneration.models.User;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserDTOMapper {
     public Function<UserRequestDTO, User> toUser = (userRequestDTO) -> {
         User user = new User();
-        user.setRole(Role.fromInt(userRequestDTO.role()));
+        user.setRoles(userRequestDTO.roles().stream().map(Role::fromInt).collect(Collectors.toList()));
         user.setUsername(userRequestDTO.username());
         user.setPassword(userRequestDTO.password());
         user.setFirstName(userRequestDTO.firstName());

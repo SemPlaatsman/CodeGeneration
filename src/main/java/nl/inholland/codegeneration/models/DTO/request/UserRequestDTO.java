@@ -1,9 +1,10 @@
 package nl.inholland.codegeneration.models.DTO.request;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public record UserRequestDTO(
-    int role,
+    List<Integer> roles,
     String username,
     String password,
     String firstName,

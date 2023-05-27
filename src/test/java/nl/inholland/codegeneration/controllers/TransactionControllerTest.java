@@ -1,6 +1,7 @@
 package nl.inholland.codegeneration.controllers;
 
 import nl.inholland.codegeneration.configuration.apiTestConfiguration;
+import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
 import nl.inholland.codegeneration.models.Transaction;
 import nl.inholland.codegeneration.services.TransactionService;
 import nl.inholland.codegeneration.services.UserService;
@@ -62,7 +63,7 @@ public class TransactionControllerTest {
 
     @Test
     public void getAll() throws Exception {
-        when(transactionService.getAll(null)).thenReturn(List.of(new Transaction(), new Transaction()));
+        when(transactionService.getAll(null)).thenReturn(List.of(new TransactionResponseDTO(), new Transaction()));
 
         mockMvc.perform(get("/transactions")
                 .header(HttpHeaders.AUTHORIZATION, token)

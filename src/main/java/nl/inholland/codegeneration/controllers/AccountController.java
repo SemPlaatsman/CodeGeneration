@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,6 +33,7 @@ import nl.inholland.codegeneration.services.AccountService;
 
 @RestController
 @RequestMapping(path = "/accounts")
+@RequiredArgsConstructor
 public class AccountController {
 
     @Autowired
@@ -39,6 +41,7 @@ public class AccountController {
 
     // get /accounts
     @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery)
             throws Exception {
@@ -51,6 +54,7 @@ public class AccountController {
     }
 
     // get /accounts/{Iban}
+
     @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAccountByIban(@PathVariable("iban") String Iban) throws APIException {
@@ -81,11 +85,12 @@ public class AccountController {
     public ResponseEntity<?> updateAccount(@RequestBody Account account, @PathVariable("Iban") String Iban)
             throws APIException {
         Account _account = accountService.updateAccount(account, Iban);
+
         return ResponseEntity.status(200).body(_account);
 
     }
 
-    // delete /accounts/{Iban}
+    // delete /accounts/{iban}
     @PreAuthorize("hasAuthority('CUSTOMER')")
     @DeleteMapping(path = "/{Iban}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteAccount(@PathVariable("Iban") String Iban) throws APIException {
@@ -93,6 +98,7 @@ public class AccountController {
         CustomerIbanCheck(user, Iban);
         accountService.deleteAccount(Iban);
         return ResponseEntity.status(204).body(null);
+
 
     }
 
@@ -106,6 +112,7 @@ public class AccountController {
         List<Transaction> accounts = accountService.getTransactions(Iban);
         return ResponseEntity.status(200).body(accounts);
 
+
     }
 
     // get /accounts/{id}/balance
@@ -116,6 +123,7 @@ public class AccountController {
         CustomerIbanCheck(user, Iban);
         BigDecimal balance = accountService.getBalance(Iban);
         return ResponseEntity.status(200).body(balance);
+
 
     }
 

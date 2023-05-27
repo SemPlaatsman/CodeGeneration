@@ -9,8 +9,6 @@ import java.math.BigDecimal;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
-
 @Entity
 @Table(name = "accounts")
 @Getter
@@ -32,7 +30,7 @@ public class Account {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    
+
     @Column(name = "balance", nullable = false, precision = 32, scale = 2)
     private BigDecimal balance = new BigDecimal(0);
 
@@ -41,6 +39,10 @@ public class Account {
 
     @Column(name = "isDeleted", nullable = false)
     private Boolean isDeleted = false;
+
+    public Boolean getIsDeleted() {
+        return isDeleted;
+    }
 
     @JsonProperty("user")
     public void setUserById(Long userId) {

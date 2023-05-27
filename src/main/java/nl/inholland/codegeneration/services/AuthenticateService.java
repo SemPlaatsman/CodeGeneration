@@ -13,6 +13,8 @@ import nl.inholland.codegeneration.security.requests.AuthenticationRequest;
 import nl.inholland.codegeneration.security.requests.RegisterRequest;
 import nl.inholland.codegeneration.security.response.AuthenticationResponse;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticateService {
@@ -35,8 +37,8 @@ public class AuthenticateService {
     user.setPhoneNumber(request.getPhoneNumber());
     user.setBirthdate(request.getBirthdate());
 
-    //registering user is by default customer van change this if you want to register a new employee you could make a diferent endpoint for that
-    user.setRole(Role.CUSTOMER);
+    //registering user is by default customer van change this if you want to register a new employee you could make a different endpoint for that
+    user.setRoles(List.of(Role.CUSTOMER));
     userRepository.save(user);
 
     String jwtToken =  jwtService.generateToken(user);

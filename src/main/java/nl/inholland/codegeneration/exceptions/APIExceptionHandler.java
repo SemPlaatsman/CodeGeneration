@@ -1,5 +1,6 @@
 package nl.inholland.codegeneration.exceptions;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.codegeneration.models.DTO.response.APIExceptionResponseDTO;
@@ -52,14 +53,14 @@ public class APIExceptionHandler {
     @ExceptionHandler({BadCredentialsException.class, JwtException.class, UsernameNotFoundException.class})
     public ResponseEntity<APIExceptionResponseDTO> handleUnauthorizedException(RuntimeException ex, WebRequest request) {
         APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO(
-                (ex.getMessage() != null) ? ex.getMessage() + "BITCH" : "Unauthorized!",
+                (ex.getMessage() != null) ? ex.getMessage() : "Unauthorized!",
                 HttpStatus.UNAUTHORIZED,
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(apiExceptionResponseDTO, apiExceptionResponseDTO.httpStatus());
     }
 
-    @ExceptionHandler({InvalidDataAccessApiUsageException.class, SemanticException.class, NullPointerException.class})
+    @ExceptionHandler({InvalidDataAccessApiUsageException.class, SemanticException.class, NullPointerException.class, IllegalArgumentException.class})
     public ResponseEntity<APIExceptionResponseDTO> handleBadRequestException(RuntimeException ex, WebRequest request) {
         APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO(
                 (ex.getMessage() != null) ? ex.getMessage() : "Bad Request!",

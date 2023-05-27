@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,15 +14,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,9 +31,11 @@ public class User implements UserDetails {
     @Column(name = "id")
     private Long id;
 
-    @Enumerated
-    @Column(name = "role", nullable = false, columnDefinition = "smallint default 1")
-    private Role role;
+    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
+    @Enumerated(EnumType.ORDINAL)
+    @CollectionTable(name = "roles")
+    @Column(name = "role")
+    private List<Role> roles;
 
     // @ElementCollection(fetch = FetchType.EAGER)
     // private List<Role> role;
@@ -78,7 +73,7 @@ public class User implements UserDetails {
     private Boolean isDeleted = false;
 
     public User update(User user) {
-        this.setRole(user.getRole());
+        this.setRoles(user.getRoles());
         this.setUsername(user.getUsername());
         this.setPassword(user.getPassword());
         this.setFirstName(user.getFirstName());
@@ -94,7 +89,7 @@ public class User implements UserDetails {
     @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return roles.stream().map(role -> new SimpleGrantedAuthority(role.name())).collect(Collectors.toList());
     }
 
     @JsonIgnore

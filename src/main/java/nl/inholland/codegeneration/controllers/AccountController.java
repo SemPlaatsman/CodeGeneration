@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -65,6 +66,7 @@ public class AccountController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> insertAccount(@RequestBody Account account) {
 
+       Optional<User> user = (Optional<User>) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         account.setUser((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         Account _account = accountService.insertAccount(account);
         return ResponseEntity.status(201).body(_account);

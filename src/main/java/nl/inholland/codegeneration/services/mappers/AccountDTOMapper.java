@@ -1,6 +1,7 @@
 package nl.inholland.codegeneration.services.mappers;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import nl.inholland.codegeneration.models.Account;
 import nl.inholland.codegeneration.models.AccountType;
 import nl.inholland.codegeneration.models.DTO.request.AccountRequestDTO;
@@ -17,8 +18,13 @@ import java.util.function.Function;
 
 @Service
 public class AccountDTOMapper {
+    private UserRepository userRepository;
+
     @Autowired
-    UserRepository userRepository;
+    public AccountDTOMapper(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     public Function<AccountRequestDTO, Account> toAccount = (accountRequestDTO) -> {
         Account account = new Account();
         account.setUser(userRepository.findById(accountRequestDTO.customerId()).orElseThrow(() -> new EntityNotFoundException("User not found!")));

@@ -2,6 +2,8 @@ package nl.inholland.codegeneration.security;
 
 import java.io.IOException;
 
+import io.jsonwebtoken.JwtException;
+import nl.inholland.codegeneration.exceptions.APIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,6 +33,7 @@ public class JwtFIlter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
+    // TODO: Exception handling
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
@@ -54,6 +57,4 @@ public class JwtFIlter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
-
-    
 }

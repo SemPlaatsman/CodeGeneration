@@ -60,10 +60,10 @@ public class QueryParams {
                 throw new SemanticException("Invalid filter option!");
             }
 
-            if (field.getAnnotation(Filterable.class).role() == Role.EMPLOYEE && user.getRole() != Role.EMPLOYEE) {
+            if (field.getAnnotation(Filterable.class).role() == Role.EMPLOYEE && !user.getRoles().contains(Role.EMPLOYEE)) {
                 throw new BadCredentialsException("Invalid permissions!");
             }
-        } else if (this.classReference.getAnnotation(Filterable.class).role() == Role.EMPLOYEE && user.getRole() != Role.EMPLOYEE) {
+        } else if (this.classReference.getAnnotation(Filterable.class).role() == Role.EMPLOYEE && !user.getRoles().contains(Role.EMPLOYEE)) {
             throw new BadCredentialsException("Invalid permissions!");
         }
 

@@ -8,10 +8,13 @@ import java.util.stream.Collectors;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import nl.inholland.codegeneration.exceptions.APIException;
 import nl.inholland.codegeneration.models.*;
 import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
+import nl.inholland.codegeneration.repositories.AccountRepository;
+import nl.inholland.codegeneration.repositories.UserRepository;
 import nl.inholland.codegeneration.services.mappers.TransactionDTOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -24,11 +27,10 @@ import org.springframework.stereotype.Service;
 import nl.inholland.codegeneration.repositories.TransactionRepository;
 
 @Service
+@RequiredArgsConstructor
 public class TransactionService {
-    @Autowired
-    private TransactionRepository transactionRepository;
-    @Autowired
-    private TransactionDTOMapper transactionDTOMapper;
+    private final TransactionRepository transactionRepository;
+    private final TransactionDTOMapper transactionDTOMapper;
 
     public List<TransactionResponseDTO> getAll(@Nullable QueryParams queryParams) {
         return (List<TransactionResponseDTO>) transactionRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent().stream().map(transactionDTOMapper.toResponseDTO).collect(Collectors.toList());

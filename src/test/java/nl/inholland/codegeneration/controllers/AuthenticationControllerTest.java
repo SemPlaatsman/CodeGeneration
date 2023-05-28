@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import io.cucumber.core.gherkin.messages.internal.gherkin.internal.com.eclipsesource.json.Json;
 import io.cucumber.messages.internal.com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -83,11 +84,11 @@ public class AuthenticationControllerTest {
     void testLogin() throws Exception {
         // Given
         AuthenticationRequest loginRequest = new AuthenticationRequest();
-        loginRequest.setUsername("testUser");
-        loginRequest.setPassword("testPassword");
+        loginRequest.setUsername("johndoe");
+        loginRequest.setPassword("john123");
         AuthenticationResponse expectedResponse = new AuthenticationResponse("dummy_token");
     
-        when(authenticateService.login(any(AuthenticationRequest.class))).thenReturn(expectedResponse);
+        when(authenticateService.login(loginRequest)).thenReturn(expectedResponse);
     
         // When & Then
         mockMvc.perform(post("/authenticate/login")

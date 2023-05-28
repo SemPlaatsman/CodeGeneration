@@ -23,7 +23,7 @@ public class UserRequestDTOTest {
         UserRequestDTO dto = new UserRequestDTO(role, username, password, firstName, lastName, email, phoneNumber, birthdate);
 
         // Then
-        assertEquals(dto.role(), role);
+        assertEquals(dto.roles(), role);
         assertEquals(dto.username(), username);
         assertEquals(dto.password(), password);
         assertEquals(dto.firstName(), firstName);

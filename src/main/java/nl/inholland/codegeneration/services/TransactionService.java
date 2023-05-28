@@ -34,8 +34,8 @@ public class TransactionService {
         return (List<TransactionResponseDTO>) transactionRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent().stream().map(transactionDTOMapper.toResponseDTO).collect(Collectors.toList());
     }
 
-    public TransactionResponseDTO getById(Long id) {
-        Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Transaction not found!"));
+    public TransactionResponseDTO getById(Long i) {
+        Transaction transaction = transactionRepository.findById(i).orElseThrow(() -> new EntityNotFoundException("Transaction not found!"));
         return transactionDTOMapper.toResponseDTO.apply(transaction);
     }
 

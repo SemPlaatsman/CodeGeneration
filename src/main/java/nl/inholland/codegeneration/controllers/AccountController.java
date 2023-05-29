@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.EqualsAndHashCode.Include;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -130,7 +132,7 @@ public class AccountController {
     private Account CustomerIbanCheck(User user, String Iban) throws APIException {
         Account account = accountService.getAccountByIban(Iban)
                 .orElseThrow(() -> new APIException("Account not found", HttpStatus.NOT_FOUND, LocalDateTime.now()));
-        if (account.getUser() != user && user.getRole() == Role.CUSTOMER) {
+        if (account.getUser() != user && user.getRoles().contains(Role.CUSTOMER)) {
             throw new APIException("no acces", HttpStatus.FORBIDDEN, null);
         }
         return account;

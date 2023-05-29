@@ -13,4 +13,14 @@ public record UserRequestDTO(
     String phoneNumber,
     LocalDate birthdate
 ) {
+    public UserRequestDTO(List<Integer> roles, String username, String password, String firstName, String lastName, String email, String phoneNumber, LocalDate birthdate) {
+        this.roles = roles;
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.birthdate = birthdate;
+    }
 }

@@ -53,7 +53,7 @@ public class AuthenticateServiceTest {
         User user = new User();
         user.setUsername(registerRequest.getUsername());
         user.setPassword(registerRequest.getPassword());
-        user.setRole(Role.CUSTOMER);
+        user.setRoles(Role.CUSTOMER);
 
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(jwtService.generateToken(any(User.class))).thenReturn("token");

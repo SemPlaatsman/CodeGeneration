@@ -1,104 +1,118 @@
 package nl.inholland.codegeneration.controllers;
 
-import nl.inholland.codegeneration.configuration.apiTestConfiguration;
+import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
+import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
+import nl.inholland.codegeneration.exceptions.APIException;
+import nl.inholland.codegeneration.models.Account;
 import nl.inholland.codegeneration.models.User;
-import nl.inholland.codegeneration.services.UserService;
 import nl.inholland.codegeneration.services.AccountService;
-import nl.inholland.codegeneration.services.JwtService;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-
+import nl.inholland.codegeneration.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener;
+import org.springframework.cglib.core.Local;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import nl.inholland.codegeneration.models.User;
-import nl.inholland.codegeneration.services.AccountService;
-import nl.inholland.codegeneration.services.JwtService;
-import nl.inholland.codegeneration.services.UserService;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(UserController.class)
-@Import(apiTestConfiguration.class)
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doNothing;
+
+@SpringBootTest
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class, MockitoTestExecutionListener.class})
 public class UserControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @InjectMocks
+    private UserController userController;
 
-    @MockBean
+    @Mock
     private UserService userService;
 
-    @MockBean
+    @Mock
     private AccountService accountService;
 
-    private String token;
+    private UserRequestDTO userRequestDTO;
+    private UserResponseDTO userResponseDTO;
+    private Account account;
 
     @BeforeEach
-    void setUp() {
-        // TODO: Replace this with actual logic to generate or get the token
-        // this.token = "Bearer " + jwtService.createToken("Your User details");
-
-        // If the token is static, you can directly assign it like this:
-        // this.token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg0Nzg0OTU5LCJleHAiOjE2ODQ4MjA5NTl9.Tcrz5wvxcAVmgudWcbVjbiDlMM2mRJSvvBjQDQEWp-Q";
+    void setup() {
+        User user = new User();
+        userRequestDTO = new UserRequestDTO(1, "test", "test", "test", "test", "test", "test", LocalDate.now());
+        userResponseDTO = new UserResponseDTO(user);
+        account = new Account();
     }
 
     @Test
-    public void getAll() throws Exception {
-        when(userService.getAll(null)).thenReturn(List.of(new User(), new User()));
+    void testGetAll() {
+        when(userService.getAll(any())).thenReturn(Collections.singletonList(userResponseDTO));
 
-        mockMvc.perform(get("/users")
-                .header(HttpHeaders.AUTHORIZATION, this.token))
-                .andDo(print())
-                .andExpect(status().isOk());
+        try {
+            assertEquals(ResponseEntity.status(200).body(Collections.singletonList(userResponseDTO)),
+                    userController.getAll(null));
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     @Test
-    public void getById() throws Exception {
-        when(userService.getById(1L)).thenReturn(new User());
+    void testGetById() {
+        when(userService.getById(anyLong())).thenReturn(userResponseDTO);
 
-        mockMvc.perform(get("/users/1")
-                .header(HttpHeaders.AUTHORIZATION, this.token))
-                .andDo(print());
+        assertEquals(ResponseEntity.status(200).body(userResponseDTO),
+                userController.getById(1L));
     }
 
     @Test
-    public void add() throws Exception {
-        when(userService.add(any(User.class))).thenReturn(new User());
+    void testGetAllAccountsById() {
+        when(accountService.getAllByUserId(anyLong())).thenReturn(Collections.singletonList(account));
 
-        mockMvc.perform(post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, this.token)
-                .content("{}"))
-                .andDo(print());
+        assertEquals(ResponseEntity.status(200).body(Collections.singletonList(account)),
+                userController.getAllAccountsById(1L));
     }
 
     @Test
-    public void update() throws Exception {
-        when(userService.update(any(User.class), any(Long.class))).thenReturn(new User());
+    void testAdd() {
+        when(userService.add(any())).thenReturn(userResponseDTO);
 
-        mockMvc.perform(post("/users/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, this.token)
-                .content("{}"))
-                .andDo(print());
+        assertEquals(ResponseEntity.status(201).body(userResponseDTO),
+                userController.add(userRequestDTO));
     }
 
     @Test
-    public void delete() throws Exception {
-        mockMvc.perform(post("/users/1/delete")
-                .header(HttpHeaders.AUTHORIZATION, this.token))
-                .andDo(print())
-                .andExpect(status().isOk());
+    void testUpdate() {
+        when(userService.update(any(), anyLong())).thenReturn(userResponseDTO);
+
+        assertEquals(ResponseEntity.status(200).body(userResponseDTO),
+                userController.update(userRequestDTO, 1L));
+    }
+
+    @Test
+    void testDelete() {
+        try {
+            doNothing().when(userService).delete(anyLong());
+        } catch (APIException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        try {
+            assertEquals(ResponseEntity.status(204).body("No Content"),
+                    userController.delete(1L));
+        } catch (APIException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }

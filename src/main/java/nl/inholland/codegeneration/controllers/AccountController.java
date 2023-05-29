@@ -37,34 +37,26 @@ import nl.inholland.codegeneration.services.AccountService;
 @RequestMapping(path = "/accounts")
 @RequiredArgsConstructor
 public class AccountController {
-
-    @Autowired
-    private AccountService accountService;
+    private final AccountService accountService;
 
     // get /accounts
-    @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
-
+    @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery)
             throws Exception {
-
         QueryParams queryParams = new QueryParams(Transaction.class);
         queryParams.setFilter(filterQuery);
         List<Account> accounts = accountService.getAll(queryParams);
         return ResponseEntity.status(200).body(accounts);
-
     }
 
-    // get /accounts/{Iban}
-
+    // get /accounts/{iban}
     @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAccountByIban(@PathVariable("iban") String Iban) throws APIException {
-
+    public ResponseEntity<?> getAccountByIban(@PathVariable("iban") String iban) throws APIException {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Account account = CustomerIbanCheck(user, Iban);
+        Account account = CustomerIbanCheck(user, iban);
         return ResponseEntity.status(200).body(account);
-
     }
 
     // post /accounts
@@ -72,68 +64,63 @@ public class AccountController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> insertAccount(@RequestBody Account account) throws APIException {
 
-        Optional<User> user = (Optional<User>) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User _user = user.orElseThrow(() -> new APIException("User not found", HttpStatus.UNAUTHORIZED, LocalDateTime.now()));
+        User user = ((Optional<User>) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+                .orElseThrow(() -> new APIException("User not found", HttpStatus.UNAUTHORIZED, null));
     
-        CustomerIbanCheck(_user, account.getIban());
+        CustomerIbanCheck(user, account.getIban());
 
-        account.setUser(_user);
-        Account _account = accountService.insertAccount(account);
-        return ResponseEntity.status(201).body(_account);
+        account.setUser(user);
+        Account addedAccount = accountService.insertAccount(account);
+        return ResponseEntity.status(201).body(addedAccount);
 
     }
 
-    // put /accounts/{Ibans}
+    // put /accounts/{iban}
     @PreAuthorize("hasAuthority('EMPLOYEE')")
-    @PutMapping(path = "/{Iban}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateAccount(@RequestBody Account account, @PathVariable("Iban") String Iban)
+    @PutMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateAccount(@RequestBody Account account, @PathVariable("iban") String iban)
             throws APIException {
-        Account _account = accountService.updateAccount(account, Iban);
+        Account updatedAccount = accountService.updateAccount(account, iban);
 
-        return ResponseEntity.status(200).body(_account);
+        return ResponseEntity.status(200).body(updatedAccount);
 
     }
 
     // delete /accounts/{iban}
     @PreAuthorize("hasAuthority('CUSTOMER')")
-    @DeleteMapping(path = "/{Iban}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> deleteAccount(@PathVariable("Iban") String Iban) throws APIException {
-        accountService.deleteAccount(Iban);
+    @DeleteMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> deleteAccount(@PathVariable("iban") String iban) throws APIException {
+        accountService.deleteAccount(iban);
         return ResponseEntity.status(204).body(null);
-
-
     }
 
     // get /accounts/{iban}/transactions
     @PreAuthorize("hasAuthority('CUSTOMER')")
-    @GetMapping(path = "/{Iban}/transactions", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getTransactions(@PathVariable("Iban") String Iban) throws APIException {
-
+    @GetMapping(path = "/{iban}/transactions", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getTransactions(@PathVariable("iban") String iban) throws APIException {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CustomerIbanCheck(user, Iban);
-        List<Transaction> accounts = accountService.getTransactions(Iban);
+        CustomerIbanCheck(user, iban);
+        List<Transaction> accounts = accountService.getTransactions(iban);
         return ResponseEntity.status(200).body(accounts);
-
-
     }
 
     // get /accounts/{id}/balance
     @PreAuthorize("hasAuthority('CUSTOMER')")
-    @GetMapping(path = "/{Iban}/balance", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BigDecimal> getBalance(@PathVariable("Iban") String Iban) throws APIException {
+    @GetMapping(path = "/{iban}/balance", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getBalance(@PathVariable("iban") String iban) throws APIException {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CustomerIbanCheck(user, Iban);
-        BigDecimal balance = accountService.getBalance(Iban);
+        CustomerIbanCheck(user, iban);
+        BigDecimal balance = accountService.getBalance(iban);
         return ResponseEntity.status(200).body(balance);
 
 
     }
 
-    private Account CustomerIbanCheck(User user, String Iban) throws APIException {
-        Account account = accountService.getAccountByIban(Iban)
+    private Account CustomerIbanCheck(User user, String iban) throws APIException {
+        Account account = accountService.getAccountByIban(iban)
                 .orElseThrow(() -> new APIException("Account not found", HttpStatus.NOT_FOUND, LocalDateTime.now()));
         if (account.getUser() != user && user.getRoles().contains(Role.CUSTOMER)) {
-            throw new APIException("no acces", HttpStatus.FORBIDDEN, null);
+            throw new APIException("Forbidden!", HttpStatus.FORBIDDEN, null);
         }
         return account;
     }

@@ -16,7 +16,6 @@ import nl.inholland.codegeneration.services.AuthenticateService;
 @RequestMapping(path = "/authenticate")
 @RequiredArgsConstructor
 public class AuthenticationController {
-
     private final AuthenticateService authenticateService;
 
     @PostMapping("/register")

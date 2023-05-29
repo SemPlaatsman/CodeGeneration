@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;

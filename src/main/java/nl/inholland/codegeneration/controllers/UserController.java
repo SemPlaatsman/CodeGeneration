@@ -2,6 +2,7 @@ package nl.inholland.codegeneration.controllers;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
@@ -57,14 +58,14 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> add(@RequestBody UserRequestDTO user) {
+    public ResponseEntity<?> add(@RequestBody @Valid UserRequestDTO user) {
         UserResponseDTO addedUser = userService.add(user);
         return ResponseEntity.status(201).body(addedUser);
     }
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> update(@RequestBody UserRequestDTO user, @PathVariable Long id) {
+    public ResponseEntity<?> update(@RequestBody @Valid UserRequestDTO user, @PathVariable Long id) {
         UserResponseDTO updatedUser = userService.update(user, id);
         return ResponseEntity.status(200).body(updatedUser);
     }

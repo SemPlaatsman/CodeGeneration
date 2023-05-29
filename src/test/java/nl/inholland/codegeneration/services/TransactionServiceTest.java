@@ -79,7 +79,7 @@ public class TransactionServiceTest {
 
     @Test
     void testGetAllTransactions() {
-        when(transactionRepository.findAll(any(), any()))
+        when(transactionRepository.findAll())
                 .thenReturn(Collections.singletonList(transaction));
         when(transactionDTOMapper.toResponseDTO.apply(transaction)).thenReturn(transactionResponseDTO);
 

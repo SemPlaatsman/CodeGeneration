@@ -19,8 +19,11 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import javax.management.relation.Role;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -48,7 +51,9 @@ public class UserControllerTest {
     @BeforeEach
     void setup() {
         User user = new User();
-        userRequestDTO = new UserRequestDTO(1, "test", "test", "test", "test", "test", "test", LocalDate.now());
+        List<Integer> roles = new ArrayList<>();
+        roles.add(1);
+        userRequestDTO = new UserRequestDTO(roles, "test", "test", "test", "test", "test", "test", LocalDate.now());
         userResponseDTO = new UserResponseDTO(user);
         account = new Account();
     }
@@ -75,7 +80,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void testGetAllAccountsById() {
+    void testGetAllAccountsById() throws APIException {
         when(accountService.getAllByUserId(anyLong())).thenReturn(Collections.singletonList(account));
 
         assertEquals(ResponseEntity.status(200).body(Collections.singletonList(account)),

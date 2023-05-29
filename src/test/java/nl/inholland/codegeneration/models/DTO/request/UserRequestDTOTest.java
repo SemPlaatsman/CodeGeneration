@@ -4,13 +4,16 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.ArrayList;
 
 public class UserRequestDTOTest {
 
     @Test
     public void testConstructor_setsFieldsCorrectly() {
         // Given
-        int role = 1;
+        List<Integer> roles = new ArrayList<>();
+        roles.add(1);
         String username = "testUser";
         String password = "testPassword";
         String firstName = "John";
@@ -20,10 +23,10 @@ public class UserRequestDTOTest {
         LocalDate birthdate = LocalDate.now();
 
         // When
-        UserRequestDTO dto = new UserRequestDTO(role, username, password, firstName, lastName, email, phoneNumber, birthdate);
+        UserRequestDTO dto = new UserRequestDTO(roles, username, password, firstName, lastName, email, phoneNumber, birthdate);
 
         // Then
-        assertEquals(dto.roles(), role);
+        assertEquals(dto.roles(), roles);
         assertEquals(dto.username(), username);
         assertEquals(dto.password(), password);
         assertEquals(dto.firstName(), firstName);

@@ -48,7 +48,7 @@ public class UserControllerTest {
     @BeforeEach
     void setup() {
         User user = new User();
-        userRequestDTO = new UserRequestDTO(1, "test", "test", "test", "test", "test", "test", LocalDate.now());
+        userRequestDTO = new UserRequestDTO(List.of(1), "test", "test", "test", "test", "test", "test", LocalDate.now());
         userResponseDTO = new UserResponseDTO(user);
         account = new Account();
     }

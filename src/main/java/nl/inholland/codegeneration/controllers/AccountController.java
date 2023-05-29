@@ -9,6 +9,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.EqualsAndHashCode.Include;
 
+import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -114,8 +115,6 @@ public class AccountController {
         CustomerIbanCheck(user, iban);
         BigDecimal balance = accountService.getBalance(iban);
         return ResponseEntity.status(200).body(balance);
-
-
     }
 
     private Account CustomerIbanCheck(User user, String iban) throws APIException {

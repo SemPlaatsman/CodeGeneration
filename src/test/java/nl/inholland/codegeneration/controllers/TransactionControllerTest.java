@@ -1,3 +1,5 @@
+package nl.inholland.codegeneration.controllers;
+
 import nl.inholland.codegeneration.controllers.TransactionController;
 import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import nl.inholland.codegeneration.services.TransactionService;

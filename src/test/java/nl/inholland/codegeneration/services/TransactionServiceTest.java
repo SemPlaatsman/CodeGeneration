@@ -11,11 +11,14 @@ import nl.inholland.codegeneration.repositories.TransactionRepository;
 import nl.inholland.codegeneration.services.mappers.TransactionDTOMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -23,12 +26,12 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Optional;
 
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class TransactionServiceTest {
-
     @InjectMocks
     private TransactionService transactionService;
 
@@ -39,52 +42,64 @@ public class TransactionServiceTest {
     private TransactionDTOMapper transactionDTOMapper;
 
     @Mock
+    private TransactionRequestDTO transactionRequestDTO;
+    
+    @Mock
     private TransactionResponseDTO transactionResponseDTO;
 
     private Transaction transaction;
     private User user;
     private Account accountFrom;
     private Account accountTo;
-    private QueryParams queryParams;
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         user = new User();
         user.setTransactionLimit(BigDecimal.valueOf(1000));
-
+    
         accountFrom = new Account();
         accountFrom.setUser(user);
         accountFrom.setIsDeleted(false);
         accountFrom.setBalance(BigDecimal.valueOf(2000));
         accountFrom.setAbsoluteLimit(BigDecimal.valueOf(500));
         accountFrom.setAccountType(AccountType.CURRENT);
-
+    
         accountTo = new Account();
         accountTo.setUser(user);
         accountTo.setIsDeleted(false);
-
+    
         transaction = new Transaction();
         transaction.setAccountFrom(accountFrom);
         transaction.setAccountTo(accountTo);
         transaction.setAmount(BigDecimal.valueOf(500));
-
+    
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null));
-
-        queryParams = new QueryParams();
-        queryParams.setPage(0);
-        queryParams.setLimit(5);
+    
     }
 
     @Test
     void testGetAllTransactions() {
-        when(transactionRepository.findAll())
-                .thenReturn(Collections.singletonList(transaction));
+        // Create QueryParams
+        QueryParams queryParams = new QueryParams();
+        queryParams.setPage(0);
+        queryParams.setLimit(5);
+    
+        // Build Specification and Pageable
+        Specification<Transaction> spec = queryParams.buildFilter();
+        PageRequest pageable = PageRequest.of(queryParams.getPage(), queryParams.getLimit());
+    
+        // Create a Page with your single transaction
+        Page<Transaction> page = new PageImpl<>(Collections.singletonList(transaction));
+    
+        // Mock the call to findAll
+        when(transactionRepository.findAll(spec, pageable)).thenReturn(page);
+    
+        // Mock the call to toResponseDTO
         when(transactionDTOMapper.toResponseDTO.apply(transaction)).thenReturn(transactionResponseDTO);
-
+    
+        // Test the getAll method
         assertEquals(Collections.singletonList(transactionResponseDTO),
-                transactionService.getAll(null));
+                transactionService.getAll(queryParams));
     }
 
     @Test
@@ -95,6 +110,75 @@ public class TransactionServiceTest {
 
         assertEquals(transactionResponseDTO, transactionService.getById(1L));
     }
+    
+    // For add method, similar test cases can be written 
+}
+
+// public class TransactionServiceTest {
+
+//     @InjectMocks
+//     private TransactionService transactionService;
+
+//     @Mock
+//     private TransactionRepository transactionRepository;
+
+//     @Mock
+//     private TransactionDTOMapper transactionDTOMapper;
+
+//     @Mock
+//     private TransactionResponseDTO transactionResponseDTO;
+
+//     private Transaction transaction;
+//     private User user;
+//     private Account accountFrom;
+//     private Account accountTo;
+//     private QueryParams queryParams;
+
+//     @BeforeEach
+// public void setUp() {
+//     user = new User();
+//     user.setTransactionLimit(BigDecimal.valueOf(1000));
+
+//     accountFrom = new Account();
+//     accountFrom.setUser(user);
+//     accountFrom.setIsDeleted(false);
+//     accountFrom.setBalance(BigDecimal.valueOf(2000));
+//     accountFrom.setAbsoluteLimit(BigDecimal.valueOf(500));
+//     accountFrom.setAccountType(AccountType.CURRENT);
+
+//     accountTo = new Account();
+//     accountTo.setUser(user);
+//     accountTo.setIsDeleted(false);
+
+//     transaction = new Transaction();
+//     transaction.setAccountFrom(accountFrom);
+//     transaction.setAccountTo(accountTo);
+//     transaction.setAmount(BigDecimal.valueOf(500));
+
+//     SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null));
+
+//     queryParams = new QueryParams();
+//     queryParams.setPage(0);
+//     queryParams.setLimit(5);
+// }
+//     @Test
+//     void testGetAllTransactions() {
+//         when(transactionRepository.findAll())
+//                 .thenReturn(Collections.singletonList(transaction));
+//         when(transactionDTOMapper.toResponseDTO.apply(transaction)).thenReturn(transactionResponseDTO);
+
+//         assertEquals(Collections.singletonList(transactionResponseDTO),
+//                 transactionService.getAll(null));
+//     }
+
+//     @Test
+//     void testGetTransactionById() {
+//         when(transactionRepository.findById(any(Long.class)))
+//                 .thenReturn(Optional.of(transaction));
+//         when(transactionDTOMapper.toResponseDTO.apply(transaction)).thenReturn(transactionResponseDTO);
+
+//         assertEquals(transactionResponseDTO, transactionService.getById(1L));
+//     }
 
     // @Test
     // public void testGetAll() {
@@ -118,4 +202,4 @@ public class TransactionServiceTest {
     //     Transaction addedTransaction = transactionService.add(transaction);
     //     assertNotNull(addedTransaction);
     // }
-}
+// }

@@ -33,8 +33,6 @@ public class UserServiceTest {
     AccountRepository accountRepository;
     @Mock
     UserDTOMapper userDTOMapper;
-    @Mock
-    UserRequestDTO userRequestDTO;
     @InjectMocks
     UserService userService;
 
@@ -61,7 +59,8 @@ public class UserServiceTest {
     public void testAddUser() {
         List<Integer> roles = new ArrayList<>();
         roles.add(1);
-        UserRequestDTO userRequestDTO = new UserRequestDTO(roles, "test", "test", "test", "test", "test", "test", null);
+        UserRequestDTO userRequestDTO = new UserRequestDTO(roles, "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
+        // ... set other fields as needed
         User user = new User();
         when(userDTOMapper.toUser.apply(userRequestDTO)).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
@@ -73,7 +72,8 @@ public class UserServiceTest {
     public void testUpdateUser() {
         List<Integer> roles = new ArrayList<>();
         roles.add(1);
-        UserRequestDTO userRequestDTO = new UserRequestDTO(roles, "test", "test", "test", "test", "test", "test", null);
+        UserRequestDTO userRequestDTO = new UserRequestDTO(roles, "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
+        // ... set other fields as needed
         User user = new User();
         user.setId(1L);
         when(userDTOMapper.toUser.apply(userRequestDTO)).thenReturn(user);
@@ -85,9 +85,10 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateUser_invalidId() {
-        List<Integer> roles = new ArrayList<>();
+         List<Integer> roles = new ArrayList<>();
         roles.add(1);
-        UserRequestDTO userRequestDTO = new UserRequestDTO(roles, "test", "test", "test", "test", "test", "test", null);
+        UserRequestDTO userRequestDTO = new UserRequestDTO(roles, "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
+        // ... set other fields as needed
         User user = new User();
         user.setId(2L);
         when(userDTOMapper.toUser.apply(userRequestDTO)).thenReturn(user);

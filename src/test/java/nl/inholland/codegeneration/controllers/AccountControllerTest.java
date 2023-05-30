@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -72,6 +73,7 @@ public class AccountControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
     void getAllAccounts() throws Exception {
         Account account = new Account();
         User user = new User();
@@ -99,6 +101,7 @@ public class AccountControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
     void getAccountByIban() throws Exception {
         Account account = new Account();
         User user = new User();
@@ -120,6 +123,7 @@ public class AccountControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
     void insertAccount() throws Exception {
         Account account = new Account();
         User user = new User();
@@ -146,7 +150,8 @@ public class AccountControllerTest {
     }
 
     @Test
-void updateAccount() throws Exception {
+    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
+    void updateAccount() throws Exception {
     // Setup
     Account account = new Account();
     User user = new User();
@@ -185,6 +190,7 @@ void updateAccount() throws Exception {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
     void deleteAccount() throws Exception {
         String iban = "NL01INHO0000000001";
 
@@ -200,6 +206,7 @@ void updateAccount() throws Exception {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
     void getTransactions() throws Exception {
         // Create accounts
         Account accountFrom = new Account();
@@ -243,6 +250,7 @@ void updateAccount() throws Exception {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
     void getBalance() throws Exception {
     Account account = new Account();
     User user = new User();

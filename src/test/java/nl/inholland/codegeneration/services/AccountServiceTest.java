@@ -60,7 +60,7 @@ public class AccountServiceTest {
     @Test
     public void testInsertAccount() throws APIException {
         User user = new User();
-        Account account = new Account("iban123", AccountType.CURRENT, user, new BigDecimal("100.00"), new BigDecimal("500.00"), false);
+        Account account = new Account("NL06INHO0000000001", AccountType.CURRENT, user, new BigDecimal("100.00"), new BigDecimal("500.00"), false);
         when(accountRepository.save(any(Account.class))).thenReturn(account);
 
         Account savedAccount = accountService.insertAccount(account);
@@ -75,7 +75,7 @@ public class AccountServiceTest {
         Account savedAccountArgument = accountCaptor.getValue();
 
         // Assert that the saved account has the properties you expect
-        assertEquals("iban123", savedAccountArgument.getIban());
+        assertEquals("NL06INHO0000000001", savedAccountArgument.getIban());
         assertEquals(AccountType.CURRENT, savedAccountArgument.getAccountType());
         assertEquals(user, savedAccountArgument.getUser());
         assertEquals(new BigDecimal("100.00"), savedAccountArgument.getBalance());

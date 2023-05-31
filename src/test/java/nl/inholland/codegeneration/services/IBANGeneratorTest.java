@@ -28,7 +28,7 @@ public class IBANGeneratorTest {
     @Test
     public void testCalculateMod97() {
         // a sample valid IBAN
-        String iban = "NL01INHO0000000001";
+        String iban = "NL06INHO0000000001"; // the inholland iban doesnt work NL01INHO0000000001
         
         int expectedRemainder = 1; // The expected remainder when the IBAN is valid.
         
@@ -46,25 +46,23 @@ public class IBANGeneratorTest {
         }, "Should throw IdentifierGenerationException for an invalid IBAN length");
     }
 
-    @Test
-    public void testValidateIBAN() {
-        String validIban = "NL91INHO0123456789"; // a sample valid IBAN
-        String invalidIban = "NL00INHO0123456789"; // a sample invalid IBAN
-
-        assertTrue(ibanGenerator.validateIBAN(validIban), "Should return true for a valid IBAN");
-        assertFalse(ibanGenerator.validateIBAN(invalidIban), "Should return false for an invalid IBAN");
-    }
-
     // @Test
     // public void testValidateIBAN() {
-    // String validIban = "NL02ABNA0123456789"; // a sample valid IBAN
-    // String invalidIban = "NL00INHO0123456789"; // a sample invalid IBAN
+    //     String validIban = "NL91INHO0123456789"; // a sample valid IBAN
+    //     String invalidIban = "NL00INHO0123456789"; // a sample invalid IBAN
 
-    // assertTrue(ibanGenerator.validateIBAN(validIban), "Should return true for a
-    // valid IBAN");
-    // assertFalse(ibanGenerator.validateIBAN(invalidIban), "Should return false for
-    // an invalid IBAN");
+    //     assertTrue(ibanGenerator.validateIBAN(validIban), "Should return true for a valid IBAN");
+    //     assertFalse(ibanGenerator.validateIBAN(invalidIban), "Should return false for an invalid IBAN");
     // }
+
+    @Test
+    public void testValidateIBAN() {
+    String validIban = "NL02ABNA0123456789"; // a sample valid IBAN
+    String invalidIban = "NL00INHO0123456789"; // a sample invalid IBAN
+
+    assertTrue(ibanGenerator.validateIBAN(validIban), "Should return true for a valid IBAN");
+    assertFalse(ibanGenerator.validateIBAN(invalidIban), "Should return false for an invalid IBAN");
+    }
 
     @Test
     public void testValidateIBANWithException() {

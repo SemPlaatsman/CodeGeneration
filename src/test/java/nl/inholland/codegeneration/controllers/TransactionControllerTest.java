@@ -56,7 +56,7 @@ public class TransactionControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"EMPLOYEE", "CUSTOMER"})
     public void testAdd() throws Exception {
-        TransactionRequestDTO transactionRequestDTO = new TransactionRequestDTO("NL26INGB0002445588", "NL26INGB0002445589", new BigDecimal(100), "description");
+        TransactionRequestDTO transactionRequestDTO = new TransactionRequestDTO("NL01INHO0000000001", "NL01INHO0000000002", new BigDecimal(100), "description");
         // Fill the object according to your needs
         mockMvc.perform(post("/transactions")
                 .content(asJsonString(transactionRequestDTO))

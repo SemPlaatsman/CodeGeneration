@@ -46,7 +46,7 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"EMPLOYEE"})
     public void testGetAll() throws Exception {
-        mockMvc.perform(get("/users").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/usern:\ Cannot invoke "Object.getClas").contentType(MediaType.APPLICATION_JSON))
                .andExpect(status().isOk());
     }
     
@@ -67,7 +67,7 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"EMPLOYEE"})
     public void testAdd() throws Exception {
-        List<Integer> roles = new ArrayList<>();
+        List<@PositiveOrZero Integer> roles = new ArrayList<>();
         roles.add(1);
         UserRequestDTO user = new UserRequestDTO(roles, "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
         mockMvc.perform(post("/users")
@@ -79,7 +79,7 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"EMPLOYEE"})
     public void testUpdate() throws Exception {
-        List<Integer> roles = new ArrayList<>();
+        List<@PositiveOrZero Integer> roles = new ArrayList<>();
         roles.add(1);
         // List<Role> roles = new ArrayList<>();
         // roles.add(Role.EMPLOYEE);

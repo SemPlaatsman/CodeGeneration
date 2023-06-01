@@ -2,6 +2,7 @@ package nl.inholland.codegeneration.services;
 
 import nl.inholland.codegeneration.exceptions.APIException;
 import nl.inholland.codegeneration.models.QueryParams;
+import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
 import nl.inholland.codegeneration.repositories.AccountRepository;
@@ -58,9 +59,7 @@ public class UserServiceTest {
 
     @Test
     public void testAddUser() {
-        List<Integer> roles = new ArrayList<>();
-        roles.add(1);
-        UserRequestDTO userRequestDTO = new UserRequestDTO(roles, "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
+        UserRequestDTO userRequestDTO = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
         // ... set other fields as needed
         User user = new User();
         when(userDTOMapper.toUser.apply(userRequestDTO)).thenReturn(user);
@@ -73,7 +72,7 @@ public class UserServiceTest {
     public void testUpdateUser() {
         List<Integer> roles = new ArrayList<>();
         roles.add(1);
-        UserRequestDTO userRequestDTO = new UserRequestDTO(roles, "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
+        UserRequestDTO userRequestDTO = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
         // ... set other fields as needed
         User user = new User();
         user.setId(1L);
@@ -88,7 +87,7 @@ public class UserServiceTest {
     public void testUpdateUser_invalidId() {
          List<Integer> roles = new ArrayList<>();
         roles.add(1);
-        UserRequestDTO userRequestDTO = new UserRequestDTO(roles, "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
+        UserRequestDTO userRequestDTO = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
         // ... set other fields as needed
         User user = new User();
         user.setId(2L);

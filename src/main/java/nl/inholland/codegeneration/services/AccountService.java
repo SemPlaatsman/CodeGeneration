@@ -43,6 +43,7 @@ public class AccountService {
     }
 
     public List<AccountResponseDTO> getAllByUserId(Long request) throws APIException {
+
         if (!userRepository.existsById(request)) {
             throw new APIException("not users found", HttpStatus.NOT_FOUND, LocalDateTime.now());
         }

@@ -8,7 +8,7 @@
 
 ### GET        /accounts/{iban}/transactions -> Customer
 
-- [x] If called by Customer; check if iban in url belongs to userId in JWT.
+- [ ] If called by Customer; check if iban in url belongs to userId in JWT.
 
 ### GET        /accounts/{iban}/balance -> Customer
 

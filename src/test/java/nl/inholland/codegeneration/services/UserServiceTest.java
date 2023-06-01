@@ -2,6 +2,7 @@ package nl.inholland.codegeneration.services;
 
 import nl.inholland.codegeneration.exceptions.APIException;
 import nl.inholland.codegeneration.models.QueryParams;
+import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
 import nl.inholland.codegeneration.repositories.AccountRepository;
@@ -14,12 +15,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.Optional;
+import jakarta.persistence.EntityNotFoundException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -54,7 +59,8 @@ public class UserServiceTest {
 
     @Test
     public void testAddUser() {
-        UserRequestDTO userRequestDTO = new UserRequestDTO();
+        UserRequestDTO userRequestDTO = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
+        // ... set other fields as needed
         User user = new User();
         when(userDTOMapper.toUser.apply(userRequestDTO)).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
@@ -64,7 +70,10 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateUser() {
-        UserRequestDTO userRequestDTO = new UserRequestDTO();
+        List<Integer> roles = new ArrayList<>();
+        roles.add(1);
+        UserRequestDTO userRequestDTO = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
+        // ... set other fields as needed
         User user = new User();
         user.setId(1L);
         when(userDTOMapper.toUser.apply(userRequestDTO)).thenReturn(user);
@@ -76,7 +85,10 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateUser_invalidId() {
-        UserRequestDTO userRequestDTO = new UserRequestDTO();
+         List<Integer> roles = new ArrayList<>();
+        roles.add(1);
+        UserRequestDTO userRequestDTO = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
+        // ... set other fields as needed
         User user = new User();
         user.setId(2L);
         when(userDTOMapper.toUser.apply(userRequestDTO)).thenReturn(user);

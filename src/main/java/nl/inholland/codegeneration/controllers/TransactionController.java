@@ -2,6 +2,7 @@ package nl.inholland.codegeneration.controllers;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
@@ -25,7 +26,8 @@ import nl.inholland.codegeneration.services.TransactionService;
 @RequestMapping(path = "/transactions")
 @RequiredArgsConstructor
 public class TransactionController {
-    private final TransactionService transactionService;
+
+    private TransactionService transactionService;
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -46,7 +48,7 @@ public class TransactionController {
 
     @PreAuthorize("hasAuthority('EMPLOYEE') OR (hasAuthority('CUSTOMER') AND #transaction.accountFrom.user.id == authentication.principal.id)")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> add(@RequestBody TransactionRequestDTO transactionRequestDTO) {
+    public ResponseEntity<?> add(@RequestBody @Valid TransactionRequestDTO transactionRequestDTO) {
         TransactionResponseDTO addedTransaction = transactionService.add(transactionRequestDTO);
         return ResponseEntity.status(201).body(addedTransaction);
     }

@@ -3,6 +3,9 @@ package nl.inholland.codegeneration.services;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -45,6 +48,8 @@ public class AuthenticateServiceTest {
 
     @Test
     void testRegister() {
+        List<Role> roles = new ArrayList<>();
+        roles.add(Role.CUSTOMER);
         RegisterRequest registerRequest = new RegisterRequest();
         registerRequest.setUsername("user");
         registerRequest.setPassword("pass");
@@ -53,7 +58,7 @@ public class AuthenticateServiceTest {
         User user = new User();
         user.setUsername(registerRequest.getUsername());
         user.setPassword(registerRequest.getPassword());
-        user.setRoles(Role.CUSTOMER);
+        user.setRoles(roles);
 
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(jwtService.generateToken(any(User.class))).thenReturn("token");

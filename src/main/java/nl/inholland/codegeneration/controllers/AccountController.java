@@ -74,6 +74,7 @@ public class AccountController {
         Account addedAccount = accountService.insertAccount(account);
         return ResponseEntity.status(201).body(addedAccount);
 
+
     }
 
     // put /accounts/{iban}
@@ -92,6 +93,7 @@ public class AccountController {
     @DeleteMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteAccount(@PathVariable("iban") String iban) throws APIException {
         accountService.deleteAccount(iban);
+
         return ResponseEntity.status(204).body(null);
     }
 

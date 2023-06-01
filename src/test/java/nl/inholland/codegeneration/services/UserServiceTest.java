@@ -14,11 +14,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
-import java.util.Optional;
+import jakarta.persistence.EntityNotFoundException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -53,7 +57,10 @@ public class UserServiceTest {
 
     @Test
     public void testAddUser() {
-        UserRequestDTO userRequestDTO = new UserRequestDTO();
+        List<Integer> roles = new ArrayList<>();
+        roles.add(1);
+        UserRequestDTO userRequestDTO = new UserRequestDTO(roles, "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
+        // ... set other fields as needed
         User user = new User();
         when(userDTOMapper.toUser.apply(userRequestDTO)).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
@@ -63,7 +70,10 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateUser() {
-        UserRequestDTO userRequestDTO = new UserRequestDTO();
+        List<Integer> roles = new ArrayList<>();
+        roles.add(1);
+        UserRequestDTO userRequestDTO = new UserRequestDTO(roles, "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
+        // ... set other fields as needed
         User user = new User();
         user.setId(1L);
         when(userDTOMapper.toUser.apply(userRequestDTO)).thenReturn(user);
@@ -75,7 +85,10 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateUser_invalidId() {
-        UserRequestDTO userRequestDTO = new UserRequestDTO();
+         List<Integer> roles = new ArrayList<>();
+        roles.add(1);
+        UserRequestDTO userRequestDTO = new UserRequestDTO(roles, "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
+        // ... set other fields as needed
         User user = new User();
         user.setId(2L);
         when(userDTOMapper.toUser.apply(userRequestDTO)).thenReturn(user);

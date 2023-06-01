@@ -44,10 +44,11 @@ public class AccountService {
        if(account.getUser().getIsDeleted() ==true){
         throw new APIException("unauthorized", HttpStatus.UNAUTHORIZED, LocalDateTime.now());
        }
-        return accountRepository.save(
-            new Account(null, account.getAccountType(), account.getUser(),null, account.getAbsoluteLimit(),null)
-            );
-
+       Account _account = new Account();
+       _account.setAccountType(account.getAccountType());
+       _account.setUser(account.getUser());
+       _account.setAbsoluteLimit(account.getAbsoluteLimit());
+        return accountRepository.save(_account);
     }
 
     public Optional<Account> getAccountByIban(String iban) throws APIException {
@@ -72,11 +73,8 @@ public class AccountService {
           
             if (_account.isPresent()&&user.isPresent()) {
             
-                _account.get().setUser(user.get());
-                _account.get().setIban(Iban);
                 _account.get().setAccountType(account.getAccountType());
                 _account.get().setUser(account.getUser());
-                _account.get().setBalance(account.getBalance());
                 _account.get().setAbsoluteLimit(account.getAbsoluteLimit());
 
 

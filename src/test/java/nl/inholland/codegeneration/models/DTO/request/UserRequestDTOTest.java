@@ -5,13 +5,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.ArrayList;
 
 public class UserRequestDTOTest {
 
     @Test
     public void testConstructor_setsFieldsCorrectly() {
         // Given
-        List<Integer> roles = List.of(1);
+        List<Integer> roles = new ArrayList<>();
+        roles.add(1);
         String username = "testUser";
         String password = "testPassword";
         String firstName = "John";

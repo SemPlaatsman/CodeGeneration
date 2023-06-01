@@ -26,7 +26,8 @@ import nl.inholland.codegeneration.services.TransactionService;
 @RequestMapping(path = "/transactions")
 @RequiredArgsConstructor
 public class TransactionController {
-    private final TransactionService transactionService;
+
+    private TransactionService transactionService;
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

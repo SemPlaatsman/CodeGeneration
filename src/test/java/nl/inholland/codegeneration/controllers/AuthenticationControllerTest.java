@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -43,6 +44,9 @@ public class AuthenticationControllerTest {
     @MockBean
     private AuthenticateService authenticateService;
 
+    @MockBean
+    private JwtService jwtService;
+
     private String token;
 
     @BeforeEach
@@ -63,6 +67,7 @@ public class AuthenticationControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
     void testRegister() throws Exception {
         // Given
         RegisterRequest registerRequest = new RegisterRequest();
@@ -81,6 +86,7 @@ public class AuthenticationControllerTest {
     }
     
     @Test
+    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
     void testLogin() throws Exception {
         // Given
         AuthenticationRequest loginRequest = new AuthenticationRequest();

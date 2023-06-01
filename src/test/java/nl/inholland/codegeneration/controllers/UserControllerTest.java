@@ -5,9 +5,15 @@ import nl.inholland.codegeneration.services.AccountService;
 import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -33,7 +39,7 @@ public class UserControllerTest {
     
     @Mock
     private AccountService accountService;
-
+    
     private MockMvc mockMvc;
 
     @BeforeEach
@@ -46,7 +52,7 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"EMPLOYEE"})
     public void testGetAll() throws Exception {
-        mockMvc.perform(get("/usern:\ Cannot invoke "Object.getClas").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/users").contentType(MediaType.APPLICATION_JSON))
                .andExpect(status().isOk());
     }
     
@@ -67,7 +73,7 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"EMPLOYEE"})
     public void testAdd() throws Exception {
-        List<@PositiveOrZero Integer> roles = new ArrayList<>();
+        List<Integer> roles = new ArrayList<>();
         roles.add(1);
         UserRequestDTO user = new UserRequestDTO(roles, "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
         mockMvc.perform(post("/users")
@@ -79,7 +85,7 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"EMPLOYEE"})
     public void testUpdate() throws Exception {
-        List<@PositiveOrZero Integer> roles = new ArrayList<>();
+        List<Integer> roles = new ArrayList<>();
         roles.add(1);
         // List<Role> roles = new ArrayList<>();
         // roles.add(Role.EMPLOYEE);

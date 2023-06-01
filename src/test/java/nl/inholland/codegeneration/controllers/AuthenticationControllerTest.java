@@ -44,9 +44,6 @@ public class AuthenticationControllerTest {
     @MockBean
     private AuthenticateService authenticateService;
 
-    @MockBean
-    private JwtService jwtService;
-
     private String token;
 
     @BeforeEach

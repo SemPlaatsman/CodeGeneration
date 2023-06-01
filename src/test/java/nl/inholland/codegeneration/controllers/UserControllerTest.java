@@ -39,7 +39,7 @@ public class UserControllerTest {
     
     @Mock
     private AccountService accountService;
-    
+
     private MockMvc mockMvc;
 
     @BeforeEach

@@ -51,7 +51,7 @@ public class AccountController {
             throws Exception {
         QueryParams queryParams = new QueryParams(Transaction.class);
         queryParams.setFilter(filterQuery);
-        List<Account> accounts = accountService.getAll(queryParams);
+        List<AccountResponseDTO> accounts = accountService.getAll(queryParams);
         return ResponseEntity.status(200).body(accounts);
     }
 
@@ -59,35 +59,27 @@ public class AccountController {
     @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAccountByIban(@PathVariable("iban") String iban) throws APIException {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Account account = CustomerIbanCheck(user, iban);
+        // Account account = CustomerIbanCheck(user, iban);
+        
+        AccountResponseDTO account = accountService.getAccountByIban(iban);
         return ResponseEntity.status(200).body(account);
     }
 
     // post /accounts
     @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> insertAccount(@RequestBody @Valid Account account) throws APIException {
+    public ResponseEntity<?> insertAccount(@RequestBody @Valid AccountRequestDTO account) throws APIException {
 
-        User user = ((Optional<User>) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-                .orElseThrow(() -> new APIException("User not found", HttpStatus.UNAUTHORIZED, null));
-    
-        CustomerIbanCheck(user, account.getIban());
-
-        account.setUser(user);
-        Account addedAccount = accountService.insertAccount(account);
+        AccountResponseDTO addedAccount = accountService.insertAccount(account);
         return ResponseEntity.status(201).body(addedAccount);
-
-
     }
 
     // put /accounts/{iban}
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @PutMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateAccount(@RequestBody AccountRequestDTO account, @PathVariable("iban") String iban)
+    public ResponseEntity<?> updateAccount(@RequestBody @Valid AccountRequestDTO account, @PathVariable("iban") String iban)
             throws APIException {
         AccountResponseDTO updatedAccount = accountService.updateAccount(account, iban);
-
         return ResponseEntity.status(200).body(updatedAccount);
 
     }
@@ -97,7 +89,6 @@ public class AccountController {
     @DeleteMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteAccount(@PathVariable("iban") String iban) throws APIException {
         accountService.deleteAccount(iban);
-
         return ResponseEntity.status(204).body(null);
     }
 
@@ -106,7 +97,6 @@ public class AccountController {
     @GetMapping(path = "/{iban}/transactions", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getTransactions(@PathVariable("iban") String iban) throws APIException {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CustomerIbanCheck(user, iban);
         List<TransactionResponseDTO> accounts = accountService.getTransactions(iban);
         return ResponseEntity.status(200).body(accounts);
     }
@@ -121,12 +111,5 @@ public class AccountController {
         return ResponseEntity.status(200).body(balance);
     }
     //TODO move to service
-    private Account CustomerIbanCheck(User user, String iban) throws APIException {
-        Account account = accountService.getAccountByIban(iban)
-                .orElseThrow(() -> new APIException("Account not found", HttpStatus.NOT_FOUND, LocalDateTime.now()));
-        if (account.getUser() != user && user.getRoles().contains(Role.CUSTOMER)) {
-            throw new APIException("Forbidden!", HttpStatus.FORBIDDEN, null);
-        }
-        return account;
-    }
+ 
 }

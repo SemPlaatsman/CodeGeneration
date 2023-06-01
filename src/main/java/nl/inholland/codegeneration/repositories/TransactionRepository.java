@@ -17,6 +17,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
     @Query("SELECT t FROM Transaction t WHERE t.accountFrom.iban = :iban OR t.accountTo.iban = :iban")
     List<Transaction> findAllByAccountFromIban(@Param("iban") String iban);
 
+
     @Query(value = "SELECT SUM(t.amount) FROM Transaction t WHERE TRUNC(t.timestamp) = CURDATE() AND t.accountFrom.user.id = :id")
     Optional<BigDecimal> findDailyTransactionsValueOfUser(@Param("id") Long id);
 }

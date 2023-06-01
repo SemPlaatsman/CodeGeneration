@@ -1,5 +1,6 @@
 package nl.inholland.codegeneration.controllers;
 
+import nl.inholland.codegeneration.configuration.SecurityConfig;
 import nl.inholland.codegeneration.configuration.apiTestConfiguration;
 import nl.inholland.codegeneration.models.Account;
 import nl.inholland.codegeneration.models.Transaction;
@@ -11,7 +12,9 @@ import nl.inholland.codegeneration.services.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -46,8 +49,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 @WebMvcTest(UserController.class)
+//@AutoConfigureMockMvc(addFilters = false)
 @Import(apiTestConfiguration.class)
 public class AccountControllerTest {
 
@@ -73,7 +77,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
+    @WithMockUser(username = "user", authorities = {"EMPLOYEE"})
     void getAllAccounts() throws Exception {
         Account account = new Account();
         User user = new User();
@@ -101,7 +105,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
+    @WithMockUser(username = "user", authorities = {"EMPLOYEE"})
     void getAccountByIban() throws Exception {
         Account account = new Account();
         User user = new User();
@@ -123,7 +127,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
+    @WithMockUser(username = "user", authorities = {"EMPLOYEE"})
     void insertAccount() throws Exception {
         Account account = new Account();
         User user = new User();
@@ -150,7 +154,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
+    @WithMockUser(username = "user", authorities = {"EMPLOYEE"})
     void updateAccount() throws Exception {
     // Setup
     Account account = new Account();
@@ -190,7 +194,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
+    @WithMockUser(username = "user", authorities = {"EMPLOYEE"})
     void deleteAccount() throws Exception {
         String iban = "NL01INHO0000000001";
 
@@ -206,7 +210,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
+    @WithMockUser(username = "user", authorities = {"EMPLOYEE"})
     void getTransactions() throws Exception {
         // Create accounts
         Account accountFrom = new Account();
@@ -250,7 +254,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
+    @WithMockUser(username = "user", authorities = {"EMPLOYEE"})
     void getBalance() throws Exception {
     Account account = new Account();
     User user = new User();

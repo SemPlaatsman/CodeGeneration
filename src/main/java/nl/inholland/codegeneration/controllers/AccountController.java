@@ -61,7 +61,7 @@ public class AccountController {
     }
 
     // post /accounts
-    @PreAuthorize("hasAuthority('CUSTOMER')")
+    @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> insertAccount(@RequestBody Account account) throws APIException {
 
@@ -89,7 +89,7 @@ public class AccountController {
     }
 
     // delete /accounts/{iban}
-    @PreAuthorize("hasAuthority('CUSTOMER')")
+    @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
     @DeleteMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteAccount(@PathVariable("iban") String iban) throws APIException {
         accountService.deleteAccount(iban);
@@ -98,7 +98,7 @@ public class AccountController {
     }
 
     // get /accounts/{iban}/transactions
-    @PreAuthorize("hasAuthority('CUSTOMER')")
+    @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{iban}/transactions", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getTransactions(@PathVariable("iban") String iban) throws APIException {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -108,7 +108,7 @@ public class AccountController {
     }
 
     // get /accounts/{id}/balance
-    @PreAuthorize("hasAuthority('CUSTOMER')")
+    @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{iban}/balance", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getBalance(@PathVariable("iban") String iban) throws APIException {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

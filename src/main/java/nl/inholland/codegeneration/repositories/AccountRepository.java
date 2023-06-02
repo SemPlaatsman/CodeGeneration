@@ -12,7 +12,7 @@ import nl.inholland.codegeneration.models.Account;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, String>, JpaSpecificationExecutor<Account> {
 
-    List<Account> findAllAndIsDeletedFalse();
+    List<Account> findAllByIsDeletedFalse();
 
     Optional<Account> findByIbanAndIsDeletedFalse(String iban);
 

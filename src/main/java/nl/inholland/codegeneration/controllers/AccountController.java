@@ -35,6 +35,7 @@ import nl.inholland.codegeneration.models.Transaction;
 import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.models.DTO.request.AccountRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.AccountResponseDTO;
+import nl.inholland.codegeneration.models.DTO.response.BalanceResponseDTO;
 import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
 import nl.inholland.codegeneration.services.AccountService;
 
@@ -105,9 +106,8 @@ public class AccountController {
     @GetMapping(path = "/{iban}/balance", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getBalance(@PathVariable("iban") String iban) throws APIException {
        
-        AccountResponseDTO balance = accountService.getBalance(iban);
+        BalanceResponseDTO balance = accountService.getBalance(iban);
         return ResponseEntity.status(200).body(balance);
     }
-    //TODO move to service
  
 }

@@ -20,6 +20,7 @@ import nl.inholland.codegeneration.models.Transaction;
 import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.models.DTO.request.AccountRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.AccountResponseDTO;
+import nl.inholland.codegeneration.models.DTO.response.BalanceResponseDTO;
 import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
 import nl.inholland.codegeneration.repositories.AccountRepository;
 import nl.inholland.codegeneration.repositories.TransactionRepository;
@@ -142,14 +143,14 @@ public class AccountService {
 
     }
 
-    public AccountResponseDTO getBalance(String iban) throws APIException {
+    public BalanceResponseDTO getBalance(String iban) throws APIException {
         Optional<Account> account = accountRepository.findByIbanAndIsDeletedFalse(iban);
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CustomerIbanCheck(user , account.get());
         if (account.isPresent()) {
-            Account updatedAccount = new Account();
+            CustomerIbanCheck(user , account.get());
+            Account updatedAccount = account.get();
             updatedAccount.setBalance(account.get().getBalance());
-            return  AccountDTOMapper.toResponseDTO.apply(updatedAccount);
+            return  AccountDTOMapper.toBalanceDTO.apply(updatedAccount);
         } else {
             throw new APIException("Account not found", HttpStatus.NOT_FOUND, LocalDateTime.now());
         }

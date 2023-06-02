@@ -13,17 +13,23 @@ public record UserRequestDTO(
 //    @PositiveOrZero(message = "All role ID's must be zero or above!")
     List<Integer> roles,
     @NotNull(message = "Username cannot be null!")
+    @NotEmpty(message = "Username cannot be empty!")
     String username,
     @NotNull(message = "Password cannot be null!")
+    @NotEmpty(message = "Password cannot be empty!")
     String password,
     @NotNull(message = "First name cannot be null!")
+    @NotEmpty(message = "First name cannot be empty!")
     String firstName,
     @NotNull(message = "Last name cannot be null!")
+    @NotEmpty(message = "Last name cannot be empty!")
     String lastName,
     @NotNull(message = "Email cannot be null!")
+    @NotEmpty(message = "Email cannot be empty!")
     @Email(message = "Invalid email address!")
     String email,
     @NotNull(message = "Phone number cannot be null!")
+    @NotEmpty(message = "Phone number cannot be empty!")
     String phoneNumber,
     @NotNull(message = "Birthdate cannot be null!")
     LocalDate birthdate

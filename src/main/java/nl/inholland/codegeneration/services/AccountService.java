@@ -47,7 +47,12 @@ public class AccountService {
         if (!userRepository.existsById(request)) {
             throw new APIException("not users found", HttpStatus.NOT_FOUND, LocalDateTime.now());
         }
-        return (List<AccountResponseDTO>) accountRepository.findAllByUserId(request).stream().map(AccountDTOMapper.toResponseDTO).collect(Collectors.toList());
+        List<Account> accounts = accountRepository.findAllByUserIdAndIsDeletedFalse(request);
+        // if (accounts.isEmpty()) {
+        //     throw new APIException("not accounts found", HttpStatus.NOT_FOUND, LocalDateTime.now());
+        // }
+
+        return (List<AccountResponseDTO>) accounts.stream().map(AccountDTOMapper.toResponseDTO).collect(Collectors.toList());
     }
 
     public AccountResponseDTO insertAccount(AccountRequestDTO request) throws APIException {
@@ -64,9 +69,9 @@ public class AccountService {
 
     public AccountResponseDTO getAccountByIban(String iban) throws APIException {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Optional<Account> account = accountRepository.findByIban(iban);
-        CustomerIbanCheck(user, account.get());
+        Optional<Account> account = accountRepository.findByIbanAndIsDeletedFalse(iban);
         if (account.isPresent()) {
+            CustomerIbanCheck(user, account.get());
             return AccountDTOMapper.toResponseDTO.apply(account.get());
         } else {
             throw new APIException("Account not found", HttpStatus.NOT_FOUND, LocalDateTime.now());
@@ -82,7 +87,7 @@ public class AccountService {
             throw new APIException("Unauthorized", HttpStatus.BAD_REQUEST, LocalDateTime.now());
         }
 
-        Optional<Account> updatedAccount = accountRepository.findByIban(Iban);
+        Optional<Account> updatedAccount = accountRepository.findByIbanAndIsDeletedFalse(Iban);
 
         Optional<User> user = userRepository.findById(account.getUser().getId());
 
@@ -101,9 +106,16 @@ public class AccountService {
 
     public void deleteAccount(String iban) throws APIException {
 
-        Optional<Account> addedAccount = accountRepository.findByIban(iban);
+        Optional<Account> addedAccount = accountRepository.findByIbanAndIsDeletedFalse(iban);
         if (addedAccount.isPresent()) {
-            accountRepository.delete(addedAccount.get());
+            Account account = addedAccount.get();
+            if(account.getIsDeleted())
+            {
+                throw new APIException("account whit iban: " + iban + " does not exist", HttpStatus.NOT_FOUND,
+                LocalDateTime.now());
+            }
+            account.setIsDeleted(true);
+            accountRepository.save(account);
         } else {
             throw new APIException("account whit iban: " + iban + " not found", HttpStatus.NOT_FOUND,
                     LocalDateTime.now());
@@ -112,8 +124,16 @@ public class AccountService {
     }
 
     public List<TransactionResponseDTO> getTransactions(String iban) throws APIException {
-        List<Transaction> accounts = transactionRepository.findAllByAccountFromIban(iban);
-        // maybe make a  query  that only gets transactions that have the same acount id as the user
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<Transaction> accounts;
+        if(user.getRoles().contains(Role.CUSTOMER)){
+              accounts = transactionRepository.findAllByAccountFromIbanAndUserId(iban, user.getId());
+        }
+        else{
+      
+            accounts = transactionRepository.findAllByAccountFromIban(iban);
+        }
+
         if (accounts.isEmpty()) {
             throw new APIException("No transactions for " + iban, HttpStatus.NOT_FOUND, LocalDateTime.now());
         }
@@ -123,7 +143,7 @@ public class AccountService {
     }
 
     public AccountResponseDTO getBalance(String iban) throws APIException {
-        Optional<Account> account = accountRepository.findByIban(iban);
+        Optional<Account> account = accountRepository.findByIbanAndIsDeletedFalse(iban);
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         CustomerIbanCheck(user , account.get());
         if (account.isPresent()) {
@@ -138,8 +158,8 @@ public class AccountService {
 
     private Account CustomerIbanCheck(User user,  Account account) throws APIException {
        
-        if (account.getUser() != user && user.getRoles().contains(Role.CUSTOMER)) {
-            throw new APIException("Forbidden!", HttpStatus.FORBIDDEN, null);
+        if (account.getUser() != user && user.getRoles().contains(Role.CUSTOMER)&& !user.getRoles().contains(Role.EMPLOYEE)) {
+            throw new APIException("Forbidden!", HttpStatus.FORBIDDEN, LocalDateTime.now());
         }
         return account;
     }

@@ -96,7 +96,6 @@ public class AccountController {
     @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{iban}/transactions", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getTransactions(@PathVariable("iban") String iban) throws APIException {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<TransactionResponseDTO> accounts = accountService.getTransactions(iban);
         return ResponseEntity.status(200).body(accounts);
     }
@@ -105,9 +104,8 @@ public class AccountController {
     @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{iban}/balance", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getBalance(@PathVariable("iban") String iban) throws APIException {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CustomerIbanCheck(user, iban);
-        BigDecimal balance = accountService.getBalance(iban);
+       
+        AccountResponseDTO balance = accountService.getBalance(iban);
         return ResponseEntity.status(200).body(balance);
     }
     //TODO move to service

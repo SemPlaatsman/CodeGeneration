@@ -7,6 +7,7 @@ import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.models.Account;
 import nl.inholland.codegeneration.models.AccountType;
 import nl.inholland.codegeneration.models.QueryParams;
+import nl.inholland.codegeneration.repositories.AccountRepository;
 import nl.inholland.codegeneration.repositories.TransactionRepository;
 import nl.inholland.codegeneration.services.mappers.TransactionDTOMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +31,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -64,8 +68,9 @@ public class TransactionServiceTest {
     }
 
     @Test
-    void testGetAllTransactions() {
+    void testGetAllTransactions() throws Exception {
         QueryParams queryParams = new QueryParams();
+        queryParams.setFilter("");
         queryParams.setPage(0);
         queryParams.setLimit(5);
 
@@ -114,15 +119,15 @@ public class TransactionServiceTest {
     }
 
     @Test
-void testGetTransactionByIdWithMapper() {
-    TransactionResponseDTO transactionResponseDTO = new TransactionResponseDTO(any()); // Initialize this according to your requirements
-    when(transactionRepository.findById(any(Long.class)))
+    void testGetTransactionByIdWithMapper() {
+        TransactionResponseDTO transactionResponseDTO = new TransactionResponseDTO(1L, LocalDateTime.now(), "NL06INHO0000000001", "johndoe", "NL05INHO0000000002", "sarawilson", new BigDecimal("20"), "test description"); // Initialize this according to your requirements
+        when(transactionRepository.findById(any(Long.class)))
             .thenReturn(Optional.of(transaction));
-    when(transactionDTOMapper.toResponseDTO.apply(any(Transaction.class)))
+        when(transactionDTOMapper.toResponseDTO.apply(any(Transaction.class)))
             .thenReturn(transactionResponseDTO);
 
-    assertEquals(transactionResponseDTO, transactionService.getById(1L));
-}
+        assertEquals(transactionResponseDTO, transactionService.getById(1L));
+    }
 
 }
 // @Test

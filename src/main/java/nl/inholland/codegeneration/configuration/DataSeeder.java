@@ -35,7 +35,7 @@ public class DataSeeder implements ApplicationRunner {
         @Override
         public void run(ApplicationArguments args) throws Exception {
                 // Users
-                userRepository.save(new User(null, List.of(Role.EMPLOYEE, Role.CUSTOMER), "johndoe", passwordEncoder.encode("john123"), "John",
+                userRepository.save(new User(null, List.of(Role.EMPLOYEE, Role.EMPLOYEE), "johndoe", passwordEncoder.encode("john123"), "John",
                                 "Doe", "john.doe@gmail.com",
                                 "0671122334", LocalDate.of(2003, 9, 1), new BigDecimal(1000), new BigDecimal(200),
                                 false));

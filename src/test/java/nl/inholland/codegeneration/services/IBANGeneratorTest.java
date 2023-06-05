@@ -24,7 +24,6 @@ public class IBANGeneratorTest {
         assertTrue(ibanGenerator.validateIBAN(iban), "Generated IBAN should be valid");
     }
 
-    //DOESNT WORK BECAUSE THE IBAN IS NOT VALID, BUT THE TEST WOULD BE CORRECT
     @Test
     public void testCalculateMod97() {
         // a sample valid IBAN
@@ -45,15 +44,6 @@ public class IBANGeneratorTest {
             ibanGenerator.calculateMod97(invalidIban);
         }, "Should throw IdentifierGenerationException for an invalid IBAN length");
     }
-
-    // @Test
-    // public void testValidateIBAN() {
-    //     String validIban = "NL91INHO0123456789"; // a sample valid IBAN
-    //     String invalidIban = "NL00INHO0123456789"; // a sample invalid IBAN
-
-    //     assertTrue(ibanGenerator.validateIBAN(validIban), "Should return true for a valid IBAN");
-    //     assertFalse(ibanGenerator.validateIBAN(invalidIban), "Should return false for an invalid IBAN");
-    // }
 
     @Test
     public void testValidateIBAN() {

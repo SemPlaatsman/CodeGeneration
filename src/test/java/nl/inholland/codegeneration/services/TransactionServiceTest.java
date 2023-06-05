@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -102,8 +103,16 @@ public class TransactionServiceTest {
         assertThatThrownBy(() -> transactionService.add(transactionRequestDTO)).isInstanceOf(InvalidDataAccessApiUsageException.class).hasMessage("Invalid bank account provided!");
     }
 
-    // Continue creating similar tests for the other scenarios (surpassing day limit, surpassing transaction limit, etc.)
-}
+    // @Test
+    // void testGetTransactionByIdWithMapper() {
+    //     TransactionResponseDTO transactionResponseDTO = new TransactionResponseDTO(1L, LocalDateTime.now(), "NL06INHO0000000001", "johndoe", "NL05INHO0000000002", "sarawilson", new BigDecimal("20"), "test description"); // Initialize this according to your requirements
+    //     when(transactionRepository.findById(any(Long.class)))
+    //         .thenReturn(Optional.of(transaction));
+    //     when(transactionDTOMapper.toResponseDTO.apply(any(Transaction.class)))
+    //         .thenReturn(transactionResponseDTO);
+
+    //     assertEquals(transactionResponseDTO, transactionService.getById(1L));
+    // }
 
 
 

@@ -91,7 +91,8 @@ public class UserServiceTest {
                 "email@example.com", "1234567890", LocalDate.now());
         // ... set other fields as needed
         User user = new User();
-        when(toUser.apply(userRequestDTO)).thenReturn(user);
+        user.setId(1L);
+        when(userDTOMapper.toUser.apply(userRequestDTO)).thenReturn(user);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
         userService.update(userRequestDTO, 1L);

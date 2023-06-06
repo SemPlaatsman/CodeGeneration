@@ -1,6 +1,7 @@
 package nl.inholland.codegeneration.services;
 
 import nl.inholland.codegeneration.exceptions.APIException;
+import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
 import nl.inholland.codegeneration.models.QueryParams;
 import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.User;
@@ -8,10 +9,13 @@ import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
 import nl.inholland.codegeneration.repositories.AccountRepository;
 import nl.inholland.codegeneration.repositories.UserRepository;
 import nl.inholland.codegeneration.services.mappers.UserDTOMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
@@ -25,6 +29,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -33,10 +39,19 @@ public class UserServiceTest {
     UserRepository userRepository;
     @Mock
     AccountRepository accountRepository;
-    @Mock
+
     UserDTOMapper userDTOMapper;
     @InjectMocks
     UserService userService;
+
+    @BeforeEach
+    public void setup() {
+        userDTOMapper = new UserDTOMapper();
+        userDTOMapper.toUser = Mockito.mock(Function.class);
+        userDTOMapper.toResponseDTO = Mockito.mock(Function.class);
+
+        userService = new UserService(userRepository, accountRepository, userDTOMapper);
+    }
 
     @Test
     public void testGetById_whenUserExists() {

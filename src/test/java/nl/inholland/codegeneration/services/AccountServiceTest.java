@@ -158,16 +158,16 @@ public class AccountServiceTest {
         account.setIban("NL01ABCD0000000001");
         Account savedAccount = new Account();
         AccountResponseDTO responseDTO = new AccountResponseDTO("NL01ABCD0000000001", 0, null, null, null);
-        when(AccountDTOMapper.toAccount.apply(requestDTO)).thenReturn(account);
+        when(accountDTOMapper.toAccount.apply(requestDTO)).thenReturn(account);
         when(accountRepository.save(account)).thenReturn(savedAccount);
-        when(AccountDTOMapper.toResponseDTO.apply(savedAccount)).thenReturn(responseDTO);
+        when(accountDTOMapper.toResponseDTO.apply(savedAccount)).thenReturn(responseDTO);
 
         AccountResponseDTO result = accountService.insertAccount(requestDTO);
 
         assertEquals(responseDTO, result);
         verify(accountRepository).save(account);
-        verify(AccountDTOMapper.toAccount).apply(requestDTO);
-        verify(AccountDTOMapper.toResponseDTO).apply(savedAccount);
+        verify(accountDTOMapper.toAccount).apply(requestDTO);
+        verify(accountDTOMapper.toResponseDTO).apply(savedAccount);
     }
 
     @Test

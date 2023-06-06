@@ -39,11 +39,10 @@ public class UserServiceTest {
     UserRepository userRepository;
     @Mock
     AccountRepository accountRepository;
-
     UserDTOMapper userDTOMapper;
     @InjectMocks
     UserService userService;
-
+  
     @BeforeEach
     public void setup() {
         userDTOMapper = new UserDTOMapper();
@@ -74,7 +73,8 @@ public class UserServiceTest {
 
     @Test
     public void testAddUser() {
-        UserRequestDTO userRequestDTO = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
+        UserRequestDTO userRequestDTO = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname",
+                "email@example.com", "1234567890", LocalDate.now());
         // ... set other fields as needed
         User user = new User();
         when(userDTOMapper.toUser.apply(userRequestDTO)).thenReturn(user);
@@ -87,11 +87,11 @@ public class UserServiceTest {
     public void testUpdateUser() {
         List<Integer> roles = new ArrayList<>();
         roles.add(1);
-        UserRequestDTO userRequestDTO = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
+        UserRequestDTO userRequestDTO = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname",
+                "email@example.com", "1234567890", LocalDate.now());
         // ... set other fields as needed
         User user = new User();
-        user.setId(1L);
-        when(userDTOMapper.toUser.apply(userRequestDTO)).thenReturn(user);
+        when(toUser.apply(userRequestDTO)).thenReturn(user);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
         userService.update(userRequestDTO, 1L);
@@ -100,9 +100,10 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateUser_invalidId() {
-         List<Integer> roles = new ArrayList<>();
+        List<Integer> roles = new ArrayList<>();
         roles.add(1);
-        UserRequestDTO userRequestDTO = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname", "email@example.com", "1234567890", LocalDate.now());
+        UserRequestDTO userRequestDTO = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname",
+                "email@example.com", "1234567890", LocalDate.now());
         // ... set other fields as needed
         User user = new User();
         user.setId(2L);

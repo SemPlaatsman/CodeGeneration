@@ -32,4 +32,8 @@ public class TransactionDTOMapper {
     };
 
     public Function<Transaction, TransactionResponseDTO> toResponseDTO = TransactionResponseDTO::new;
+
+    public TransactionResponseDTO convertToResponseDTO(Transaction transaction) {
+        return toResponseDTO.apply(transaction);
+    }
 }

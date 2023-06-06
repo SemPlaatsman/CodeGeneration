@@ -27,7 +27,7 @@ import nl.inholland.codegeneration.services.TransactionService;
 @RequiredArgsConstructor
 public class TransactionController {
 
-    private TransactionService transactionService;
+    private final TransactionService transactionService;
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

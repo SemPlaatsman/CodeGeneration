@@ -152,22 +152,31 @@ public class AccountServiceTest {
     }
 
     @Test
+    @WithMockUser(roles = {"EMPLOYEE"}, username = "user")
     public void testInsertAccount() throws APIException {
-        AccountRequestDTO requestDTO = new AccountRequestDTO(null, null, 0);
-        Account account = new Account();
-        account.setIban("NL01ABCD0000000001");
+
+        String iban = "NL88INHO0001204817";
+        User user = new User(1L, List.of(Role.CUSTOMER), "sarawilson", "sara123","Sara", "Wilson", "sara.wilson@yahoo.com",
+        "0612345678", LocalDate.of(1990, 11, 13), new BigDecimal(1000), new BigDecimal(200),false);
+        //make test account
+        Account account = new Account(iban, AccountType.CURRENT, user,new BigDecimal("120"), new BigDecimal("-1000"), false);
+        AccountRequestDTO requestDTO = new AccountRequestDTO(user.getId(), account.getAbsoluteLimit(), account.getAccountType().getValue());
+        
         Account savedAccount = new Account();
-        AccountResponseDTO responseDTO = new AccountResponseDTO("NL01ABCD0000000001", 0, null, null, null);
-        when(AccountDTOMapper.toAccount.apply(requestDTO)).thenReturn(account);
+        AccountResponseDTO responseDTO = new AccountResponseDTO(account.getIban(), account.getAccountType().getValue(), account.getUser().getUsername(), account.getBalance(), account.getAbsoluteLimit());
+
+        when(userRepository.existsById(user.getId())).thenReturn(true);
+        when(accountDTOMapper.toAccount.apply(requestDTO)).thenReturn(account);
         when(accountRepository.save(account)).thenReturn(savedAccount);
-        when(AccountDTOMapper.toResponseDTO.apply(savedAccount)).thenReturn(responseDTO);
+        when(accountDTOMapper.toResponseDTO.apply(savedAccount)).thenReturn(responseDTO);
+      
 
         AccountResponseDTO result = accountService.insertAccount(requestDTO);
 
         assertEquals(responseDTO, result);
         verify(accountRepository).save(account);
-        verify(AccountDTOMapper.toAccount).apply(requestDTO);
-        verify(AccountDTOMapper.toResponseDTO).apply(savedAccount);
+        verify(accountDTOMapper.toAccount).apply(requestDTO);
+        verify(accountDTOMapper.toResponseDTO).apply(savedAccount);
     }
 
     @Test

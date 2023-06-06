@@ -1,9 +1,13 @@
 package nl.inholland.codegeneration.security.response;
 
+import java.util.List;
+
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nl.inholland.codegeneration.models.Role;
 
 @Data
 @Builder
@@ -11,4 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthenticationResponse {
     private String token;
+    List<Role> roles;
+    String username;
+    String email;
 }

@@ -14,4 +14,5 @@ public record AccountResponseDTO(
     public AccountResponseDTO(Account account) {
         this(account.getIban(), account.getAccountType().getValue(), account.getUser().getUsername(), account.getBalance(), account.getAbsoluteLimit());
     }
+
 }

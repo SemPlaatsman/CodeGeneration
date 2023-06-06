@@ -17,6 +17,8 @@ import nl.inholland.codegeneration.models.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.commons.JUnitException;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -26,12 +28,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.List;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -40,6 +44,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+
 public class AccountServiceTest {
     @Mock
     private AccountRepository accountRepository;
@@ -52,6 +57,7 @@ public class AccountServiceTest {
     @Mock
     private TransactionDTOMapper transactionDTOMapper;
     
+    @InjectMocks
     private AccountService accountService;
     
     @BeforeEach
@@ -83,25 +89,21 @@ public class AccountServiceTest {
     @Test
     @WithMockUser(roles = {"EMPLOYEE"}, username = "user")
     public void testGetAccountByIban_whenAccountExists() throws APIException {
-        //make test account
-        String iban = "NL01ABCD0000000001";
-        Account account = new Account();
-        account.setIban(iban);
-        account.setBalance(new BigDecimal(0));
-        account.setAbsoluteLimit(new BigDecimal(0));
-        account.setIsDeleted(false);
-        account.setAccountType(AccountType.CURRENT);
-
         //make test user
-        User user = new User();
-        user.setId(1L);        
-        account.setUser(user);
+        User user = new User(null, List.of(Role.CUSTOMER), "sarawilson", "sara123","Sara", "Wilson", "sara.wilson@yahoo.com",
+        "0612345678", LocalDate.of(1990, 11, 13), new BigDecimal(1000), new BigDecimal(200),false);
+        
+        //make test account
+        String iban = "NL88INHO0001204817";
+        Account account = new Account(iban, AccountType.CURRENT, user,new BigDecimal("120"), new BigDecimal("-1000"), false);
+
+       
 
         AccountResponseDTO responseDTO = new AccountResponseDTO(iban, 0, iban, null, null);
-        //when the accountRepository is called with the iban, return the account
-        // when(accountRepository.findByIbanAndIsDeletedFalse(iban)).thenReturn(Optional.of(account));
-        //when the AccountDTOMapper is called with the account, return the responseDTO
-        // when(accountDTOMapper.toResponseDTO.apply(account)).thenReturn(responseDTO);
+        // when the accountRepository is called with the iban, return the account
+        when(accountRepository.findByIbanAndIsDeletedFalse(iban)).thenReturn(Optional.of(account));
+        // when the AccountDTOMapper is called with the account, return the responseDTO
+        when(accountDTOMapper.toResponseDTO.apply(account)).thenReturn(responseDTO);
 
         AccountResponseDTO result = accountService.getAccountByIban(iban);
 
@@ -110,7 +112,43 @@ public class AccountServiceTest {
         //check if the AccountDTOMapper is called once to asure that a responseDTO is returned
         verify(accountDTOMapper.toResponseDTO).apply(account);
         //check if the result is the same as the expected responseDTO
+        // assertEquals(responseDTO, result);
         assertEquals(responseDTO, result);
+
+    }
+
+    @Test
+    @WithMockUser(roles = {"EMPLOYEE"}, username = "user")
+    public void testGetAccountByIban_whenAccountDoesNotExists() throws APIException {
+
+        String iban = "NL88INHO0001204817";
+        String iban2 = "NL88INHO0001204818";
+
+        //make test user
+        User user = new User(1L, List.of(Role.CUSTOMER), "sarawilson", "sara123","Sara", "Wilson", "sara.wilson@yahoo.com",
+        "0612345678", LocalDate.of(1990, 11, 13), new BigDecimal(1000), new BigDecimal(200),false);
+        
+        //make test account
+    
+        Account account = new Account(iban2, AccountType.CURRENT, user,new BigDecimal("120"), new BigDecimal("-1000"), false);
+
+        //reponse to be expected
+        AccountResponseDTO responseDTO = new AccountResponseDTO(iban, 0, user.getUsername(), null, null);
+        AccountResponseDTO responseDTO2 = new AccountResponseDTO(iban2, 0, user.getUsername(), null, null);
+        // when the accountRepository is called with the iban, return the account
+        when(accountRepository.findByIbanAndIsDeletedFalse(iban)).thenReturn(Optional.of(account));
+        // when the AccountDTOMapper is called with the account, return the responseDTO
+        when(accountDTOMapper.toResponseDTO.apply(account)).thenReturn(responseDTO2);
+
+        AccountResponseDTO result = accountService.getAccountByIban(iban);
+
+        //check if the accountRepository is called once
+        verify(accountRepository).findByIbanAndIsDeletedFalse(iban);
+        //check if the AccountDTOMapper is called once to asure that a responseDTO is returned
+        verify(accountDTOMapper.toResponseDTO).apply(account);
+        //check if the result is the same as the expected responseDTO
+        assertNotEquals(responseDTO , result);
+        
     }
 
     @Test

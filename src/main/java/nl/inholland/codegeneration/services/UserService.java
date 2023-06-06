@@ -62,7 +62,7 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found!"));
         user.setIsDeleted(true);
         User deletedUser = userRepository.save(user);
-        List<Account> accounts = accountRepository.findAllByUserId(id);
+        List<Account> accounts = accountRepository.findAllByUserIdAndIsDeletedFalse(id);
         accounts.forEach(account -> account.setIsDeleted(true));
         List<Account> deletedAccounts = accountRepository.saveAll(accounts);
         if (!deletedUser.getIsDeleted() || deletedAccounts.stream().anyMatch(account -> !account.getIsDeleted())) {

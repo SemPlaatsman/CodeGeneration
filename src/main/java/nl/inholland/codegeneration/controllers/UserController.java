@@ -35,6 +35,7 @@ public class UserController {
     private final UserService userService;
     private final AccountService accountService;
 
+    @PreAuthorize("hasAuthority('EMPLOYEE') OR hasAuthority('CUSTOMER')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery) throws Exception {
         QueryParams queryParams = new QueryParams(User.class);

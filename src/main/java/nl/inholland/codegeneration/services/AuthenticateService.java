@@ -14,6 +14,7 @@ import nl.inholland.codegeneration.security.requests.RegisterRequest;
 import nl.inholland.codegeneration.security.response.AuthenticationResponse;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +47,7 @@ public class AuthenticateService {
     .token(jwtToken)
     .username(user.getUsername())
     .email(user.getEmail())
-    .roles(user.getRoles())
+    .roles(user.getRoles().stream().map(Enum::name).collect(Collectors.toList()))
     .build();
   }
 
@@ -58,7 +59,7 @@ public class AuthenticateService {
     .token(jwtToken)
     .username(user.getUsername())
     .email(user.getEmail())
-    .roles(user.getRoles())
+    .roles(user.getRoles().stream().map(Enum::name).collect(Collectors.toList()))
     .build();
   }
 }

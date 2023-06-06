@@ -4,6 +4,8 @@ import nl.inholland.codegeneration.configuration.apiTestConfiguration;
 import nl.inholland.codegeneration.models.Account;
 import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.User;
+import nl.inholland.codegeneration.models.DTO.request.AccountRequestDTO;
+import nl.inholland.codegeneration.models.DTO.response.AccountResponseDTO;
 import nl.inholland.codegeneration.services.AccountService;
 import nl.inholland.codegeneration.services.AuthenticateService;
 
@@ -63,41 +65,44 @@ public class AccountControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"EMPLOYEE"})
     public void testGetAccountByIban() throws Exception {
-        // Account account = new Account();
-        // User user = new User();
-        // user.setRoles(List.of(Role.EMPLOYEE));
-        // account.setUser(user);
-        mockMvc.perform(get("/accounts/NL06INHO0000000001"))
+        mockMvc.perform(get("/accounts/{iban}", "NL06INHO0000000001"))
         .andExpect(status().isOk());
-
-        // when(accountService.getAccountByIban("NL06INHO0000000001")).thenReturn(Optional.of(account));
-        // mockMvc.perform(get("/accounts/NL06INHO0000000001")).andExpect(status().isOk());
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
+    @WithMockUser(username = "user", roles = {"EMPLOYEE"})//400 response
     public void testInsertAccount() throws Exception {
         Account account = new Account();
         User user = new User();
         user.setRoles(List.of(Role.CUSTOMER));
         account.setUser(user);
 
-        when(accountService.insertAccount(account)).thenReturn(account);
-        mockMvc.perform(post("/accounts").contentType(MediaType.APPLICATION_JSON)
-                .content("{}")).andExpect(status().isCreated());
+        AccountRequestDTO requestDTO = new AccountRequestDTO(1L, null, 0);
+        AccountResponseDTO responseDTO = new AccountResponseDTO("NL06INHO0000000001", 0, "Luuk", null, null);
+
+        when(accountService.insertAccount(requestDTO)).thenReturn(responseDTO);
+        mockMvc.perform(post("/accounts", account)
+        .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+                .andExpect(status().isCreated());
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
+    @WithMockUser(username = "user", roles = {"EMPLOYEE"})//400 response
     public void testUpdateAccount() throws Exception {
         Account account = new Account();
         User user = new User();
         user.setRoles(List.of(Role.EMPLOYEE));
         account.setUser(user);
 
-        when(accountService.updateAccount(account, "NL06INHO0000000001")).thenReturn(account);
-        mockMvc.perform(put("/accounts/NL06INHO0000000001").contentType(MediaType.APPLICATION_JSON)
-                .content("{}")).andExpect(status().isOk());
+        AccountRequestDTO requestDTO = new AccountRequestDTO(1L, null, 0);
+        AccountResponseDTO responseDTO = new AccountResponseDTO("NL06INHO0000000001", 0, "Luuk", null, null);
+
+        when(accountService.updateAccount(requestDTO, "NL06INHO0000000001")).thenReturn(responseDTO);
+        mockMvc.perform(put("/accounts", requestDTO).contentType(MediaType.APPLICATION_JSON)
+        // mockMvc.perform(put("/accounts").contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+                .andExpect(status().isOk());
     }
 
     @Test

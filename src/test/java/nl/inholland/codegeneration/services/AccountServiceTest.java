@@ -11,19 +11,32 @@ import nl.inholland.codegeneration.repositories.TransactionRepository;
 import nl.inholland.codegeneration.services.mappers.AccountDTOMapper;
 import nl.inholland.codegeneration.services.mappers.TransactionDTOMapper;
 import nl.inholland.codegeneration.models.QueryParams;
+import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.User;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.List;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,32 +48,69 @@ public class AccountServiceTest {
     @Mock
     private TransactionRepository transactionRepository;
     @Mock
-    private AccountDTOMapper AccountDTOMapper;
+    private AccountDTOMapper accountDTOMapper;
     @Mock
-    private TransactionDTOMapper TransactionDTOMapper;
+    private TransactionDTOMapper transactionDTOMapper;
     
     private AccountService accountService;
     
     @BeforeEach
     public void setup() {
-        accountService = new AccountService(accountRepository, userRepository, transactionRepository, AccountDTOMapper, TransactionDTOMapper);
-        this.AccountDTOMapper = new AccountDTOMapper(userRepository);
+      
+        //security mocks
+        
+        User user = new User();
+        user.setUsername("sarawilson");
+        user.setPassword("sara123");
+        user.setRoles(Collections.singletonList(Role.EMPLOYEE)); // Assuming the user has the role "EMPLOYEE"
+    
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+            user,
+            "sara123",
+            user.getAuthorities()
+        );
+    
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        securityContext.setAuthentication(authentication);
+
+        //mapper mocks
+        accountDTOMapper = new AccountDTOMapper(userRepository);
+        accountDTOMapper.toAccount = Mockito.mock(Function.class);
+        accountDTOMapper.toResponseDTO = Mockito.mock(Function.class);
+        accountService = new AccountService(accountRepository, userRepository, transactionRepository, accountDTOMapper, transactionDTOMapper);
     }
     
     @Test
-    public void testGetAccountByIban() throws APIException {
+    @WithMockUser(roles = {"EMPLOYEE"}, username = "user")
+    public void testGetAccountByIban_whenAccountExists() throws APIException {
+        //make test account
         String iban = "NL01ABCD0000000001";
         Account account = new Account();
         account.setIban(iban);
+        account.setBalance(new BigDecimal(0));
+        account.setAbsoluteLimit(new BigDecimal(0));
+        account.setIsDeleted(false);
+        account.setAccountType(AccountType.CURRENT);
+
+        //make test user
+        User user = new User();
+        user.setId(1L);        
+        account.setUser(user);
+
         AccountResponseDTO responseDTO = new AccountResponseDTO(iban, 0, iban, null, null);
-        when(accountRepository.findByIbanAndIsDeletedFalse(iban)).thenReturn(Optional.of(account));
-        when(AccountDTOMapper.toResponseDTO.apply(account)).thenReturn(responseDTO);
+        //when the accountRepository is called with the iban, return the account
+        // when(accountRepository.findByIbanAndIsDeletedFalse(iban)).thenReturn(Optional.of(account));
+        //when the AccountDTOMapper is called with the account, return the responseDTO
+        // when(accountDTOMapper.toResponseDTO.apply(account)).thenReturn(responseDTO);
 
         AccountResponseDTO result = accountService.getAccountByIban(iban);
 
-        assertEquals(responseDTO, result);
+        //check if the accountRepository is called once
         verify(accountRepository).findByIbanAndIsDeletedFalse(iban);
-        verify(AccountDTOMapper.toResponseDTO).apply(account);
+        //check if the AccountDTOMapper is called once to asure that a responseDTO is returned
+        verify(accountDTOMapper.toResponseDTO).apply(account);
+        //check if the result is the same as the expected responseDTO
+        assertEquals(responseDTO, result);
     }
 
     @Test
@@ -92,7 +142,7 @@ public class AccountServiceTest {
         when(userRepository.existsById(userId)).thenReturn(true);
         when(accountRepository.findAllByUserIdAndIsDeletedFalse(userId)).thenReturn(accounts);
         // when(AccountDTOMapper.toResponseDTO.apply(any(Account.class))).thenReturn(new AccountResponseDTO(null, 0, null, null, null));
-        when(AccountDTOMapper.toResponseDTO.apply(any(Account.class))).thenReturn(new AccountResponseDTO("NL01ABCD0000000001", 0, null, null, null));
+        when(accountDTOMapper.toResponseDTO.apply(any(Account.class))).thenReturn(new AccountResponseDTO("NL01ABCD0000000001", 0, null, null, null));
         
         List<AccountResponseDTO> result = accountService.getAllByUserId(userId);
 

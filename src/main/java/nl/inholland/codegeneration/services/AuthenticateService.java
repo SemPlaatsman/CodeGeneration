@@ -37,7 +37,7 @@ public class AuthenticateService {
     user.setPhoneNumber(request.getPhoneNumber());
     user.setBirthdate(request.getBirthdate());
 
-    //registering user is by default customer van change this if you want to register a new employee you could make a different endpoint for that
+    //registering user is by default customer
     user.setRoles(List.of(Role.CUSTOMER));
     userRepository.save(user);
 

@@ -7,6 +7,7 @@ import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
 import nl.inholland.codegeneration.repositories.AccountRepository;
+import nl.inholland.codegeneration.repositories.TransactionRepository;
 import nl.inholland.codegeneration.repositories.UserRepository;
 import nl.inholland.codegeneration.services.mappers.UserDTOMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +50,7 @@ public class UserServiceTest {
   
     @BeforeEach
     public void setup() {
-        userDTOMapper = new UserDTOMapper();
+        userDTOMapper = new UserDTOMapper(Mockito.mock(TransactionRepository.class));
         userDTOMapper.toUser = Mockito.mock(Function.class);
         userDTOMapper.toResponseDTO = Mockito.mock(Function.class);
 

@@ -40,7 +40,6 @@ public class AccountService {
     public List<AccountResponseDTO> getAll(QueryParams queryParams) {
         return (List<AccountResponseDTO>) accountRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit()))
                .getContent().stream().map(AccountDTOMapper.toResponseDTO).collect(Collectors.toList());
-
     }
 
     public List<AccountResponseDTO> getAllByUserId(Long request) throws APIException {
@@ -58,9 +57,11 @@ public class AccountService {
 
     public AccountResponseDTO insertAccount(AccountRequestDTO request) throws APIException {
         Account account = AccountDTOMapper.toAccount.apply(request);
+
         if (account.getUser().getIsDeleted() == true) {
             throw new APIException("unauthorized", HttpStatus.UNAUTHORIZED, LocalDateTime.now());
         }
+        
         Account addedAccount = new Account();
         addedAccount.setAccountType(account.getAccountType());
         addedAccount.setUser(account.getUser());

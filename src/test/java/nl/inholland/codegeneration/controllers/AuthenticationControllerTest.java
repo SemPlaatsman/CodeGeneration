@@ -1,6 +1,7 @@
 package nl.inholland.codegeneration.controllers;
 
 import nl.inholland.codegeneration.configuration.apiTestConfiguration;
+import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.security.requests.AuthenticationRequest;
 import nl.inholland.codegeneration.security.requests.RegisterRequest;
 import nl.inholland.codegeneration.security.response.AuthenticationResponse;
@@ -27,6 +28,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import io.cucumber.core.gherkin.messages.internal.gherkin.internal.com.eclipsesource.json.Json;
 import io.cucumber.messages.internal.com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -72,7 +75,7 @@ public class AuthenticationControllerTest {
         RegisterRequest registerRequest = new RegisterRequest();
         registerRequest.setUsername("testUser");
         registerRequest.setPassword("testPassword");
-        AuthenticationResponse expectedResponse = new AuthenticationResponse("dummy_token");
+        AuthenticationResponse expectedResponse = new AuthenticationResponse("dummy_token", List.of(Role.EMPLOYEE.name()), "testUser", "user@email.com");
     
         when(authenticateService.register(any(RegisterRequest.class))).thenReturn(expectedResponse);
     
@@ -80,7 +83,7 @@ public class AuthenticationControllerTest {
         mockMvc.perform(post("/authenticate/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(registerRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
     
     @Test
@@ -90,7 +93,7 @@ public class AuthenticationControllerTest {
         AuthenticationRequest loginRequest = new AuthenticationRequest();
         loginRequest.setUsername("johndoe");
         loginRequest.setPassword("john123");
-        AuthenticationResponse expectedResponse = new AuthenticationResponse("dummy_token");
+        AuthenticationResponse expectedResponse = new AuthenticationResponse("dummy_token", List.of(Role.EMPLOYEE.name()), "testUser", "user@email.com");
     
         when(authenticateService.login(loginRequest)).thenReturn(expectedResponse);
     

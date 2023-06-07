@@ -29,6 +29,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import javax.security.auth.x500.X500Principal;
+
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -124,4 +126,6 @@ public class AccountControllerTest {
         when(accountService.getBalance("NL01INHO0000000001")).thenReturn(null);
         mockMvc.perform(get("/accounts/NL01INHO0000000001/balance")).andExpect(status().isOk());
     }
+
+   
 }

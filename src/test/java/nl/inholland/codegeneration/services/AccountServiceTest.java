@@ -197,6 +197,7 @@ public class AccountServiceTest {
         verify(accountRepository).save(any(Account.class));
     }
 
+   
     @Test
     public void testGetAllByUserId() throws APIException {
         Long userId = 1L;
@@ -221,6 +222,34 @@ public class AccountServiceTest {
         verify(userRepository).existsById(userId);
         verify(accountRepository).findAllByUserIdAndIsDeletedFalse(userId);
     }
+
+    @Test
+    void testDeleteAccount() {
+        
+    }
+
+    @Test
+    void testGetAll() {
+        
+    }
+
+
+    @Test
+    void testGetBalance() {
+        
+    }
+
+    @Test
+    void testGetTransactions() {
+        
+    }
+
+    @Test
+    void testUpdateAccount() {
+        
+    }
+
+    
 
  
 

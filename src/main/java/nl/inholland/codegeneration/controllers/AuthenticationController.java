@@ -1,5 +1,7 @@
 package nl.inholland.codegeneration.controllers;
 
+import jakarta.validation.Valid;
+import nl.inholland.codegeneration.exceptions.APIException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,12 +21,12 @@ public class AuthenticationController {
     private final AuthenticateService authenticateService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody RegisterRequest request) throws APIException {
         return ResponseEntity.status(201).body(authenticateService.register(request));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authenticateService.login(request));
     }
 

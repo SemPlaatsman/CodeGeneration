@@ -49,9 +49,7 @@ public class UserService {
 
     public UserResponseDTO update(UserRequestDTO userRequestDTO, Long id) {
         User user = userDTOMapper.toUser.apply(userRequestDTO);
-        if (user.getId() != id) {
-            throw new InvalidDataAccessApiUsageException("Invalid id!");
-        }
+        user.setId(id);
         User existingUser = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found!"));
         existingUser.update(user);
         return userDTOMapper.toResponseDTO.apply(userRepository.save(existingUser));

@@ -68,6 +68,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> update(@RequestBody @Valid UserRequestDTO user, @PathVariable Long id) {
+        System.out.println(user);
         UserResponseDTO updatedUser = userService.update(user, id);
         return ResponseEntity.status(200).body(updatedUser);
     }

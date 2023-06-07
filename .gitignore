@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+src/test/java/nl/inholland/.DS_Store
+src/test/java/nl/inholland/codegeneration/.DS_Store

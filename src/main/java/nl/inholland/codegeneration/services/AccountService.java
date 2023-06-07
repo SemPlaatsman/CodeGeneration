@@ -57,9 +57,11 @@ public class AccountService {
 
     public AccountResponseDTO insertAccount(AccountRequestDTO request) throws APIException {
         Account account = AccountDTOMapper.toAccount.apply(request);
+
         if (account.getUser().getIsDeleted() == true) {
             throw new APIException("unauthorized", HttpStatus.UNAUTHORIZED, LocalDateTime.now());
         }
+        
         Account addedAccount = new Account();
         addedAccount.setAccountType(account.getAccountType());
         addedAccount.setUser(account.getUser());

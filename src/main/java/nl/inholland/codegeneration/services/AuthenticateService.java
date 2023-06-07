@@ -55,6 +55,7 @@ public class AuthenticateService {
     .username(user.getUsername())
     .email(user.getEmail())
     .roles(user.getRoles().stream().map(Role::getValue).collect(Collectors.toList()))
+    .id(user.getId())
     .build();
   }
 
@@ -67,6 +68,7 @@ public class AuthenticateService {
     .username(user.getUsername())
     .email(user.getEmail())
     .roles(user.getRoles().stream().map(Role::getValue).collect(Collectors.toList()))
+    .id(user.getId())
     .build();
   }
 }

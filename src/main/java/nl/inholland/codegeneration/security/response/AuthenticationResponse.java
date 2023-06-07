@@ -15,6 +15,7 @@ import nl.inholland.codegeneration.models.Role;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthenticationResponse {
+    private Long id;
     private String token;
     List<Integer> roles;
     String username;

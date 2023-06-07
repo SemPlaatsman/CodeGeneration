@@ -13,6 +13,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -30,6 +31,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
     private final UserDTOMapper userDTOMapper;
+    private final PasswordEncoder passwordEncoder;
 
     public List<UserResponseDTO> getAll(@Nullable QueryParams queryParams) {
         return (List<UserResponseDTO>) userRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent().stream().map(userDTOMapper.toResponseDTO).collect(Collectors.toList());
@@ -49,9 +51,8 @@ public class UserService {
 
     public UserResponseDTO update(UserRequestDTO userRequestDTO, Long id) {
         User user = userDTOMapper.toUser.apply(userRequestDTO);
-        if (user.getId() != id) {
-            throw new InvalidDataAccessApiUsageException("Invalid id!");
-        }
+        user.setId(id);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         User existingUser = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found!"));
         existingUser.update(user);
         return userDTOMapper.toResponseDTO.apply(userRepository.save(existingUser));

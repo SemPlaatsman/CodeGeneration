@@ -161,6 +161,7 @@ public class AccountServiceTest {
     @WithMockUser(roles = { "EMPLOYEE" }, username = "user")
     public void testInsertAccount() throws APIException {
 
+
         String iban = "NL88INHO0001204817";
         // make test user
         User user = new User(1L, List.of(Role.CUSTOMER), "sarawilson", "sara123", "Sara", "Wilson",
@@ -182,6 +183,7 @@ public class AccountServiceTest {
         when(accountDTOMapper.toResponseDTO.apply(addedAccount)).thenReturn(expectedResponse);
         when(accountDTOMapper.toAccount.apply(requestDTO)).thenReturn(addedAccount);
         AccountResponseDTO result = accountService.insertAccount(requestDTO);
+
 
         // Verify the result
         assertNotNull(result);

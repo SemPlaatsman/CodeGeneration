@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -42,6 +43,9 @@ public class UserServiceTest {
     UserDTOMapper userDTOMapper;
     @InjectMocks
     UserService userService;
+
+    @Mock
+    PasswordEncoder passwordEncoder;
   
     @BeforeEach
     public void setup() {
@@ -49,7 +53,7 @@ public class UserServiceTest {
         userDTOMapper.toUser = Mockito.mock(Function.class);
         userDTOMapper.toResponseDTO = Mockito.mock(Function.class);
 
-        userService = new UserService(userRepository, accountRepository, userDTOMapper);
+        userService = new UserService(userRepository, accountRepository, userDTOMapper, passwordEncoder);
     }
 
     @Test

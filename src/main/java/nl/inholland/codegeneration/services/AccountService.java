@@ -40,7 +40,6 @@ public class AccountService {
     public List<AccountResponseDTO> getAll(QueryParams queryParams) {
         return (List<AccountResponseDTO>) accountRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit()))
                .getContent().stream().map(AccountDTOMapper.toResponseDTO).collect(Collectors.toList());
-
     }
 
     public List<AccountResponseDTO> getAllByUserId(Long request) throws APIException {

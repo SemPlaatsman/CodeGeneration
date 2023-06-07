@@ -7,12 +7,17 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import jakarta.persistence.criteria.*;
+import jakarta.validation.constraints.Null;
 import org.hibernate.query.SemanticException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -25,37 +30,54 @@ import nl.inholland.codegeneration.services.FilterSpecification;
 @Getter
 @Setter
 @NoArgsConstructor
-public class QueryParams {
+public class QueryParams<T> {
     private final List<FilterCriteria> filterCriteria = new ArrayList<>();
     private int limit = 12;
     private int page = 0;
     // This class reference is used to access the fields of the class the filterCriteria needs to filter on
     private Class<?> classReference;
 
-    public QueryParams(Class<?> classReference) {
+    public QueryParams(Class<?> classReference, @Nullable Integer limit, @Nullable Integer page) {
         this.classReference = classReference;
+        if (limit != null) { this.limit = limit; }
+        if (page != null) { this.page = page; }
     }
 
     public void setFilter(String filterQuery) throws Exception {
 //        System.out.println(filterQuery);
         this.filterCriteria.clear();
-        Pattern pattern = Pattern.compile("(\\w+?)(:|<|>|>:|<:)'([a-zA-Z0-9:.-]+?)',");
+        Pattern pattern = Pattern.compile("(\\w.+?)(:|<|>|>:|<:)'([a-zA-Z0-9:.-]+?)',");
         Matcher matcher = pattern.matcher(filterQuery + ",");
         while (matcher.find()) {
-//            System.out.println("First: " + matcher.group(1) + ". Second: " + matcher.group(2) + ". Third: " + matcher.group(3));
+            System.out.println("First: " + matcher.group(1) + ". Second: " + matcher.group(2) + ". Third: " + matcher.group(3));
             this.addFilter(new FilterCriteria(matcher.group(1), matcher.group(2), matcher.group(3)));
         }
     }
 
     public boolean addFilter(FilterCriteria filterCriterion) throws Exception {
-        Field field = this.classReference.getDeclaredField(filterCriterion.getKey());
-
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (user == null) {
             throw new BadCredentialsException("Unauthorized!");
         }
 
-        if (!this.classReference.isAnnotationPresent(Filterable.class)) {
+        String[] parts = filterCriterion.getKey().split("\\.");
+
+        // Check if it's a nested variable using the NestedFilterable annotation and change the current class reference if it is nested
+        Class<?> currentClass = this.classReference;
+        Field field = null;
+        for (int i = 0; i < parts.length; i++) {
+            field = currentClass.getDeclaredField(parts[i]);
+
+            if (field.isAnnotationPresent(NestedFilterable.class)) {
+                if (i + 1 >= parts.length || !Objects.equals(parts[i + 1], field.getAnnotation(NestedFilterable.class).nestedProperty())) {
+                    throw new SemanticException("Invalid filter option!");
+                }
+                currentClass = field.getType();
+            }
+        }
+
+        // Check for Filterable annotations in the current class or field
+        if (!currentClass.isAnnotationPresent(Filterable.class)) {
             if (!field.isAnnotationPresent(Filterable.class)) {
                 throw new SemanticException("Invalid filter option!");
             }
@@ -67,14 +89,16 @@ public class QueryParams {
             throw new BadCredentialsException("Invalid permissions!");
         }
 
+        // cast to correct field type
         filterCriterion.setValue(this.castToFieldType(field.getType(), (String) filterCriterion.getValue()));
-//        System.out.println(filterCriterion.getKey() + filterCriterion.getOperation() + filterCriterion.getValue() + " (" + filterCriterion.getValue().getClass() + ")");
+
+        System.out.println(filterCriterion.getKey() + filterCriterion.getOperation() + filterCriterion.getValue() + " (" + filterCriterion.getValue().getClass() + ")");
+
         return this.filterCriteria.add(filterCriterion);
     }
 
     private Object castToFieldType(Class<?> fieldType, String value) throws Exception {
         //why not use multiple if statements? it breaks out of the method anyway when the return is called
-
         if (fieldType.isAssignableFrom(String.class)) {
             return value;
         } else if (fieldType.isAssignableFrom(Long.class) || fieldType.isAssignableFrom(Long.TYPE)) {
@@ -97,21 +121,32 @@ public class QueryParams {
             return LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE);
         } else if (fieldType.isAssignableFrom(LocalDateTime.class)) {
             return LocalDateTime.parse(value, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        } else if (fieldType.isAssignableFrom(Role.class)) {
+            return Role.fromInt(Integer.parseInt(value));
+        } else if (fieldType.isAssignableFrom(AccountType.class)) {
+            return AccountType.fromInt(Integer.parseInt(value));
         } else {
             throw new APIException("Unsupported filter field type! " + fieldType.getName(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
         }
     }
 
-    public Specification buildFilter() {
-        if (filterCriteria.size() == 0) {
-            return null;
-        }
+    public Specification<T> buildFilter() {
+        return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            for (FilterCriteria criterion : filterCriteria) {
+                String[] parts = criterion.getKey().split("\\.");
+                Specification<T> spec;
 
-        Specification combinedSpecification = new FilterSpecification(filterCriteria.get(0));
-        for (int i = 1; i < filterCriteria.size(); i++) {
-            combinedSpecification = Specification.where(combinedSpecification).and(new FilterSpecification(filterCriteria.get(i)));
-        }
+                if (parts.length > 1) {
+                    Join<T, ?> join = root.join(parts[0]);
+                    spec = new FilterSpecification<>(new FilterCriteria(parts[1], criterion.getOperation(), criterion.getValue()), join);
+                } else {
+                    spec = new FilterSpecification<>(criterion, null);
+                }
+                predicates.add(spec.toPredicate(root, query, builder));
+            }
 
-        return combinedSpecification;
+            return builder.and(predicates.toArray(new Predicate[0]));
+        };
     }
 }

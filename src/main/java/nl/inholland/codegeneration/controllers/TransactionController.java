@@ -31,13 +31,14 @@ public class TransactionController {
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery) throws Exception {
-        QueryParams queryParams = new QueryParams(Transaction.class);
+    public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery,
+                                    @RequestParam(value = "limit", required = false) Integer limit,
+                                    @RequestParam(value = "page", required = false) Integer page) throws Exception {
+        QueryParams<Transaction> queryParams = new QueryParams(Transaction.class, limit, page);
         queryParams.setFilter(filterQuery);
         List<TransactionResponseDTO> transactions = transactionService.getAll(queryParams);
         return ResponseEntity.status(200).body(transactions);
     }
-
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

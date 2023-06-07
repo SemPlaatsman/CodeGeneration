@@ -26,12 +26,14 @@ public class Transaction {
     private LocalDateTime timestamp;
 
     @Filterable
+    @NestedFilterable(nestedProperty = "user")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="accountFrom", nullable = false, referencedColumnName = "IBAN")
     private Account accountFrom;
 
     @Filterable
+    @NestedFilterable(nestedProperty = "user")
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="accountTo", nullable = false, referencedColumnName = "IBAN")
     private Account accountTo;
@@ -39,7 +41,6 @@ public class Transaction {
     @Filterable
     @Column(name = "amount", nullable = false, columnDefinition = "Decimal(32,2)")
     private BigDecimal amount;
-
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.EAGER, optional = false)

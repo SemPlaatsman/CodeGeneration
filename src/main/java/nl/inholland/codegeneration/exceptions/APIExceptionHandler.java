@@ -68,7 +68,7 @@ public class APIExceptionHandler {
     @ExceptionHandler({InvalidDataAccessApiUsageException.class, SemanticException.class, NullPointerException.class, IllegalArgumentException.class, NoSuchFieldException.class, IllegalStateException.class})
     public ResponseEntity<APIExceptionResponseDTO> handleBadRequestException(Exception ex, WebRequest request) {
         APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO(
-                (ex.getMessage() != null) ? ex.getMessage() : "Bad Request!",
+                (ex.getMessage() != null) ? (ex instanceof NoSuchFieldException ? "No such field: " : "") + ex.getMessage() : "Bad Request!",
                 HttpStatus.BAD_REQUEST,
                 LocalDateTime.now()
         );

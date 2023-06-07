@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import nl.inholland.codegeneration.models.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,11 +14,6 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import nl.inholland.codegeneration.exceptions.APIException;
-import nl.inholland.codegeneration.models.Account;
-import nl.inholland.codegeneration.models.QueryParams;
-import nl.inholland.codegeneration.models.Role;
-import nl.inholland.codegeneration.models.Transaction;
-import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.models.DTO.request.AccountRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.AccountResponseDTO;
 import nl.inholland.codegeneration.models.DTO.response.BalanceResponseDTO;
@@ -37,16 +33,17 @@ public class AccountService {
     private final AccountDTOMapper AccountDTOMapper;
     private final TransactionDTOMapper TransactionDTOMapper;
 
-    public List<AccountResponseDTO> getAll(QueryParams queryParams) {
+    public List<AccountResponseDTO> getAll(QueryParams<Account> queryParams) {
         return (List<AccountResponseDTO>) accountRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit()))
                .getContent().stream().map(AccountDTOMapper.toResponseDTO).collect(Collectors.toList());
     }
 
-    public List<AccountResponseDTO> getAllByUserId(Long request) throws APIException {
-        if (!userRepository.existsById(request)) {
-            throw new APIException("not users found", HttpStatus.NOT_FOUND, LocalDateTime.now());
+    public List<AccountResponseDTO> getAllByUserId(Long id) throws APIException {
+        if (!userRepository.existsById(id)) {
+            throw new APIException("User not found!", HttpStatus.NOT_FOUND, LocalDateTime.now());
         }
-        List<Account> accounts = accountRepository.findAllByUserIdAndIsDeletedFalse(request);
+
+        List<Account> accounts = accountRepository.findAllByUserIdAndIsDeletedFalse(id);
         // if (accounts.isEmpty()) {
         //     throw new APIException("not accounts found", HttpStatus.NOT_FOUND, LocalDateTime.now());
         // }
@@ -124,14 +121,13 @@ public class AccountService {
 
     }
 
-    public List<TransactionResponseDTO> getTransactions(String iban) throws APIException {
+    public List<TransactionResponseDTO> getTransactions(QueryParams queryParams, String iban) throws APIException {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<Transaction> accounts;
-        if(user.getRoles().contains(Role.CUSTOMER)){
+        if (user.getRoles().contains(Role.CUSTOMER)) {
               accounts = transactionRepository.findAllByAccountFromIbanAndUserId(iban, user.getId());
         }
-        else{
-      
+        else {
             accounts = transactionRepository.findAllByAccountFromIban(iban);
         }
 

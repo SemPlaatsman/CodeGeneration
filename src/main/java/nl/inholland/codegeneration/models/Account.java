@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Filterable
 @JsonDeserialize(as = Account.class)
 public class Account {
     @Id
@@ -28,6 +27,8 @@ public class Account {
     @Enumerated()
     private AccountType accountType = AccountType.CURRENT;
 
+    @Filterable
+    @NestedFilterable(nestedProperty = "id")
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -38,6 +39,7 @@ public class Account {
     @Column(name = "absoluteLimit", nullable = false, precision = 32, scale = 2)
     private BigDecimal absoluteLimit = new BigDecimal(0);
 
+    @Filterable
     @Column(name = "isDeleted", nullable = false)
     private Boolean isDeleted = false;
 

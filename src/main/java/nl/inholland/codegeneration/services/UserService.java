@@ -33,7 +33,7 @@ public class UserService {
     private final UserDTOMapper userDTOMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public List<UserResponseDTO> getAll(@Nullable QueryParams queryParams) {
+    public List<UserResponseDTO> getAll(@Nullable QueryParams<User> queryParams) {
         return (List<UserResponseDTO>) userRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent().stream().map(userDTOMapper.toResponseDTO).collect(Collectors.toList());
     }
 

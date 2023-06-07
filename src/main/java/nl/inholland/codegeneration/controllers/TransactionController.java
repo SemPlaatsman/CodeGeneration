@@ -34,7 +34,7 @@ public class TransactionController {
     public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery,
                                     @RequestParam(value = "limit", required = false) Integer limit,
                                     @RequestParam(value = "page", required = false) Integer page) throws Exception {
-        QueryParams queryParams = new QueryParams(Transaction.class, limit, page);
+        QueryParams<Transaction> queryParams = new QueryParams(Transaction.class, limit, page);
         queryParams.setFilter(filterQuery);
         List<TransactionResponseDTO> transactions = transactionService.getAll(queryParams);
         return ResponseEntity.status(200).body(transactions);

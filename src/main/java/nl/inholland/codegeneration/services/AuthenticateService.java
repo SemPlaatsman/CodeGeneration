@@ -54,7 +54,7 @@ public class AuthenticateService {
     .token(jwtToken)
     .username(user.getUsername())
     .email(user.getEmail())
-    .roles(user.getRoles().stream().map(Enum::name).collect(Collectors.toList()))
+    .roles(user.getRoles().stream().map(Role::getValue).collect(Collectors.toList()))
     .build();
   }
 
@@ -66,7 +66,7 @@ public class AuthenticateService {
     .token(jwtToken)
     .username(user.getUsername())
     .email(user.getEmail())
-    .roles(user.getRoles().stream().map(Enum::name).collect(Collectors.toList()))
+    .roles(user.getRoles().stream().map(Role::getValue).collect(Collectors.toList()))
     .build();
   }
 }

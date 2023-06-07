@@ -1,5 +1,7 @@
 package nl.inholland.codegeneration.services;
 
+import nl.inholland.codegeneration.exceptions.APIException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +15,8 @@ import nl.inholland.codegeneration.security.requests.AuthenticationRequest;
 import nl.inholland.codegeneration.security.requests.RegisterRequest;
 import nl.inholland.codegeneration.security.response.AuthenticationResponse;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +32,10 @@ public class AuthenticateService {
 
   private final AuthenticationManager authenticationManager;
 
-  public AuthenticationResponse register(RegisterRequest request) {
+  public AuthenticationResponse register(RegisterRequest request) throws APIException {
+    if (Period.between(request.getBirthdate(), LocalDate.now()).getYears() < 18) {
+      throw new APIException("You must at least 18 years of age to make a profile!", HttpStatus.BAD_REQUEST, null);
+    }
     User user = new User();
     user.setUsername(request.getUsername());
     user.setPassword(passwordEncoder.encode(request.getPassword()));

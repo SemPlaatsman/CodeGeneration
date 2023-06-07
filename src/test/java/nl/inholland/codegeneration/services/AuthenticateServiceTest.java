@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.inholland.codegeneration.exceptions.APIException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -47,7 +48,7 @@ public class AuthenticateServiceTest {
     }
 
     @Test
-    void testRegister() {
+    void testRegister() throws APIException {
         List<Role> roles = new ArrayList<>();
         roles.add(Role.CUSTOMER);
         RegisterRequest registerRequest = new RegisterRequest();

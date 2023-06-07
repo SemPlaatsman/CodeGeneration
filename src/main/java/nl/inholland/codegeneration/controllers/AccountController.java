@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.EqualsAndHashCode.Include;
 
@@ -48,9 +49,11 @@ public class AccountController {
     // get /accounts
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery)
+    public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery,
+                                    @RequestParam(value = "limit", required = false) Integer limit,
+                                    @RequestParam(value = "page", required = false) Integer page)
             throws Exception {
-        QueryParams queryParams = new QueryParams(Transaction.class);
+        QueryParams queryParams = new QueryParams(Account.class, limit, page);
         queryParams.setFilter(filterQuery);
         List<AccountResponseDTO> accounts = accountService.getAll(queryParams);
         return ResponseEntity.status(200).body(accounts);

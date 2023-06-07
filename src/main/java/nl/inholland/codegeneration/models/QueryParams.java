@@ -10,9 +10,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.validation.constraints.Null;
 import org.hibernate.query.SemanticException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -32,8 +35,10 @@ public class QueryParams {
     // This class reference is used to access the fields of the class the filterCriteria needs to filter on
     private Class<?> classReference;
 
-    public QueryParams(Class<?> classReference) {
+    public QueryParams(Class<?> classReference, @Nullable Integer limit, @Nullable Integer page) {
         this.classReference = classReference;
+        if (limit != null) { this.limit = limit; }
+        if (page != null) { this.page = page; }
     }
 
     public void setFilter(String filterQuery) throws Exception {
@@ -74,7 +79,6 @@ public class QueryParams {
 
     private Object castToFieldType(Class<?> fieldType, String value) throws Exception {
         //why not use multiple if statements? it breaks out of the method anyway when the return is called
-
         if (fieldType.isAssignableFrom(String.class)) {
             return value;
         } else if (fieldType.isAssignableFrom(Long.class) || fieldType.isAssignableFrom(Long.TYPE)) {
@@ -97,6 +101,10 @@ public class QueryParams {
             return LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE);
         } else if (fieldType.isAssignableFrom(LocalDateTime.class)) {
             return LocalDateTime.parse(value, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        } else if (fieldType.isAssignableFrom(Role.class)) {
+            return Role.fromInt(Integer.parseInt(value));
+        } else if (fieldType.isAssignableFrom(AccountType.class)) {
+            return AccountType.fromInt(Integer.parseInt(value));
         } else {
             throw new APIException("Unsupported filter field type! " + fieldType.getName(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
         }

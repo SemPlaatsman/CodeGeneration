@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Filterable
 @JsonDeserialize(as = Account.class)
 public class Account {
     @Id

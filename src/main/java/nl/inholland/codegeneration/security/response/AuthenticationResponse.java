@@ -3,6 +3,7 @@ package nl.inholland.codegeneration.security.response;
 import java.util.List;
 
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +17,7 @@ import nl.inholland.codegeneration.models.Role;
 public class AuthenticationResponse {
     private Long id;
     private String token;
-    List<String> roles;
+    List<Integer> roles;
     String username;
     String email;
 }

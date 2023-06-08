@@ -53,10 +53,15 @@ public class UserController {
         return ResponseEntity.status(200).body(user);
     }
 
-    @PreAuthorize("hasAuthority('EMPLOYEE') OR (hasAuthority('CUSTOMER') AND #id == authentication.principal.id)")
+    @PreAuthorize("hasAuthority('EMPLOYEE') OR ((hasAuthority('CUSTOMER') AND #id == authentication.principal.id))")
     @GetMapping(path = "/{id}/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAllAccountsById(@PathVariable Long id) throws Exception {
-        List<AccountResponseDTO> accounts = accountService.getAllByUserId(id);
+    public ResponseEntity<?> getAllAccountsById(@RequestParam(value = "filter", required = false) String filterQuery,
+                                                @RequestParam(value = "limit", required = false) Integer limit,
+                                                @RequestParam(value = "page", required = false) Integer page,
+                                                @PathVariable Long id) throws Exception {
+        QueryParams<Account> queryParams = new QueryParams(Account.class, limit, page);
+        queryParams.setFilter(filterQuery);
+        List<AccountResponseDTO> accounts = accountService.getAllByUserId(queryParams, id);
         return ResponseEntity.status(200).body(accounts);
     }
 

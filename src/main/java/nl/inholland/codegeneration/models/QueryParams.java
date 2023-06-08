@@ -32,7 +32,6 @@ import nl.inholland.codegeneration.services.FilterSpecification;
 @Setter
 @NoArgsConstructor
 public class QueryParams<T> {
-    // TODO: implement default value if role is invalid
     private final List<FilterCriteria> filterCriteria = new ArrayList<>();
     private int limit = 12;
     private int page = 0;
@@ -51,7 +50,7 @@ public class QueryParams<T> {
         Pattern pattern = Pattern.compile("(\\w.+?)(:|<|>|>:|<:)'([a-zA-Z0-9:.-]+?)',");
         Matcher matcher = pattern.matcher(filterQuery + ",");
         while (matcher.find()) {
-            System.out.println("First: " + matcher.group(1) + ". Second: " + matcher.group(2) + ". Third: " + matcher.group(3));
+            System.out.println("First: (" + matcher.group(1) + ")[" + matcher.group(1).getClass() + "]. Second: (" + matcher.group(2) + ")[" + matcher.group(2).getClass() + "]. Third: (" + matcher.group(3) + ")[" + matcher.group(3).getClass() + "]");
             this.addFilter(new FilterCriteria(matcher.group(1), matcher.group(2), matcher.group(3)));
         }
     }
@@ -93,7 +92,7 @@ public class QueryParams<T> {
         }
 
         // Cast to correct field type
-        filterCriterion.setValue(this.castToFieldType(field.getType(), (String) filterCriterion.getValue()));
+        filterCriterion.setValue(this.castToFieldType(field.getType(), filterCriterion.getValue().toString()));
 
         System.out.println(filterCriterion.getKey() + filterCriterion.getOperation() + filterCriterion.getValue() + " (" + filterCriterion.getValue().getClass() + ")");
 
@@ -133,7 +132,10 @@ public class QueryParams<T> {
         }
     }
 
-    public Specification<T> buildFilter() {
+    public Specification<T> buildFilter() throws Exception {
+        if (!this.fieldHasBeenAdded("isDeleted")) {
+            this.addFilter(new FilterCriteria("isDeleted", ":", false));
+        }
         return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
             List<Predicate> predicates = new ArrayList<>();
             for (FilterCriteria criterion : filterCriteria) {

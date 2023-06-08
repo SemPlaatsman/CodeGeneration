@@ -24,8 +24,8 @@ public class TransactionDTOMapper {
 
     public Function<TransactionRequestDTO, Transaction> toTransaction = (transactionRequestDTO) -> {
         Transaction transaction = new Transaction();
-        transaction.setAccountFrom(accountRepository.findById(transactionRequestDTO.accountFromIban()).orElseThrow(() -> new EntityNotFoundException("Transaction not found!")));
-        transaction.setAccountTo(accountRepository.findById(transactionRequestDTO.accountToIban()).orElseThrow(() -> new EntityNotFoundException("Transaction not found!")));
+        transaction.setAccountFrom(accountRepository.findById(transactionRequestDTO.accountFromIban()).orElseThrow(() -> new EntityNotFoundException("Account not found!")));
+        transaction.setAccountTo(accountRepository.findById(transactionRequestDTO.accountToIban()).orElseThrow(() -> new EntityNotFoundException("Account not found!")));
         transaction.setAmount(transactionRequestDTO.amount());
         transaction.setDescription(transactionRequestDTO.description());
         return transaction;

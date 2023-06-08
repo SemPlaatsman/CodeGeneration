@@ -17,6 +17,7 @@ import jakarta.validation.constraints.Null;
 import org.hibernate.query.SemanticException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.config.JpaRepositoryConfigExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -133,7 +134,7 @@ public class QueryParams<T> {
     }
 
     public Specification<T> buildFilter() throws Exception {
-        if (!this.fieldHasBeenAdded("isDeleted")) {
+        if (!this.fieldHasBeenAdded("isDeleted") && this.classReference != Transaction.class) {
             this.addFilter(new FilterCriteria("isDeleted", ":", false));
         }
         return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
@@ -150,7 +151,11 @@ public class QueryParams<T> {
                 }
                 predicates.add(spec.toPredicate(root, query, builder));
             }
-
+//            System.out.println("Predicates: ");
+//            for (Predicate predicate : predicates) {
+//                System.out.println(predicate);
+//            }
+//            System.out.println("End of predicates");
             return builder.and(predicates.toArray(new Predicate[0]));
         };
     }

@@ -41,12 +41,14 @@ public class TransactionService {
         return transactionDTOMapper.toResponseDTO.apply(transaction);
     }
 
-    @Transactional
+    @Transactional(rollbackOn = Exception.class)
     public TransactionResponseDTO add(TransactionRequestDTO transactionRequestDTO) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Transaction transaction = transactionDTOMapper.toTransaction.apply(transactionRequestDTO);
         if (transaction.getAccountFrom().getIsDeleted() || transaction.getAccountTo().getIsDeleted()) {
             throw new InvalidDataAccessApiUsageException("Invalid bank account provided!");
+        } else if (transaction.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalStateException("Amount cannot be lower or equal to zero!");
         } else if (transaction.getAccountFrom().getAbsoluteLimit().compareTo(transaction.getAccountFrom().getBalance().subtract(transaction.getAmount())) > 0) {
             throw new IllegalStateException("Insufficient balance!");
         } else if (transactionRepository.findDailyTransactionsValueOfUser(transaction.getAccountFrom().getUser().getId()).orElse(new BigDecimal(0)).add(transaction.getAmount()).compareTo(transaction.getAccountFrom().getUser().getDayLimit()) > 0) {

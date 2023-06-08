@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import lombok.RequiredArgsConstructor;
 import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
@@ -11,6 +15,7 @@ import nl.inholland.codegeneration.services.mappers.UserDTOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,8 +38,21 @@ public class UserService {
     private final UserDTOMapper userDTOMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public List<UserResponseDTO> getAll(@Nullable QueryParams<User> queryParams) throws Exception {
-        return (List<UserResponseDTO>) userRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent().stream().map(userDTOMapper.toResponseDTO).collect(Collectors.toList());
+    public List<UserResponseDTO> getAll(@Nullable QueryParams<User> queryParams, @Nullable Boolean hasAccount) throws Exception {
+        Specification<User> specification = queryParams.buildFilter();
+        if (hasAccount != null) {
+            Specification<User> hasAccountSpecification = (Root<User> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
+                Subquery<Account> accountSubquery = query.subquery(Account.class);
+                Root<Account> account = accountSubquery.from(Account.class);
+                accountSubquery.select(account);
+                accountSubquery.where(builder.equal(account.get("user"), root));
+                return builder.exists(accountSubquery);
+            };
+            if (hasAccount) { specification = Specification.where(hasAccountSpecification).and(specification); }
+            else { specification = Specification.not(hasAccountSpecification).and(specification); }
+        }
+
+        return (List<UserResponseDTO>) userRepository.findAll(specification, PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent().stream().map(userDTOMapper.toResponseDTO).collect(Collectors.toList());
     }
 
     public UserResponseDTO getById(Long id) {

@@ -113,9 +113,7 @@ public class AccountController {
     @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{iban}/balance", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getBalance(@PathVariable("iban") String iban) throws APIException {
-       
         BalanceResponseDTO balance = accountService.getBalance(iban);
         return ResponseEntity.status(200).body(balance);
     }
- 
 }

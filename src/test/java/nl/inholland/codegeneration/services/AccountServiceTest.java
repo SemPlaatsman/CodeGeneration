@@ -213,7 +213,7 @@ public class AccountServiceTest {
         when(accountRepository.findAllByUserIdAndIsDeletedFalse(userId)).thenReturn(accounts);
         when((List<AccountResponseDTO>) accounts.stream().map(AccountResponseDTO::new).collect(Collectors.toList())).thenReturn(accounts.stream().map(AccountResponseDTO::new).collect(Collectors.toList()));
 
-        List<AccountResponseDTO> result = accountService.getAllByUserId( userId);
+        List<AccountResponseDTO> result = accountService.getAllByUserId(null, userId);
 
         assertNotNull(result);
         assertEquals(expectedResponse.size(), result.size());

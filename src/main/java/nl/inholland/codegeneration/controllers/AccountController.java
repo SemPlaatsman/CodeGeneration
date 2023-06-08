@@ -103,7 +103,7 @@ public class AccountController {
                                              @RequestParam(value = "limit", required = false) Integer limit,
                                              @RequestParam(value = "page", required = false) Integer page,
                                              @PathVariable("iban") String iban) throws Exception {
-        QueryParams queryParams = new QueryParams(Transaction.class, limit, page);
+        QueryParams<Transaction> queryParams = new QueryParams(Transaction.class, limit, page);
         queryParams.setFilter(filterQuery);
         List<TransactionResponseDTO> accounts = accountService.getTransactions(queryParams, iban);
         return ResponseEntity.status(200).body(accounts);

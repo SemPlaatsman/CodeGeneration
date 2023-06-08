@@ -39,7 +39,7 @@ public class Account {
     @Column(name = "absoluteLimit", nullable = false, precision = 32, scale = 2)
     private BigDecimal absoluteLimit = new BigDecimal(0);
 
-    @Filterable
+    @Filterable(role = Role.EMPLOYEE, defaultValue = "false")
     @Column(name = "isDeleted", nullable = false)
     private Boolean isDeleted = false;
 

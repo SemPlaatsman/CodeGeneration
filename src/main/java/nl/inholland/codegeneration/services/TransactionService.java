@@ -32,7 +32,7 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final TransactionDTOMapper transactionDTOMapper;
 
-    public List<TransactionResponseDTO> getAll(@Nullable QueryParams<Transaction> queryParams) {
+    public List<TransactionResponseDTO> getAll(@Nullable QueryParams<Transaction> queryParams) throws Exception {
         return (List<TransactionResponseDTO>) transactionRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent().stream().map(transactionDTOMapper.toResponseDTO).collect(Collectors.toList());
     }
 

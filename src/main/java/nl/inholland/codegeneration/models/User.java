@@ -70,7 +70,7 @@ public class User implements UserDetails {
     @Column(name = "transactionLimit", nullable = false, precision = 32, scale = 2)
     private BigDecimal transactionLimit = new BigDecimal("200");
 
-    @Filterable
+    @Filterable(role = Role.EMPLOYEE, defaultValue = "false")
     @Column(name = "isDeleted", nullable = false)
     private Boolean isDeleted = false;
 

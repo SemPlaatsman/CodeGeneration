@@ -8,7 +8,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NestedFilterable {
-    String nestedProperty() default "";
-
-    Role role() default Role.CUSTOMER;
+    String[] nestedProperty() default "";
 }

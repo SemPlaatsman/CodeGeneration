@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @AllArgsConstructor
 @JsonDeserialize(as = Account.class)
 public class Account {
+    @Filterable
     @Id
     @GenericGenerator(name = "ibangen", strategy = "nl.inholland.codegeneration.services.IBANGenerator")
     @GeneratedValue(generator = "ibangen")
@@ -27,7 +28,6 @@ public class Account {
     @Enumerated()
     private AccountType accountType = AccountType.CURRENT;
 
-    @Filterable
     @NestedFilterable(nestedProperty = "id")
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

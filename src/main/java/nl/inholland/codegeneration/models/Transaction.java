@@ -25,14 +25,12 @@ public class Transaction {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime timestamp;
 
-    @Filterable
-    @NestedFilterable(nestedProperty = "user")
+    @NestedFilterable(nestedProperty = {"user", "iban"})
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="accountFrom", nullable = false, referencedColumnName = "IBAN")
     private Account accountFrom;
 
-    @Filterable
     @NestedFilterable(nestedProperty = "user")
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="accountTo", nullable = false, referencedColumnName = "IBAN")

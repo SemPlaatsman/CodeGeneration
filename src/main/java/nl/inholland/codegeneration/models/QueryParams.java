@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -31,6 +32,7 @@ import nl.inholland.codegeneration.services.FilterSpecification;
 @Setter
 @NoArgsConstructor
 public class QueryParams<T> {
+    // TODO: implement default value if role is invalid
     private final List<FilterCriteria> filterCriteria = new ArrayList<>();
     private int limit = 12;
     private int page = 0;
@@ -69,7 +71,7 @@ public class QueryParams<T> {
             field = currentClass.getDeclaredField(parts[i]);
 
             if (field.isAnnotationPresent(NestedFilterable.class)) {
-                if (i + 1 >= parts.length || !Objects.equals(parts[i + 1], field.getAnnotation(NestedFilterable.class).nestedProperty())) {
+                if (i + 1 >= parts.length || !Arrays.asList(field.getAnnotation(NestedFilterable.class).nestedProperty()).contains(parts[i + 1])) {
                     throw new SemanticException("Invalid filter option!");
                 }
                 currentClass = field.getType();

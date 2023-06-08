@@ -43,4 +43,5 @@ public class AppConfig {
     public PasswordEncoder PasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    
 }

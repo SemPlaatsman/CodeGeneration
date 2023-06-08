@@ -66,9 +66,5 @@ public class TransactionService {
         return transactionDTOMapper.toResponseDTO.apply(transactionRepository.save(transaction));
     }
 
-//    public Transaction update(Transaction transaction, long id) {
-//        Transaction existingTransaction = getById(id);
-//        existingTransaction.update(transaction);
-//        return transactionRepository.save(existingTransaction);
-//    }
+
 }

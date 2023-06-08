@@ -51,8 +51,7 @@ public class AccountService {
 
         queryParams.addFilter(new FilterCriteria("user.id", ":", id));
         List<Account> accounts = accountRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent();
-        // if (accounts.isEmpty()) {
-        //     throw new APIException("not accounts found", HttpStatus.NOT_FOUND, LocalDateTime.now());
+        // if (accounts.isEmpty()) {pStatus.NOT_FOUND, LocalDateTime.now());
         // }
 
         return (List<AccountResponseDTO>) accounts.stream().map(AccountDTOMapper.toResponseDTO).collect(Collectors.toList());
@@ -72,6 +71,7 @@ public class AccountService {
         return AccountDTOMapper.toResponseDTO.apply(accountRepository.save(addedAccount));
     }
 
+        //     throw new APIException("not accounts found", Htt
     public AccountResponseDTO getAccountByIban(String iban) throws APIException {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Account account = accountRepository.findByIbanAndIsDeletedFalse(iban).orElseThrow(() -> new APIException("Account not found", HttpStatus.NOT_FOUND, LocalDateTime.now()));

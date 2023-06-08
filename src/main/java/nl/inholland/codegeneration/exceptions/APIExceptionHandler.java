@@ -65,10 +65,10 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(apiExceptionResponseDTO, apiExceptionResponseDTO.httpStatus());
     }
 
-    @ExceptionHandler({InvalidDataAccessApiUsageException.class, SemanticException.class, NullPointerException.class, IllegalArgumentException.class, NoSuchFieldException.class})
+    @ExceptionHandler({InvalidDataAccessApiUsageException.class, SemanticException.class, NullPointerException.class, IllegalArgumentException.class, NoSuchFieldException.class, IllegalStateException.class})
     public ResponseEntity<APIExceptionResponseDTO> handleBadRequestException(Exception ex, WebRequest request) {
         APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO(
-                (ex.getMessage() != null) ? ex.getMessage() : "Bad Request!",
+                (ex.getMessage() != null) ? (ex instanceof NoSuchFieldException ? "No such field: " : "") + ex.getMessage() : "Bad Request!",
                 HttpStatus.BAD_REQUEST,
                 LocalDateTime.now()
         );
@@ -86,15 +86,15 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(apiExceptionResponseDTO, apiExceptionResponseDTO.httpStatus());
     }
 
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<APIExceptionResponseDTO> handleUnprocessableEntityException(Exception ex, WebRequest request) {
-        APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO(
-                (ex.getMessage() != null) ? ex.getMessage() : "Unprocessable Entity!",
-                HttpStatus.UNPROCESSABLE_ENTITY,
-                LocalDateTime.now()
-        );
-        return new ResponseEntity<>(apiExceptionResponseDTO, apiExceptionResponseDTO.httpStatus());
-    }
+//    @ExceptionHandler(IllegalStateException.class)
+//    public ResponseEntity<APIExceptionResponseDTO> handleUnprocessableEntityException(Exception ex, WebRequest request) {
+//        APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO(
+//                (ex.getMessage() != null) ? ex.getMessage() : "Unprocessable Entity!",
+//                HttpStatus.UNPROCESSABLE_ENTITY,
+//                LocalDateTime.now()
+//        );
+//        return new ResponseEntity<>(apiExceptionResponseDTO, apiExceptionResponseDTO.httpStatus());
+//    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<APIExceptionResponseDTO> handleException(Exception ex, WebRequest request) {

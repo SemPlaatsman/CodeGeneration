@@ -199,7 +199,7 @@ public class AccountServiceTest {
 
    
     @Test
-    public void testGetAllByUserId() throws APIException {
+    public void testGetAllByUserId() throws Exception {
         Long userId = 1L;
         User user = new User(userId, List.of(Role.CUSTOMER), "sarawilson", "sara123", "Sara", "Wilson","sara.wilson@yahoo.com",
                 "0612345678", LocalDate.of(1990, 11, 13), new BigDecimal(1000), new BigDecimal(200), false);
@@ -213,7 +213,7 @@ public class AccountServiceTest {
         when(accountRepository.findAllByUserIdAndIsDeletedFalse(userId)).thenReturn(accounts);
         when((List<AccountResponseDTO>) accounts.stream().map(AccountResponseDTO::new).collect(Collectors.toList())).thenReturn(accounts.stream().map(AccountResponseDTO::new).collect(Collectors.toList()));
 
-        List<AccountResponseDTO> result = accountService.getAllByUserId(userId);
+        List<AccountResponseDTO> result = accountService.getAllByUserId( userId);
 
         assertNotNull(result);
         assertEquals(expectedResponse.size(), result.size());

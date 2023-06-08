@@ -8,13 +8,26 @@ import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
 import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.Transaction;
 import nl.inholland.codegeneration.models.User;
+
+import java.math.BigDecimal;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import nl.inholland.codegeneration.repositories.AccountRepository;
+import nl.inholland.codegeneration.repositories.TransactionRepository;
+import nl.inholland.codegeneration.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserDTOMapper {
+    private TransactionRepository transactionRepository;
+
+    @Autowired
+    public UserDTOMapper(TransactionRepository transactionRepository) {
+        this.transactionRepository = transactionRepository;
+    }
+
     public Function<UserRequestDTO, User> toUser = (userRequestDTO) -> {
         User user = new User();
         user.setRoles(userRequestDTO.roles().stream().map(Role::fromInt).collect(Collectors.toList()));
@@ -28,5 +41,5 @@ public class UserDTOMapper {
         return user;
     };
 
-    public Function<User, UserResponseDTO> toResponseDTO = UserResponseDTO::new;
+    public Function<User, UserResponseDTO> toResponseDTO = (user) -> new UserResponseDTO(user, this.transactionRepository.findDailyTransactionsValueOfUser(user.getId()).orElse(new BigDecimal(0)));
 }

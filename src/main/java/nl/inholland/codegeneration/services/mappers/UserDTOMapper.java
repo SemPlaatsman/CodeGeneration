@@ -41,5 +41,5 @@ public class UserDTOMapper {
         return user;
     };
 
-    public Function<User, UserResponseDTO> toResponseDTO = (user) -> new UserResponseDTO(user, this.transactionRepository.findDailyTransactionsValueOfUser(user.getId()).orElse(new BigDecimal(0)));
+    public Function<User, UserResponseDTO> toResponseDTO = (user) -> new UserResponseDTO(user, user.getDayLimit().subtract(this.transactionRepository.findDailyTransactionsValueOfUser(user.getId()).orElse(new BigDecimal(0))));
 }

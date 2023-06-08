@@ -31,7 +31,7 @@ public class Transaction {
     @JoinColumn(name="accountFrom", nullable = false, referencedColumnName = "IBAN")
     private Account accountFrom;
 
-    @NestedFilterable(nestedProperty = "user")
+    @NestedFilterable(nestedProperty = {"user", "iban"})
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="accountTo", nullable = false, referencedColumnName = "IBAN")
     private Account accountTo;

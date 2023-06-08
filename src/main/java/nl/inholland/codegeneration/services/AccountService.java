@@ -2,13 +2,19 @@ package nl.inholland.codegeneration.services;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.*;
 import nl.inholland.codegeneration.models.*;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -122,20 +128,22 @@ public class AccountService {
 
     }
 
-    public List<TransactionResponseDTO> getTransactions(QueryParams<Transaction> queryParams, String iban) throws APIException {
+    public List<TransactionResponseDTO> getTransactions(QueryParams<Transaction> queryParams, String iban) throws Exception {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<Transaction> accounts;
-        if (user.getRoles().contains(Role.CUSTOMER)) {
-              accounts = transactionRepository.findAllByAccountFromIbanAndUserId(iban, user.getId());
-        }
-        else {
-            accounts = transactionRepository.findAllByAccountFromIban(iban);
-        }
 
-        if (accounts.isEmpty()) {
-            throw new APIException("No transactions for " + iban, HttpStatus.NOT_FOUND, LocalDateTime.now());
-        }
-        return (List<TransactionResponseDTO>) transactionRepository.findAllByAccountFromIban(iban).stream()
+        Account account = this.accountRepository.findById(iban).orElseThrow(() -> new EntityNotFoundException("Account not found!"));
+        CustomerIbanCheck(user, account);
+
+        Specification<Transaction> specification = (Root<Transaction> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            Specification<Transaction> accountFromSpecification = new FilterSpecification<>(new FilterCriteria("iban", ":", iban), root.join("accountFrom"));
+            predicates.add(accountFromSpecification.toPredicate(root, query, builder));
+            Specification<Transaction> accountToSpecification = new FilterSpecification<>(new FilterCriteria("iban", ":", iban), root.join("accountTo"));
+            predicates.add(accountToSpecification.toPredicate(root, query, builder));
+            return builder.or(predicates.toArray(new Predicate[0]));
+        };
+
+        return (List<TransactionResponseDTO>) transactionRepository.findAll(queryParams.buildFilter().and(specification)).stream()
                 .map(TransactionDTOMapper.toResponseDTO).collect(Collectors.toList());
     }
 
@@ -150,12 +158,10 @@ public class AccountService {
         } else {
             throw new APIException("Account not found", HttpStatus.NOT_FOUND, LocalDateTime.now());
         }
-
     }
 
     private Account CustomerIbanCheck(User user,  Account account) throws APIException {
-       
-        if (account.getUser() != user && user.getRoles().contains(Role.CUSTOMER)&& !user.getRoles().contains(Role.EMPLOYEE)) {
+        if (!Objects.equals(account.getUser().getId(), user.getId()) && user.getRoles().contains(Role.CUSTOMER) && !user.getRoles().contains(Role.EMPLOYEE)) {
             throw new APIException("Forbidden!", HttpStatus.FORBIDDEN, LocalDateTime.now());
         }
         return account;

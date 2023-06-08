@@ -32,7 +32,6 @@ import nl.inholland.codegeneration.services.FilterSpecification;
 @Setter
 @NoArgsConstructor
 public class QueryParams<T> {
-    // TODO: implement default value if role is invalid
     private final List<FilterCriteria> filterCriteria = new ArrayList<>();
     private int limit = 12;
     private int page = 0;
@@ -51,7 +50,7 @@ public class QueryParams<T> {
         Pattern pattern = Pattern.compile("(\\w.+?)(:|<|>|>:|<:)'([a-zA-Z0-9:.-]+?)',");
         Matcher matcher = pattern.matcher(filterQuery + ",");
         while (matcher.find()) {
-            System.out.println("First: " + matcher.group(1) + ". Second: " + matcher.group(2) + ". Third: " + matcher.group(3));
+            System.out.println("First: (" + matcher.group(1) + ")[" + matcher.group(1).getClass() + "]. Second: (" + matcher.group(2) + ")[" + matcher.group(2).getClass() + "]. Third: (" + matcher.group(3) + ")[" + matcher.group(3).getClass() + "]");
             this.addFilter(new FilterCriteria(matcher.group(1), matcher.group(2), matcher.group(3)));
         }
     }
@@ -83,16 +82,17 @@ public class QueryParams<T> {
             if (!field.isAnnotationPresent(Filterable.class)) {
                 throw new SemanticException("Invalid filter option!");
             }
-
-            if (field.getAnnotation(Filterable.class).role() == Role.EMPLOYEE && !user.getRoles().contains(Role.EMPLOYEE)) {
-                throw new BadCredentialsException("Invalid permissions!");
+            Filterable filterable = field.getAnnotation(Filterable.class);
+            if (filterable.role() == Role.EMPLOYEE && !user.getRoles().contains(Role.EMPLOYEE)) {
+                if (!filterable.defaultValue().isEmpty()) { filterCriterion.setValue(filterable.defaultValue()); }
+                else { throw new BadCredentialsException("Invalid permissions!"); }
             }
         } else if (this.classReference.getAnnotation(Filterable.class).role() == Role.EMPLOYEE && !user.getRoles().contains(Role.EMPLOYEE)) {
             throw new BadCredentialsException("Invalid permissions!");
         }
 
-        // cast to correct field type
-        filterCriterion.setValue(this.castToFieldType(field.getType(), (String) filterCriterion.getValue()));
+        // Cast to correct field type
+        filterCriterion.setValue(this.castToFieldType(field.getType(), filterCriterion.getValue().toString()));
 
         System.out.println(filterCriterion.getKey() + filterCriterion.getOperation() + filterCriterion.getValue() + " (" + filterCriterion.getValue().getClass() + ")");
 
@@ -132,7 +132,10 @@ public class QueryParams<T> {
         }
     }
 
-    public Specification<T> buildFilter() {
+    public Specification<T> buildFilter() throws Exception {
+        if (!this.fieldHasBeenAdded("isDeleted")) {
+            this.addFilter(new FilterCriteria("isDeleted", ":", false));
+        }
         return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
             List<Predicate> predicates = new ArrayList<>();
             for (FilterCriteria criterion : filterCriteria) {
@@ -150,5 +153,9 @@ public class QueryParams<T> {
 
             return builder.and(predicates.toArray(new Predicate[0]));
         };
+    }
+
+    public boolean fieldHasBeenAdded(String field) {
+        return this.filterCriteria.stream().anyMatch(filterCriterion -> filterCriterion.getKey().equals(field));
     }
 }

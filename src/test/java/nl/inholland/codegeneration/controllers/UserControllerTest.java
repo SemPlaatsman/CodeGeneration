@@ -192,7 +192,7 @@ public class UserControllerTest {
 // assertEquals(ResponseEntity.status(200).body(Collections.singletonList(userResponseDTO)),
 // userController.getAll(null));
 // } catch (Exception e) {
-// // TODO Auto-generated catch block
+//
 // e.printStackTrace();
 // }
 // }
@@ -234,7 +234,7 @@ public class UserControllerTest {
 // try {
 // doNothing().when(userService).delete(anyLong());
 // } catch (APIException e) {
-// // TODO Auto-generated catch block
+//
 // e.printStackTrace();
 // }
 
@@ -242,7 +242,7 @@ public class UserControllerTest {
 // assertEquals(ResponseEntity.status(204).body("No Content"),
 // userController.delete(1L));
 // } catch (APIException e) {
-// // TODO Auto-generated catch block
+//
 // e.printStackTrace();
 // }
 // }

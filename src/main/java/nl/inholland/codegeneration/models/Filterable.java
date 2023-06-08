@@ -9,4 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Filterable {
     Role role() default Role.CUSTOMER;
+    String defaultValue() default "";
 }

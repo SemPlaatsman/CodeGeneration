@@ -83,15 +83,16 @@ public class QueryParams<T> {
             if (!field.isAnnotationPresent(Filterable.class)) {
                 throw new SemanticException("Invalid filter option!");
             }
-
-            if (field.getAnnotation(Filterable.class).role() == Role.EMPLOYEE && !user.getRoles().contains(Role.EMPLOYEE)) {
-                throw new BadCredentialsException("Invalid permissions!");
+            Filterable filterable = field.getAnnotation(Filterable.class);
+            if (filterable.role() == Role.EMPLOYEE && !user.getRoles().contains(Role.EMPLOYEE)) {
+                if (!filterable.defaultValue().isEmpty()) { filterCriterion.setValue(filterable.defaultValue()); }
+                else { throw new BadCredentialsException("Invalid permissions!"); }
             }
         } else if (this.classReference.getAnnotation(Filterable.class).role() == Role.EMPLOYEE && !user.getRoles().contains(Role.EMPLOYEE)) {
             throw new BadCredentialsException("Invalid permissions!");
         }
 
-        // cast to correct field type
+        // Cast to correct field type
         filterCriterion.setValue(this.castToFieldType(field.getType(), (String) filterCriterion.getValue()));
 
         System.out.println(filterCriterion.getKey() + filterCriterion.getOperation() + filterCriterion.getValue() + " (" + filterCriterion.getValue().getClass() + ")");
@@ -150,5 +151,9 @@ public class QueryParams<T> {
 
             return builder.and(predicates.toArray(new Predicate[0]));
         };
+    }
+
+    public boolean fieldHasBeenAdded(String field) {
+        return this.filterCriteria.stream().anyMatch(filterCriterion -> filterCriterion.getKey().equals(field));
     }
 }

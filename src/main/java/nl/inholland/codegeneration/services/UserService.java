@@ -61,6 +61,9 @@ public class UserService {
     @Transactional(rollbackOn = Exception.class)
     public void delete(Long id) throws APIException {
         User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found!"));
+        if (user.getIsDeleted()) {
+            throw new EntityNotFoundException("User not found!");
+        }
         user.setIsDeleted(true);
         User deletedUser = userRepository.save(user);
         List<Account> accounts = accountRepository.findAllByUserIdAndIsDeletedFalse(id);

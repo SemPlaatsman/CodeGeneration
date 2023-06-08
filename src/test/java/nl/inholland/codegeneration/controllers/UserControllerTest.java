@@ -118,12 +118,3 @@ public class UserControllerTest {
 }
 
 
-// try {
-// assertEquals(ResponseEntity.status(204).body("No Content"),
-// userController.delete(1L));
-// } catch (APIException e) {
-// // TODO Auto-generated catch block
-// e.printStackTrace();
-// }
-// }
-// }

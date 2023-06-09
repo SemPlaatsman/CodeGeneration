@@ -41,7 +41,7 @@ public class DataSeeder implements ApplicationRunner {
                                 false));
                 userRepository.save(new User(null, List.of(Role.CUSTOMER), "sarawilson", passwordEncoder.encode("sara123"),
                                 "Sara", "Wilson", "sara.wilson@yahoo.com",
-                                "0612345678", LocalDate.of(1990, 11, 13), new BigDecimal(1000), new BigDecimal(200),
+                                "0612345678", LocalDate.of(1990, 11, 13), new BigDecimal(2000), new BigDecimal(200),
                                 false));
                 userRepository.save(new User(null, List.of(Role.CUSTOMER), "tomlee", passwordEncoder.encode("tom123"), "Tom",
                                 "Lee", "tom.lee@hotmail.com",
@@ -49,7 +49,7 @@ public class DataSeeder implements ApplicationRunner {
                                 false));
                 userRepository.save(new User(null, List.of(Role.CUSTOMER), "luukbakkum", passwordEncoder.encode("luuk123"),
                                 "Luuk", "Bakkum", "luuk.bakkum@gmail.com",
-                                "0651239876", LocalDate.of(2000, 3, 8), new BigDecimal(1000), new BigDecimal(200),
+                                "0651239876", LocalDate.of(2000, 3, 8), new BigDecimal(3000), new BigDecimal(200),
                                 false));
                 userRepository.save(new User(null, List.of(Role.CUSTOMER), "bown", passwordEncoder.encode("bob123"), "", "",
                                 "bob.brown@hotmail.com",

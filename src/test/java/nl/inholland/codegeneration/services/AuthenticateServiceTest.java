@@ -64,8 +64,8 @@ public class AuthenticateServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(jwtService.generateToken(any(User.class))).thenReturn("token");
 
-        AuthenticationResponse response = authenticateService.register(registerRequest);
 
+        
         assertEquals("token", response.getToken());
     }
 

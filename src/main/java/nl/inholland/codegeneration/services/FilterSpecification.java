@@ -1,41 +1,43 @@
 package nl.inholland.codegeneration.services;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import lombok.AllArgsConstructor;
+import nl.inholland.codegeneration.models.Account;
 import nl.inholland.codegeneration.models.FilterCriteria;
+import nl.inholland.codegeneration.models.User;
+import org.hibernate.query.sqm.tree.domain.SqmBasicValuedSimplePath;
 import org.springframework.data.jpa.domain.Specification;
 
 // FilterSpecification object to add field filters based on the following article: https://www.baeldung.com/rest-api-search-language-spring-data-specifications
 @AllArgsConstructor
-public class FilterSpecification<T> implements Specification<T> {
+public class FilterSpecification<T, J> implements Specification<T> {
     private FilterCriteria filterCriteria;
+    private Join<T, J> join;
+
     @Override
-    public Predicate toPredicate (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+    public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+        Path<String> path;
+
+        if (join != null) {
+            path = join.get(filterCriteria.getKey());
+        } else {
+            path = root.get(filterCriteria.getKey());
+        }
+        System.out.println("Predicate path: ");
+        System.out.println(path.toString() + " : " + filterCriteria.getKey());
         if (filterCriteria.getOperation().equalsIgnoreCase(">:")) {
-            return builder.greaterThanOrEqualTo(
-                    root.<String>get(filterCriteria.getKey()), filterCriteria.getValue().toString());
-        }
-        else if (filterCriteria.getOperation().equalsIgnoreCase("<:")) {
-            return builder.lessThanOrEqualTo(
-                    root.<String>get(filterCriteria.getKey()), filterCriteria.getValue().toString());
-        }
-        else if (filterCriteria.getOperation().equalsIgnoreCase(">")) {
-            return builder.greaterThan(
-                    root.<String>get(filterCriteria.getKey()), filterCriteria.getValue().toString());
-        }
-        else if (filterCriteria.getOperation().equalsIgnoreCase("<")) {
-            return builder.lessThan(
-                    root.<String>get(filterCriteria.getKey()), filterCriteria.getValue().toString());
-        }
-        else if (filterCriteria.getOperation().equalsIgnoreCase(":")) {
-            if (root.get(filterCriteria.getKey()).getJavaType() == String.class) {
-                return builder.like(
-                        root.<String>get(filterCriteria.getKey()), "%" + filterCriteria.getValue() + "%");
+            return builder.greaterThanOrEqualTo(path, filterCriteria.getValue().toString());
+        } else if (filterCriteria.getOperation().equalsIgnoreCase("<:")) {
+            return builder.lessThanOrEqualTo(path, filterCriteria.getValue().toString());
+        } else if (filterCriteria.getOperation().equalsIgnoreCase(">")) {
+            return builder.greaterThan(path, filterCriteria.getValue().toString());
+        } else if (filterCriteria.getOperation().equalsIgnoreCase("<")) {
+            return builder.lessThan(path, filterCriteria.getValue().toString());
+        } else if (filterCriteria.getOperation().equalsIgnoreCase(":")) {
+            if (path.getJavaType() == String.class) {
+                return builder.like(path, "%" + filterCriteria.getValue() + "%");
             } else {
-                return builder.equal(root.get(filterCriteria.getKey()), filterCriteria.getValue());
+                return builder.equal(path, filterCriteria.getValue());
             }
         }
         return null;

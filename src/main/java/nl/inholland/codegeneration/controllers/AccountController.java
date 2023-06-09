@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.EqualsAndHashCode.Include;
 
@@ -48,9 +49,11 @@ public class AccountController {
     // get /accounts
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery)
+    public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery,
+                                    @RequestParam(value = "limit", required = false) Integer limit,
+                                    @RequestParam(value = "page", required = false) Integer page)
             throws Exception {
-        QueryParams queryParams = new QueryParams(Transaction.class);
+        QueryParams<Account> queryParams = new QueryParams(Account.class, limit, page);
         queryParams.setFilter(filterQuery);
         List<AccountResponseDTO> accounts = accountService.getAll(queryParams);
         return ResponseEntity.status(200).body(accounts);
@@ -96,8 +99,13 @@ public class AccountController {
     // get /accounts/{iban}/transactions
     @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{iban}/transactions", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getTransactions(@PathVariable("iban") String iban) throws APIException {
-        List<TransactionResponseDTO> accounts = accountService.getTransactions(iban);
+    public ResponseEntity<?> getTransactions(@RequestParam(value = "filter", required = false) String filterQuery,
+                                             @RequestParam(value = "limit", required = false) Integer limit,
+                                             @RequestParam(value = "page", required = false) Integer page,
+                                             @PathVariable("iban") String iban) throws Exception {
+        QueryParams<Transaction> queryParams = new QueryParams(Transaction.class, limit, page);
+        queryParams.setFilter(filterQuery);
+        List<TransactionResponseDTO> accounts = accountService.getTransactions(queryParams, iban);
         return ResponseEntity.status(200).body(accounts);
     }
 
@@ -105,9 +113,7 @@ public class AccountController {
     @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{iban}/balance", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getBalance(@PathVariable("iban") String iban) throws APIException {
-       
         BalanceResponseDTO balance = accountService.getBalance(iban);
         return ResponseEntity.status(200).body(balance);
     }
- 
 }

@@ -2,6 +2,7 @@ package nl.inholland.codegeneration.controllers;
 
 import nl.inholland.codegeneration.configuration.apiTestConfiguration;
 import nl.inholland.codegeneration.models.Account;
+import nl.inholland.codegeneration.models.QueryParams;
 import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.models.DTO.request.AccountRequestDTO;
@@ -28,6 +29,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import javax.security.auth.x500.X500Principal;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -114,7 +117,7 @@ public class AccountControllerTest {
     @Test
 //     @WithMockUser(username = "user", roles = {"CUSTOMER"})
     public void testGetTransactions() throws Exception {
-        when(accountService.getTransactions("NL01INHO0000000001")).thenReturn(Collections.emptyList());
+        when(accountService.getTransactions(null, "NL01INHO0000000001")).thenReturn(Collections.emptyList());
         mockMvc.perform(get("/accounts/NL01INHO0000000001/transactions")).andExpect(status().isOk());
     }
 
@@ -124,4 +127,6 @@ public class AccountControllerTest {
         when(accountService.getBalance("NL01INHO0000000001")).thenReturn(null);
         mockMvc.perform(get("/accounts/NL01INHO0000000001/balance")).andExpect(status().isOk());
     }
+
+   
 }

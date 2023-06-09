@@ -26,6 +26,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails {
+    @Filterable
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -40,6 +41,7 @@ public class User implements UserDetails {
     // @ElementCollection(fetch = FetchType.EAGER)
     // private List<Role> role;
 
+    @Filterable(role = Role.EMPLOYEE)
     @Column(name = "username", nullable = false, unique = true, precision = 255)
     private String username;
 
@@ -69,6 +71,7 @@ public class User implements UserDetails {
     @Column(name = "transactionLimit", nullable = false, precision = 32, scale = 2)
     private BigDecimal transactionLimit = new BigDecimal("200");
 
+    @Filterable(role = Role.EMPLOYEE, defaultValue = "false")
     @Column(name = "isDeleted", nullable = false)
     private Boolean isDeleted = false;
 

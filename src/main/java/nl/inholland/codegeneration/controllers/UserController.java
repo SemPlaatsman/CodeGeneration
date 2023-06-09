@@ -37,45 +37,52 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery) throws Exception {
-        QueryParams queryParams = new QueryParams(User.class);
+    public ResponseEntity<List<UserResponseDTO>> getAll(@RequestParam(value = "filter", required = false) String filterQuery,
+                                                        @RequestParam(value = "limit", required = false) Integer limit,
+                                                        @RequestParam(value = "page", required = false) Integer page,
+                                                        @RequestParam(value = "hasAccount", required = false) Boolean hasAccount) throws Exception {
+        QueryParams<User> queryParams = new QueryParams(User.class, limit, page);
         queryParams.setFilter(filterQuery);
-        List<UserResponseDTO> users = userService.getAll(queryParams);
+        List<UserResponseDTO> users = userService.getAll(queryParams, hasAccount);
         return ResponseEntity.status(200).body(users);
     }
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getById(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDTO> getById(@PathVariable Long id) {
         UserResponseDTO user = userService.getById(id);
         return ResponseEntity.status(200).body(user);
     }
 
-    @PreAuthorize("hasAuthority('EMPLOYEE') OR (hasAuthority('CUSTOMER') AND #id == authentication.principal.id)")
+    @PreAuthorize("hasAuthority('EMPLOYEE') OR ((hasAuthority('CUSTOMER') AND #id == authentication.principal.id))")
     @GetMapping(path = "/{id}/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAllAccountsById(@PathVariable Long id) throws APIException {
-        List<AccountResponseDTO> accounts = accountService.getAllByUserId(id);
+    public ResponseEntity<List<AccountResponseDTO>> getAllAccountsById(@RequestParam(value = "filter", required = false) String filterQuery,
+                                                @RequestParam(value = "limit", required = false) Integer limit,
+                                                @RequestParam(value = "page", required = false) Integer page,
+                                                @PathVariable Long id) throws Exception {
+        QueryParams<Account> queryParams = new QueryParams(Account.class, limit, page);
+        queryParams.setFilter(filterQuery);
+        List<AccountResponseDTO> accounts = accountService.getAllByUserId(queryParams, id);
         return ResponseEntity.status(200).body(accounts);
     }
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> add(@RequestBody @Valid UserRequestDTO user) {
+    public ResponseEntity<UserResponseDTO> add(@RequestBody @Valid UserRequestDTO user) {
         UserResponseDTO addedUser = userService.add(user);
         return ResponseEntity.status(201).body(addedUser);
     }
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> update(@RequestBody @Valid UserRequestDTO user, @PathVariable Long id) {
-        System.out.println(user);
+    public ResponseEntity<UserResponseDTO> update(@RequestBody @Valid UserRequestDTO user, @PathVariable Long id) {
         UserResponseDTO updatedUser = userService.update(user, id);
         return ResponseEntity.status(200).body(updatedUser);
     }
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) throws APIException {
+    public ResponseEntity<String> delete(@PathVariable Long id) throws APIException {
         userService.delete(id);
         return ResponseEntity.status(204).body("No Content");
     }

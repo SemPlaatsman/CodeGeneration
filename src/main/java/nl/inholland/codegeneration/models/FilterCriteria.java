@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 public class FilterCriteria {
+    @Setter
     private String key;
     private String operation;
     @Setter

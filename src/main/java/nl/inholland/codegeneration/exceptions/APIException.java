@@ -21,4 +21,5 @@ public class APIException extends Exception {
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
+    
 }

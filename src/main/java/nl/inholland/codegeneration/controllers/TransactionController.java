@@ -31,13 +31,14 @@ public class TransactionController {
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery) throws Exception {
-        QueryParams queryParams = new QueryParams(Transaction.class);
+    public ResponseEntity<?> getAll(@RequestParam(value = "filter", required = false) String filterQuery,
+                                    @RequestParam(value = "limit", required = false) Integer limit,
+                                    @RequestParam(value = "page", required = false) Integer page) throws Exception {
+        QueryParams<Transaction> queryParams = new QueryParams(Transaction.class, limit, page);
         queryParams.setFilter(filterQuery);
         List<TransactionResponseDTO> transactions = transactionService.getAll(queryParams);
         return ResponseEntity.status(200).body(transactions);
     }
-
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -53,29 +54,5 @@ public class TransactionController {
         return ResponseEntity.status(201).body(addedTransaction);
     }
     
-//    @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<?> update(@RequestBody Transaction transaction, @PathVariable int id) { //add a type where the question mark is if applicable
-//        try {
-//            Transaction updatedTransaction = transactionService.update(transaction, id);
-//            return ResponseEntity.status(200).body(updatedTransaction);
-//        } catch (Exception ex) {
-//            return ResponseEntity.badRequest().body(ex.getMessage());
-//        }
-//    }
+
 }
-// @GetMapping
-// public List<Transaction> getAllTransactions() {
-// return transactionService.getTransactions();
-// }
-// public Transaction getById(@PathVariable int id) {
-// return transactionService.getById(id);
-// }
-// @PostMapping
-// public Transaction createTransaction(@RequestBody Transaction transaction) {
-// return transactionService.add(transaction);
-// }
-// @PutMapping("/{id}")
-// public Transaction update(@RequestBody Transaction transaction, @PathVariable
-// int id) {
-// return transactionService.update(transaction, id);
-// }

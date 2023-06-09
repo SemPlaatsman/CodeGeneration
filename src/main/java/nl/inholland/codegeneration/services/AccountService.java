@@ -2,22 +2,24 @@ package nl.inholland.codegeneration.services;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.*;
+import nl.inholland.codegeneration.models.*;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import nl.inholland.codegeneration.exceptions.APIException;
-import nl.inholland.codegeneration.models.Account;
-import nl.inholland.codegeneration.models.QueryParams;
-import nl.inholland.codegeneration.models.Role;
-import nl.inholland.codegeneration.models.Transaction;
-import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.models.DTO.request.AccountRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.AccountResponseDTO;
 import nl.inholland.codegeneration.models.DTO.response.BalanceResponseDTO;
@@ -37,19 +39,19 @@ public class AccountService {
     private final AccountDTOMapper AccountDTOMapper;
     private final TransactionDTOMapper TransactionDTOMapper;
 
-    public List<AccountResponseDTO> getAll(QueryParams queryParams) {
+    public List<AccountResponseDTO> getAll(QueryParams<Account> queryParams) throws Exception {
         return (List<AccountResponseDTO>) accountRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit()))
                .getContent().stream().map(AccountDTOMapper.toResponseDTO).collect(Collectors.toList());
     }
 
-    public List<AccountResponseDTO> getAllByUserId(Long request) throws APIException {
-
-        if (!userRepository.existsById(request)) {
-            throw new APIException("not users found", HttpStatus.NOT_FOUND, LocalDateTime.now());
+    public List<AccountResponseDTO> getAllByUserId(QueryParams<Account> queryParams, Long id) throws Exception {
+        if (!userRepository.existsById(id)) {
+            throw new APIException("User not found!", HttpStatus.NOT_FOUND, LocalDateTime.now());
         }
-        List<Account> accounts = accountRepository.findAllByUserIdAndIsDeletedFalse(request);
-        // if (accounts.isEmpty()) {
-        //     throw new APIException("not accounts found", HttpStatus.NOT_FOUND, LocalDateTime.now());
+
+        queryParams.addFilter(new FilterCriteria("user.id", ":", id));
+        List<Account> accounts = accountRepository.findAll(queryParams.buildFilter(), PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent();
+        // if (accounts.isEmpty()) {pStatus.NOT_FOUND, LocalDateTime.now());
         // }
 
         return (List<AccountResponseDTO>) accounts.stream().map(AccountDTOMapper.toResponseDTO).collect(Collectors.toList());
@@ -58,8 +60,8 @@ public class AccountService {
     public AccountResponseDTO insertAccount(AccountRequestDTO request) throws APIException {
         Account account = AccountDTOMapper.toAccount.apply(request);
 
-        if (account.getUser().getIsDeleted() == true) {
-            throw new APIException("unauthorized", HttpStatus.UNAUTHORIZED, LocalDateTime.now());
+        if (account.getUser().getIsDeleted()) {
+            throw new EntityNotFoundException("User not found!");
         }
         
         Account addedAccount = new Account();
@@ -69,16 +71,15 @@ public class AccountService {
         return AccountDTOMapper.toResponseDTO.apply(accountRepository.save(addedAccount));
     }
 
+        //     throw new APIException("not accounts found", Htt
     public AccountResponseDTO getAccountByIban(String iban) throws APIException {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Optional<Account> account = accountRepository.findByIbanAndIsDeletedFalse(iban);
-        if (account.isPresent()) {
-            CustomerIbanCheck(user, account.get());
-            return AccountDTOMapper.toResponseDTO.apply(account.get());
-        } else {
-            throw new APIException("Account not found", HttpStatus.NOT_FOUND, LocalDateTime.now());
+        Account account = accountRepository.findByIbanAndIsDeletedFalse(iban).orElseThrow(() -> new APIException("Account not found", HttpStatus.NOT_FOUND, LocalDateTime.now()));
+        CustomerIbanCheck(user, account);
+        if (!user.getRoles().contains(Role.EMPLOYEE) && account.getIsDeleted()) {
+            throw new EntityNotFoundException("Account not found!");
         }
-
+        return AccountDTOMapper.toResponseDTO.apply(account);
     }
 
     public AccountResponseDTO updateAccount(AccountRequestDTO request, String Iban) throws APIException {
@@ -107,62 +108,48 @@ public class AccountService {
     }
 
     public void deleteAccount(String iban) throws APIException {
-
-        Optional<Account> addedAccount = accountRepository.findByIbanAndIsDeletedFalse(iban);
-        if (addedAccount.isPresent()) {
-            Account account = addedAccount.get();
-            if(account.getIsDeleted())
-            {
-                throw new APIException("account whit iban: " + iban + " does not exist", HttpStatus.NOT_FOUND,
-                LocalDateTime.now());
-            }
-            account.setIsDeleted(true);
-            accountRepository.save(account);
-        } else {
-            throw new APIException("account whit iban: " + iban + " not found", HttpStatus.NOT_FOUND,
-                    LocalDateTime.now());
+        Account account = accountRepository.findByIbanAndIsDeletedFalse(iban).orElseThrow(() -> new EntityNotFoundException("Account not found!"));
+        if(account.getIsDeleted()) {
+            throw new EntityNotFoundException("Account not found!");
+        } else if (!new BigDecimal(0).equals(account.getBalance())) {
+            throw new InvalidDataAccessApiUsageException("Account balance must be zero before deleting!");
         }
-
+        account.setIsDeleted(true);
+        accountRepository.save(account);
     }
 
-    public List<TransactionResponseDTO> getTransactions(String iban) throws APIException {
+    public List<TransactionResponseDTO> getTransactions(QueryParams<Transaction> queryParams, String iban) throws Exception {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<Transaction> accounts;
-        if(user.getRoles().contains(Role.CUSTOMER)){
-              accounts = transactionRepository.findAllByAccountFromIbanAndUserId(iban, user.getId());
-        }
-        else{
-      
-            accounts = transactionRepository.findAllByAccountFromIban(iban);
-        }
 
-        if (accounts.isEmpty()) {
-            throw new APIException("No transactions for " + iban, HttpStatus.NOT_FOUND, LocalDateTime.now());
+        Optional<Account> account = this.accountRepository.findById(iban);
+        if (!account.isPresent() || (!user.getRoles().contains(Role.EMPLOYEE) && account.get().getIsDeleted())) {
+            throw new EntityNotFoundException("Account not found!");
         }
-        return (List<TransactionResponseDTO>) transactionRepository.findAllByAccountFromIban(iban).stream()
+        CustomerIbanCheck(user, account.get());
+
+        Specification<Transaction> specification = (Root<Transaction> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            Specification<Transaction> accountFromSpecification = new FilterSpecification<>(new FilterCriteria("iban", ":", iban), root.join("accountFrom"));
+            predicates.add(accountFromSpecification.toPredicate(root, query, builder));
+            Specification<Transaction> accountToSpecification = new FilterSpecification<>(new FilterCriteria("iban", ":", iban), root.join("accountTo"));
+            predicates.add(accountToSpecification.toPredicate(root, query, builder));
+            return builder.or(predicates.toArray(new Predicate[0]));
+        };
+
+        return (List<TransactionResponseDTO>) transactionRepository.findAll(queryParams.buildFilter().and(specification)).stream()
                 .map(TransactionDTOMapper.toResponseDTO).collect(Collectors.toList());
-
     }
 
     public BalanceResponseDTO getBalance(String iban) throws APIException {
-        Optional<Account> account = accountRepository.findByIbanAndIsDeletedFalse(iban);
+        Account account = accountRepository.findById(iban).orElseThrow(() -> new EntityNotFoundException("Account not found!"));
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (account.isPresent()) {
-            CustomerIbanCheck(user , account.get());
-            Account updatedAccount = account.get();
-            updatedAccount.setBalance(account.get().getBalance());
-            return  AccountDTOMapper.toBalanceDTO.apply(updatedAccount);
-        } else {
-            throw new APIException("Account not found", HttpStatus.NOT_FOUND, LocalDateTime.now());
-        }
-
+        CustomerIbanCheck(user, account);
+        return AccountDTOMapper.toBalanceDTO.apply(account);
     }
 
-    private Account CustomerIbanCheck(User user,  Account account) throws APIException {
-       
-        if (account.getUser() != user && user.getRoles().contains(Role.CUSTOMER)&& !user.getRoles().contains(Role.EMPLOYEE)) {
+    private void CustomerIbanCheck(User user, Account account) throws APIException {
+        if (!Objects.equals(account.getUser().getId(), user.getId()) && user.getRoles().contains(Role.CUSTOMER) && !user.getRoles().contains(Role.EMPLOYEE)) {
             throw new APIException("Forbidden!", HttpStatus.FORBIDDEN, LocalDateTime.now());
         }
-        return account;
     }
 }

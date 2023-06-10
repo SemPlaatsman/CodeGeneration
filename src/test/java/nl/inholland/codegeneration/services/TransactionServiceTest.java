@@ -1,6 +1,8 @@
 package nl.inholland.codegeneration.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
@@ -26,6 +28,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import nl.inholland.codegeneration.models.Account;
 import nl.inholland.codegeneration.models.AccountType;
 import nl.inholland.codegeneration.models.Role;
@@ -62,46 +66,20 @@ public class TransactionServiceTest {
 
     @BeforeEach
     public void setup() {
-        user = new User(1L, null, null, null, null, null, 
-        null, null, null, BigDecimal.valueOf(5000), BigDecimal.valueOf(2000), null);
+        //preparing data (could be moved to the individual tests)
+        user = new User(1L, null, null, null, null, null, null, null, null, BigDecimal.valueOf(5000), BigDecimal.valueOf(2000), null);
+        accountFrom =new Account("accountFromIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),false);
+        accountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),false);
+
+
+        transactionRequestDTO = new TransactionRequestDTO("accountFromIban", "accountToIban", BigDecimal.valueOf(100),"description");
        
-       
-        accountFrom = new  Account(String iban, AccountType accountType, User user, BigDecimal balance, BigDecimal absoluteLimit, Boolean isDeleted);
-        accountFrom.setUserById(1L);
-        accountFrom.setIban("accountFromIban");
-        accountFrom.setUser(user);
-        accountFrom.setBalance(BigDecimal.valueOf(2000));
-        accountFrom.setIsDeleted(false);
-        accountFrom.setAbsoluteLimit(BigDecimal.valueOf(0));
-        accountFrom.setAccountType(AccountType.CURRENT);
-
-        accountTo = new Account();
-        accountTo.setUserById(2L);
-        accountTo.setIban("accountToIban");
-        accountTo.setUser(user);
-        accountTo.setBalance(BigDecimal.valueOf(1000));
-        accountTo.setIsDeleted(false);
-
-        transactionRequestDTO = new TransactionRequestDTO("accountFromIban", "accountToIban", BigDecimal.valueOf(100),
-                "description");
-        validTransaction = new Transaction();
-        validTransaction.setAccountFrom(accountFrom);
-        validTransaction.setAccountTo(accountTo);
-        validTransaction.setAmount(BigDecimal.valueOf(100));
-        validTransaction.setPerformingUser(user);
-        validTransaction.setTimestamp(LocalDateTime.now());
-
+        validTransaction = new Transaction(1L, LocalDateTime.now(), accountFrom, accountTo, BigDecimal.valueOf(100), AuthenticationUser, "description");
+        AuthenticationUser = new User(null, Collections.singletonList(Role.EMPLOYEE), "sarawilson", "sara123", null, null, null, null, null, new BigDecimal(200), new BigDecimal(400), null);
+   
         // security mocks
 
-        AuthenticationUser.setUsername("sarawilson");
-        AuthenticationUser.setPassword("sara123");
-        AuthenticationUser.setRoles(Collections.singletonList(Role.EMPLOYEE)); // Assuming the user has the role
-                                                                               // "EMPLOYEE"
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                AuthenticationUser,
-                "sara123",
-                AuthenticationUser.getAuthorities());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(AuthenticationUser,"sara123",AuthenticationUser.getAuthorities());
 
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(authentication);
@@ -109,14 +87,18 @@ public class TransactionServiceTest {
         transactionDTOMapper = new TransactionDTOMapper(accountRepository);
         transactionDTOMapper.toTransaction = Mockito.mock(Function.class);
         transactionDTOMapper.toResponseDTO = Mockito.mock(Function.class);
+        transactionService = new TransactionService(transactionRepository, transactionDTOMapper);
     }
 
     @Test
     public void add_ValidTransaction_Success() {
 
-        
+        validTransaction= new Transaction(1L, LocalDateTime.now(), accountFrom, accountTo, BigDecimal.valueOf(100), AuthenticationUser, "description");
+        user = new User(1L, null, null, null, null, null, null, null, null, BigDecimal.valueOf(5000), BigDecimal.valueOf(2000), null);
+        transactionResponseDTO = new TransactionResponseDTO(1L, LocalDateTime.now(), "accountFromIban", "sarawilson", "accountToIban", "sarawilson", BigDecimal.valueOf(100), "description");
+
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(validTransaction);
-        when(transactionRepository.findDailyTransactionsValueOfUser(anyLong())).thenReturn(Optional.of(BigDecimal.valueOf(0)));
+        when(transactionRepository.findDailyTransactionsValueOfUser(anyLong())).thenReturn(Optional.of(BigDecimal.valueOf(10)));
         when(transactionRepository.save(any(Transaction.class))).thenReturn(validTransaction);
         when(transactionDTOMapper.toResponseDTO.apply(any(Transaction.class))).thenReturn(transactionResponseDTO);
 
@@ -129,21 +111,156 @@ public class TransactionServiceTest {
     }
 
     @Test
-    public void add_InsufficientBalance_ThrowsIllegalStateException() {
-        accountFrom.setBalance(BigDecimal.valueOf(50)); // Set balance lower than transaction amount
-        when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(validTransaction);
+    public void add_BankAcountInvalid() {
+    
 
-        assertThatThrownBy(() -> transactionService.add(transactionRequestDTO))
-                .isInstanceOf(IllegalStateException.class).hasMessage("Insufficient balance!");
+        Account inValidAccountFrom = new Account("accountFromIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),true);
+        Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),true);
+        Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, BigDecimal.valueOf(100), AuthenticationUser, "description");
+
+        when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
+    
+
+        InvalidDataAccessApiUsageException exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> {
+            transactionService.add(transactionRequestDTO);
+        });
+
+        assertEquals("Invalid bank account provided!", exception.getMessage());
+
+    }
+    @Test
+    public void add_AmountLowerThenZero() {
+        BigDecimal amount = new BigDecimal("-100");
+        Account inValidAccountFrom = new Account("accountFromIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),false);
+        Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),false);
+        Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, amount, AuthenticationUser, "description");
+
+        when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
+    
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            transactionService.add(transactionRequestDTO);
+        });
+
+        assertEquals("Amount cannot be lower or equal to zero!", exception.getMessage());
+
+    }
+    @Test
+    public void add_InsuficientBalance() {
+        BigDecimal amount = new BigDecimal("10");
+        BigDecimal balance = amount.subtract(new BigDecimal("1"));
+        Account inValidAccountFrom = new Account("accountFromIban", AccountType.CURRENT, user, balance,new BigDecimal("120"),false);
+        Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),false);
+        Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, amount, AuthenticationUser, "description");
+
+        when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
+    
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            transactionService.add(transactionRequestDTO);
+        });
+
+        assertEquals("Insufficient balance!", exception.getMessage());
+
+    }
+    //Amount cannot surpass day limit!
+    @Test
+    public void add_pastDayLimit() {
+      
+        BigDecimal dayLimit = new BigDecimal("10");
+        user.setDayLimit(dayLimit);
+        Account inValidAccountFrom = new Account("accountFromIban", AccountType.CURRENT, user, new BigDecimal(200),new BigDecimal("120"),false);
+        Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),false);
+        Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, new BigDecimal("19"), AuthenticationUser, "description");
+
+        when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
+    
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            transactionService.add(transactionRequestDTO);
+        });
+
+        assertEquals("Amount cannot surpass day limit!", exception.getMessage());
+
+    }
+    //Amount cannot surpass transaction limit!
+    @Test
+    public void add_pastTransactionLimit() {
+    
+        BigDecimal transactionLimit = new BigDecimal("100");
+        user.setDayLimit(new BigDecimal("1000"));
+        user.setTransactionLimit(transactionLimit);
+        AuthenticationUser.setTransactionLimit(transactionLimit);
+        Account inValidAccountFrom = new Account("accountFromIban", AccountType.CURRENT, user, new BigDecimal(200),new BigDecimal("-1000"),false);
+        Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),false);
+        Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, new BigDecimal(200), AuthenticationUser, "description");
+
+        when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
+    
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            transactionService.add(transactionRequestDTO);
+        });
+
+        assertEquals("Amount cannot surpass transaction limit!", exception.getMessage());
+
+    }
+    //Cannot make a transaction from a savings account to an account that is not of the same user!
+    @Test
+    public void add_savingAcountAndToAccountNotSameUser() {
+    
+        user = new User(2L, null, null, null, null, null, null, null, null, BigDecimal.valueOf(5000), BigDecimal.valueOf(2000), null);
+        Account inValidAccountFrom = new Account("accountFromIban", AccountType.SAVINGS, user, new BigDecimal(200),new BigDecimal("-1000"),false);
+        Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),false);
+        Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, new BigDecimal(200), AuthenticationUser, "description");
+
+        when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
+    
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            transactionService.add(transactionRequestDTO);
+        });
+
+        assertEquals("Cannot make a transaction from a savings account to an account that is not of the same user!", exception.getMessage());
+
     }
 
     @Test
-    public void add_DeletedAccount_ThrowsInvalidDataAccessApiUsageException() {
-        accountFrom.setIsDeleted(true); // Mark account as deleted
-        when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(validTransaction);
-
-        assertThatThrownBy(() -> transactionService.add(transactionRequestDTO))
-                .isInstanceOf(InvalidDataAccessApiUsageException.class).hasMessage("Invalid bank account provided!");
+    void testGetAll() {
+         fail("Not implemented");
     }
 
+    @Test
+    void testGetById() {
+
+        Long transactionId = 1L;
+
+        TransactionResponseDTO expectedResponseDTO = new TransactionResponseDTO(validTransaction);
+        
+        when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(validTransaction));
+        when(transactionDTOMapper.toResponseDTO.apply(validTransaction)).thenReturn(expectedResponseDTO);
+
+        TransactionResponseDTO actualResponseDTO = transactionService.getById(transactionId);
+
+        assertEquals(expectedResponseDTO, actualResponseDTO);
+        verify(transactionRepository, times(1)).findById(transactionId);
+        verify(transactionDTOMapper.toResponseDTO, times(1)).apply(validTransaction);
+        
+    }
+
+    @Test
+    void testGetById_invalidTransaciont() {
+
+        Long transactionId = 1L;
+
+        Transaction invalidTransaction = new Transaction();
+        
+        when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(invalidTransaction));
+
+        EntityNotFoundException exception =  assertThrows(EntityNotFoundException.class,() ->transactionService.getById(transactionId)); 
+
+        assertEquals("Transaction not found!", exception.getMessage());
+        
+        
+    }
 }

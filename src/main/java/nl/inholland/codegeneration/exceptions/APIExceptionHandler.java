@@ -12,6 +12,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 
+import javax.naming.AuthenticationException;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
@@ -57,7 +59,7 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(apiExceptionResponseDTO, apiExceptionResponseDTO.httpStatus());
     }
 
-    @ExceptionHandler({BadCredentialsException.class, JwtException.class, UsernameNotFoundException.class})
+    @ExceptionHandler({BadCredentialsException.class, JwtException.class, UsernameNotFoundException.class, AccountExpiredException.class})
     public ResponseEntity<APIExceptionResponseDTO> handleUnauthorizedException(Exception ex, WebRequest request) {
         APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO(
                 (ex.getMessage() != null) ? ex.getMessage() : "Unauthorized!",

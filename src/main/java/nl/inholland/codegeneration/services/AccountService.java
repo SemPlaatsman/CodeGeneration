@@ -89,7 +89,7 @@ public class AccountService {
         Account account = AccountDTOMapper.toAccount.apply(request);
 
         if (account.getUser() == null) {
-            throw new APIException("Unauthorized", HttpStatus.BAD_REQUEST, LocalDateTime.now());
+            throw new APIException("Unauthorized!", HttpStatus.BAD_REQUEST, LocalDateTime.now());
         }
 
         Optional<Account> updatedAccount = accountRepository.findByIbanAndIsDeletedFalse(Iban);

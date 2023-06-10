@@ -9,49 +9,52 @@ import nl.inholland.codegeneration.models.FilterCriteria;
 import nl.inholland.codegeneration.services.FilterSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class FilterSpecificationTest {
-    
-    private Root root;
-    private CriteriaQuery query;
+
+    @Mock
+    private Root<Object> root;
+
+    @Mock
+    private CriteriaQuery<?> query;
+
+    @Mock
     private CriteriaBuilder builder;
+
     private FilterCriteria filterCriteria;
-    private FilterSpecification<String> filterSpecification;
+    private FilterSpecification<Object, Object> filterSpecification;
 
     @BeforeEach
     public void setUp() {
-        // Mock all the dependencies
-        root = Mockito.mock(Root.class);
-        query = Mockito.mock(CriteriaQuery.class);
-        builder = Mockito.mock(CriteriaBuilder.class);
+        MockitoAnnotations.openMocks(this);
 
         // Mock the behavior of root.get() method
-        Path path = Mockito.mock(Path.class);
+        Path<Object> path = mock(Path.class);
         when(root.get(anyString())).thenReturn(path);
-        when(path.getJavaType()).thenReturn(String.class);
+        when(Path.class.cast(path).getJavaType()).thenReturn(String.class);
 
         // Mock the behavior of builder.like() and builder.equal() methods
         Predicate predicate = Mockito.mock(Predicate.class);
         when(builder.like(any(Path.class), anyString())).thenReturn(predicate);
-        when(builder.equal(any(Path.class), any())).thenReturn(predicate);
-        when(builder.greaterThanOrEqualTo(any(Path.class), anyString())).thenReturn(predicate);
-        when(builder.lessThanOrEqualTo(any(Path.class), anyString())).thenReturn(predicate);
-        when(builder.greaterThan(any(Path.class), anyString())).thenReturn(predicate);
-        when(builder.lessThan(any(Path.class), anyString())).thenReturn(predicate);
+
     }
 
     @Test
     public void testToPredicateWithEqualsOperation() {
         filterCriteria = new FilterCriteria("key", ":", "value");
-        filterSpecification = new FilterSpecification<>(filterCriteria);
+        filterSpecification = new FilterSpecification<>(filterCriteria, null);
         Predicate result = filterSpecification.toPredicate(root, query, builder);
         assert result != null;
     }
-
-    // Similarly, you can test other operations like >:, <:, >, <
 }

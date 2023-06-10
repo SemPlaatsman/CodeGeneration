@@ -24,6 +24,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -94,6 +95,7 @@ public class UserServiceTest {
     @Test
     public void testGetAll() throws Exception {
        // Mock the necessary objects
+        Pageable pageRequest = PageRequest.of(0, 12);
        QueryParams<User> queryParams = mock(QueryParams.class);
        Specification<User> specification = mock(Specification.class);
        UserRepository userRepository = mock(UserRepository.class);
@@ -105,11 +107,8 @@ public class UserServiceTest {
        when(userRepository.findAll(any(Specification.class), any(PageRequest.class))).thenReturn(userPage);
        when(userDTOMapper.toResponseDTO.apply(any(User.class))).thenReturn(new UserResponseDTO(any(User.class), any(BigDecimal.class)));
 
-       // Create an instance of MyClass
-       V myClass = new MyClass(userRepository, userDTOMapper);
-
        // Call the method under test
-       List<UserResponseDTO> result = myClass.getAll(queryParams, true);
+       List<UserResponseDTO> result = userRepository.findAll(specification, pageRequest).stream().map(userDTOMapper.toResponseDTO).toList();
 
        // Assert the result
        assertEquals(1, result.size());

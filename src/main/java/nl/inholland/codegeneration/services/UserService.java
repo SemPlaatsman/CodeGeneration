@@ -2,6 +2,7 @@ package nl.inholland.codegeneration.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -64,14 +65,19 @@ public class UserService {
     public UserResponseDTO add(UserRequestDTO userRequestDTO) {
         User user = userDTOMapper.toUser.apply(userRequestDTO);
         user.setId(null);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setIsDeleted(false);
         return userDTOMapper.toResponseDTO.apply(userRepository.save(user));
     }
 
-    public UserResponseDTO update(UserUpdateRequestDTO userRequestDTO, Long id) {
-        User user = userDTOMapper.toUserFromUpdate.apply(userRequestDTO);
-        user.setId(id);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public UserResponseDTO update(UserUpdateRequestDTO userUpdateRequestDTO, Long id) {
+        if (!Objects.equals(id, userUpdateRequestDTO.id())) {
+            throw new IllegalStateException("Id in request body must match id in url!");
+        }
+        User user = userDTOMapper.toUserFromUpdate.apply(userUpdateRequestDTO);
+        if (!user.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         User existingUser = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found!"));
         existingUser.update(user);
         return userDTOMapper.toResponseDTO.apply(userRepository.save(existingUser));

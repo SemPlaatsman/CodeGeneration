@@ -26,6 +26,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -66,50 +69,46 @@ public class AccountControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
+    @WithMockUser(username = "user", roles = { "EMPLOYEE" })
     public void testGetAccountByIban() throws Exception {
         mockMvc.perform(get("/accounts/{iban}", "NL06INHO0000000001"))
-        .andExpect(status().isOk());
+                .andExpect(status().isOk());
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"EMPLOYEE"})//400 response
+    @WithMockUser(username = "user", roles = { "EMPLOYEE" })
     public void testInsertAccount() throws Exception {
-        Account account = new Account();
         User user = new User();
         user.setRoles(List.of(Role.CUSTOMER));
-        account.setUser(user);
 
         AccountRequestDTO requestDTO = new AccountRequestDTO(1L, null, 0);
         AccountResponseDTO responseDTO = new AccountResponseDTO("NL06INHO0000000001", 0, "Luuk", null, null);
 
         when(accountService.insertAccount(requestDTO)).thenReturn(responseDTO);
-        mockMvc.perform(post("/accounts", account)
-        .contentType(MediaType.APPLICATION_JSON)
-                .content("{}"))
+        mockMvc.perform(post("/accounts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(requestDTO)))
                 .andExpect(status().isCreated());
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"EMPLOYEE"})//400 response
-    public void testUpdateAccount() throws Exception {
-        Account account = new Account();
+    @WithMockUser(username = "user", roles = { "EMPLOYEE" })
+    void testUpdateAccount() throws Exception {
         User user = new User();
         user.setRoles(List.of(Role.EMPLOYEE));
-        account.setUser(user);
 
-        AccountRequestDTO requestDTO = new AccountRequestDTO(1L, null, 0);
+        AccountRequestDTO requestDTO = new AccountRequestDTO(1L, null, 100);
         AccountResponseDTO responseDTO = new AccountResponseDTO("NL06INHO0000000001", 0, "Luuk", null, null);
 
         when(accountService.updateAccount(requestDTO, "NL06INHO0000000001")).thenReturn(responseDTO);
-        mockMvc.perform(put("/accounts", requestDTO).contentType(MediaType.APPLICATION_JSON)
-        // mockMvc.perform(put("/accounts").contentType(MediaType.APPLICATION_JSON)
-                .content("{}"))
+        mockMvc.perform(put("/accounts/{iban}", "NL06INHO0000000001")
+                .content(asJsonString(requestDTO))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
+    @WithMockUser(username = "user", roles = { "EMPLOYEE" })
     public void testDeleteAccount() throws Exception {
         mockMvc.perform(delete("/accounts/NL01INHO0000000001")).andExpect(status().isNoContent());
     }
@@ -128,5 +127,14 @@ public class AccountControllerTest {
         mockMvc.perform(get("/accounts/NL01INHO0000000001/balance")).andExpect(status().isOk());
     }
 
-   
+    public static String asJsonString(final Object obj) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule()); // register JavaTimeModule Dit geeft meer errors. Moet iets
+                                                         // extra toevoegen.
+            return mapper.writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -97,7 +97,7 @@ public class DataSeeder implements ApplicationRunner {
                 accountRepository.save(new Account(null, AccountType.CURRENT, userRepository.findById(2L).orElseThrow(),
                                 new BigDecimal("520"), new BigDecimal("-2400"), false));
                 accountRepository.save(new Account(null, AccountType.CURRENT, userRepository.findById(3L).orElseThrow(),
-                                new BigDecimal("11"), new BigDecimal("-2600"), false));
+                                new BigDecimal("1100"), new BigDecimal("-2600"), false));
                 accountRepository.save(new Account(null, AccountType.CURRENT, userRepository.findById(4L).orElseThrow(),
                                 new BigDecimal("-25"), new BigDecimal("-300"), false));
                 accountRepository.save(new Account(null, AccountType.SAVINGS, userRepository.findById(4L).orElseThrow(),
@@ -107,7 +107,7 @@ public class DataSeeder implements ApplicationRunner {
                 accountRepository.save(new Account(null, AccountType.CURRENT, userRepository.findById(5L).orElseThrow(),
                                 new BigDecimal("110"), new BigDecimal("-2500"), false));
                 accountRepository.save(new Account(null, AccountType.CURRENT, userRepository.findById(6L).orElseThrow(),
-                                new BigDecimal("1000"), new BigDecimal("-1000"), false));
+                                new BigDecimal("7000"), new BigDecimal("-1000"), false));
                 accountRepository.save(new Account(null, AccountType.SAVINGS, userRepository.findById(6L).orElseThrow(),
                                 new BigDecimal("1000"), new BigDecimal("-1000"), false));
                 accountRepository.save(new Account(null, AccountType.CURRENT, userRepository.findById(7L).orElseThrow(),

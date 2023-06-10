@@ -66,7 +66,7 @@ public class UserServiceTest {
     @Mock
     PasswordEncoder passwordEncoder;
   
-    User AuthenticationUser = new User(null, null, null, null, null, null, null, null, null, null, null, null);
+    User authenticationUser = new User(null, null, null, null, null, null, null, null, null, null, null, null);
 
     @BeforeEach
     public void setup() {
@@ -76,15 +76,15 @@ public class UserServiceTest {
 
         userService = new UserService(userRepository, accountRepository, userDTOMapper, passwordEncoder);
 
-        AuthenticationUser.setUsername("sarawilson");
-        AuthenticationUser.setPassword("sara123");
-        AuthenticationUser.setRoles(Collections.singletonList(Role.EMPLOYEE)); // Assuming the user has the role
+        authenticationUser.setUsername("sarawilson");
+        authenticationUser.setPassword("sara123");
+        authenticationUser.setRoles(Collections.singletonList(Role.EMPLOYEE)); // Assuming the user has the role
                                                                                // "EMPLOYEE"
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        AuthenticationUser,
+                authenticationUser,
                         "sara123",
-                        AuthenticationUser.getAuthorities());
+                authenticationUser.getAuthorities());
 
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(authentication);

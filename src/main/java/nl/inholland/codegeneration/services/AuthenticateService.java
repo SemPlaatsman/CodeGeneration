@@ -1,5 +1,6 @@
 package nl.inholland.codegeneration.services;
 
+import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.codegeneration.exceptions.APIException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -7,6 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.User;
@@ -61,7 +63,7 @@ public class AuthenticateService {
 
   public AuthenticationResponse login(AuthenticationRequest request) {
     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-    User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
+    User user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new EntityNotFoundException("User not found!"));
     String jwtToken =  jwtService.generateToken(user);
     return AuthenticationResponse.builder()
     .token(jwtToken)
@@ -70,5 +72,6 @@ public class AuthenticateService {
     .roles(user.getRoles().stream().map(Role::getValue).collect(Collectors.toList()))
     .id(user.getId())
     .build();
+    
   }
 }

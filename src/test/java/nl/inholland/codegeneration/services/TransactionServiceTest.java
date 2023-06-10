@@ -62,7 +62,7 @@ public class TransactionServiceTest {
     private Account accountFrom;
     private Account accountTo;
 
-    private User AuthenticationUser = new User(null, null, null, null, null, null, null, null, null, null, null, null);
+    private User authenticationUser = new User(null, null, null, null, null, null, null, null, null, null, null, null);
 
     @BeforeEach
     public void setup() {
@@ -70,16 +70,43 @@ public class TransactionServiceTest {
         user = new User(1L, null, null, null, null, null, null, null, null, BigDecimal.valueOf(5000), BigDecimal.valueOf(2000), null);
         accountFrom =new Account("accountFromIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),false);
         accountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),false);
+//         user = new User(1L, null, null, null, null, null, 
+//         null, null, null, BigDecimal.valueOf(5000), BigDecimal.valueOf(2000), null);
+       
+       
+//         accountFrom = new Account();
+//         accountFrom.setUserById(1L);
+//         accountFrom.setIban("accountFromIban");
+//         accountFrom.setUser(user);
+//         accountFrom.setBalance(BigDecimal.valueOf(2000));
+//         accountFrom.setIsDeleted(false);
+//         accountFrom.setAbsoluteLimit(BigDecimal.valueOf(0));
+//         accountFrom.setAccountType(AccountType.CURRENT);
 
+//         accountTo = new Account();
+//         accountTo.setUserById(2L);
+//         accountTo.setIban("accountToIban");
+//         accountTo.setUser(user);
+//         accountTo.setBalance(BigDecimal.valueOf(1000));
+//         accountTo.setIsDeleted(false);
+
+//         transactionRequestDTO = new TransactionRequestDTO("accountFromIban", "accountToIban", BigDecimal.valueOf(100),
+//                 "description");
+//         validTransaction = new Transaction();
+//         validTransaction.setAccountFrom(accountFrom);
+//         validTransaction.setAccountTo(accountTo);
+//         validTransaction.setAmount(BigDecimal.valueOf(100));
+//         validTransaction.setPerformingUser(user);
+//         validTransaction.setTimestamp(LocalDateTime.now());
 
         transactionRequestDTO = new TransactionRequestDTO("accountFromIban", "accountToIban", BigDecimal.valueOf(100),"description");
        
-        validTransaction = new Transaction(1L, LocalDateTime.now(), accountFrom, accountTo, BigDecimal.valueOf(100), AuthenticationUser, "description");
-        AuthenticationUser = new User(null, Collections.singletonList(Role.EMPLOYEE), "sarawilson", "sara123", null, null, null, null, null, new BigDecimal(200), new BigDecimal(400), null);
+        validTransaction = new Transaction(1L, LocalDateTime.now(), accountFrom, accountTo, BigDecimal.valueOf(100), authenticationUser, "description");
+        authenticationUser = new User(null, Collections.singletonList(Role.EMPLOYEE), "sarawilson", "sara123", null, null, null, null, null, new BigDecimal(200), new BigDecimal(400), null);
    
         // security mocks
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(AuthenticationUser,"sara123",AuthenticationUser.getAuthorities());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(authenticationUser,"sara123", authenticationUser.getAuthorities());
 
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(authentication);
@@ -93,7 +120,7 @@ public class TransactionServiceTest {
     @Test
     public void add_ValidTransaction_Success() {
 
-        validTransaction= new Transaction(1L, LocalDateTime.now(), accountFrom, accountTo, BigDecimal.valueOf(100), AuthenticationUser, "description");
+        validTransaction= new Transaction(1L, LocalDateTime.now(), accountFrom, accountTo, BigDecimal.valueOf(100), authenticationUser, "description");
         user = new User(1L, null, null, null, null, null, null, null, null, BigDecimal.valueOf(5000), BigDecimal.valueOf(2000), null);
         transactionResponseDTO = new TransactionResponseDTO(1L, LocalDateTime.now(), "accountFromIban", "sarawilson", "accountToIban", "sarawilson", BigDecimal.valueOf(100), "description");
 
@@ -116,7 +143,7 @@ public class TransactionServiceTest {
 
         Account inValidAccountFrom = new Account("accountFromIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),true);
         Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),true);
-        Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, BigDecimal.valueOf(100), AuthenticationUser, "description");
+        Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, BigDecimal.valueOf(100), authenticationUser, "description");
 
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
     
@@ -133,7 +160,7 @@ public class TransactionServiceTest {
         BigDecimal amount = new BigDecimal("-100");
         Account inValidAccountFrom = new Account("accountFromIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),false);
         Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),false);
-        Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, amount, AuthenticationUser, "description");
+        Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, amount, authenticationUser, "description");
 
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
     
@@ -144,6 +171,8 @@ public class TransactionServiceTest {
 
         assertEquals("Amount cannot be lower or equal to zero!", exception.getMessage());
 
+//        assertThatThrownBy(() -> transactionService.add(transactionRequestDTO))
+//                .isInstanceOf(IllegalStateException.class).hasMessage("Insufficient balance!");
     }
     @Test
     public void add_InsuficientBalance() {
@@ -151,7 +180,7 @@ public class TransactionServiceTest {
         BigDecimal balance = amount.subtract(new BigDecimal("1"));
         Account inValidAccountFrom = new Account("accountFromIban", AccountType.CURRENT, user, balance,new BigDecimal("120"),false);
         Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),false);
-        Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, amount, AuthenticationUser, "description");
+        Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, amount, authenticationUser, "description");
 
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
     
@@ -171,7 +200,7 @@ public class TransactionServiceTest {
         user.setDayLimit(dayLimit);
         Account inValidAccountFrom = new Account("accountFromIban", AccountType.CURRENT, user, new BigDecimal(200),new BigDecimal("120"),false);
         Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),false);
-        Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, new BigDecimal("19"), AuthenticationUser, "description");
+        Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, new BigDecimal("19"), authenticationUser, "description");
 
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
     
@@ -190,10 +219,10 @@ public class TransactionServiceTest {
         BigDecimal transactionLimit = new BigDecimal("100");
         user.setDayLimit(new BigDecimal("1000"));
         user.setTransactionLimit(transactionLimit);
-        AuthenticationUser.setTransactionLimit(transactionLimit);
+        authenticationUser.setTransactionLimit(transactionLimit);
         Account inValidAccountFrom = new Account("accountFromIban", AccountType.CURRENT, user, new BigDecimal(200),new BigDecimal("-1000"),false);
         Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),false);
-        Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, new BigDecimal(200), AuthenticationUser, "description");
+        Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, new BigDecimal(200), authenticationUser, "description");
 
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
     
@@ -212,7 +241,7 @@ public class TransactionServiceTest {
         user = new User(2L, null, null, null, null, null, null, null, null, BigDecimal.valueOf(5000), BigDecimal.valueOf(2000), null);
         Account inValidAccountFrom = new Account("accountFromIban", AccountType.SAVINGS, user, new BigDecimal(200),new BigDecimal("-1000"),false);
         Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),false);
-        Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, new BigDecimal(200), AuthenticationUser, "description");
+        Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, new BigDecimal(200), authenticationUser, "description");
 
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
     
@@ -246,6 +275,8 @@ public class TransactionServiceTest {
         verify(transactionRepository, times(1)).findById(transactionId);
         verify(transactionDTOMapper.toResponseDTO, times(1)).apply(validTransaction);
         
+//        assertThatThrownBy(() -> transactionService.add(transactionRequestDTO))
+//                .isInstanceOf(InvalidDataAccessApiUsageException.class).hasMessage("Invalid bank account provided!");
     }
 
     @Test

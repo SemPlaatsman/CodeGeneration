@@ -113,7 +113,8 @@ public class AccountService {
         Account account = accountRepository.findByIbanAndIsDeletedFalse(iban).orElseThrow(() -> new EntityNotFoundException("Account not found!"));
         if(account.getIsDeleted()) {
             throw new EntityNotFoundException("Account not found!");
-        } else if (!new BigDecimal(0).equals(account.getBalance())) {
+        } else if (BigDecimal.ZERO.equals(account.getBalance())) {
+            System.out.println(account.getBalance());
             throw new InvalidDataAccessApiUsageException("Account balance must be zero before deleting!");
         }
         account.setIsDeleted(true);

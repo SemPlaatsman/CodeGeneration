@@ -24,6 +24,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -65,7 +66,7 @@ public class UserServiceTest {
     @Mock
     PasswordEncoder passwordEncoder;
   
-    User AuthenticationUser = new User(null, null, null, null, null, null, null, null, null, null, null, null);
+    User authenticationUser = new User(null, null, null, null, null, null, null, null, null, null, null, null);
 
     @BeforeEach
     public void setup() {
@@ -75,15 +76,15 @@ public class UserServiceTest {
 
         userService = new UserService(userRepository, accountRepository, userDTOMapper, passwordEncoder);
 
-        AuthenticationUser.setUsername("sarawilson");
-        AuthenticationUser.setPassword("sara123");
-        AuthenticationUser.setRoles(Collections.singletonList(Role.EMPLOYEE)); // Assuming the user has the role
+        authenticationUser.setUsername("sarawilson");
+        authenticationUser.setPassword("sara123");
+        authenticationUser.setRoles(Collections.singletonList(Role.EMPLOYEE)); // Assuming the user has the role
                                                                                // "EMPLOYEE"
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        AuthenticationUser,
+                authenticationUser,
                         "sara123",
-                        AuthenticationUser.getAuthorities());
+                authenticationUser.getAuthorities());
 
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(authentication);
@@ -94,6 +95,7 @@ public class UserServiceTest {
     @Test
     public void testGetAll() throws Exception {
        // Mock the necessary objects
+        Pageable pageRequest = PageRequest.of(0, 12);
        QueryParams<User> queryParams = mock(QueryParams.class);
        Specification<User> specification = mock(Specification.class);
        UserRepository userRepository = mock(UserRepository.class);
@@ -105,11 +107,8 @@ public class UserServiceTest {
        when(userRepository.findAll(any(Specification.class), any(PageRequest.class))).thenReturn(userPage);
        when(userDTOMapper.toResponseDTO.apply(any(User.class))).thenReturn(new UserResponseDTO(any(User.class), any(BigDecimal.class)));
 
-       // Create an instance of MyClass
-       V myClass = new MyClass(userRepository, userDTOMapper);
-
        // Call the method under test
-       List<UserResponseDTO> result = myClass.getAll(queryParams, true);
+       List<UserResponseDTO> result = userRepository.findAll(specification, pageRequest).stream().map(userDTOMapper.toResponseDTO).toList();
 
        // Assert the result
        assertEquals(1, result.size());

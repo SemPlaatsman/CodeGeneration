@@ -5,6 +5,7 @@ import java.util.List;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
+import nl.inholland.codegeneration.models.DTO.request.UserUpdateRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.AccountResponseDTO;
 import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +76,7 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('EMPLOYEE')")
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserResponseDTO> update(@RequestBody @Valid UserRequestDTO user, @PathVariable Long id) {
+    public ResponseEntity<UserResponseDTO> update(@RequestBody @Valid UserUpdateRequestDTO user, @PathVariable Long id) {
         UserResponseDTO updatedUser = userService.update(user, id);
         return ResponseEntity.status(200).body(updatedUser);
     }

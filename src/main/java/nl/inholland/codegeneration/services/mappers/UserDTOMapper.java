@@ -3,6 +3,7 @@ package nl.inholland.codegeneration.services.mappers;
 import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
+import nl.inholland.codegeneration.models.DTO.request.UserUpdateRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
 import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
 import nl.inholland.codegeneration.models.Role;
@@ -38,6 +39,20 @@ public class UserDTOMapper {
         user.setEmail(userRequestDTO.email());
         user.setPhoneNumber(userRequestDTO.phoneNumber());
         user.setBirthdate(userRequestDTO.birthdate());
+        return user;
+    };
+
+    public Function<UserUpdateRequestDTO, User> toUserFromUpdate = (userUpdateRequestDTO) -> {
+        User user = new User();
+        user.setId(userUpdateRequestDTO.id());
+        user.setRoles(userUpdateRequestDTO.roles().stream().map(Role::fromInt).collect(Collectors.toList()));
+        user.setUsername(userUpdateRequestDTO.username());
+        user.setPassword(userUpdateRequestDTO.password());
+        user.setFirstName(userUpdateRequestDTO.firstName());
+        user.setLastName(userUpdateRequestDTO.lastName());
+        user.setEmail(userUpdateRequestDTO.email());
+        user.setPhoneNumber(userUpdateRequestDTO.phoneNumber());
+        user.setBirthdate(userUpdateRequestDTO.birthdate());
         return user;
     };
 

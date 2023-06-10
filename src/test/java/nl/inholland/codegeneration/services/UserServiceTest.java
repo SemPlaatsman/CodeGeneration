@@ -1,6 +1,7 @@
 package nl.inholland.codegeneration.services;
 
 import nl.inholland.codegeneration.exceptions.APIException;
+import nl.inholland.codegeneration.models.DTO.request.UserUpdateRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
 import nl.inholland.codegeneration.models.QueryParams;
 import nl.inholland.codegeneration.models.Role;
@@ -12,7 +13,7 @@ import nl.inholland.codegeneration.repositories.UserRepository;
 import nl.inholland.codegeneration.services.mappers.AccountDTOMapper;
 import nl.inholland.codegeneration.services.mappers.UserDTOMapper;
 
-import org.h2.mvstore.Page;
+import org.springframework.data.domain.Page;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,6 +41,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,8 +67,6 @@ public class UserServiceTest {
   
     User AuthenticationUser = new User(null, null, null, null, null, null, null, null, null, null, null, null);
 
-
-
     @BeforeEach
     public void setup() {
         userDTOMapper = new UserDTOMapper(Mockito.mock(TransactionRepository.class));
@@ -74,8 +74,6 @@ public class UserServiceTest {
         userDTOMapper.toResponseDTO = Mockito.mock(Function.class);
 
         userService = new UserService(userRepository, accountRepository, userDTOMapper, passwordEncoder);
-
-
 
         AuthenticationUser.setUsername("sarawilson");
         AuthenticationUser.setPassword("sara123");
@@ -89,10 +87,6 @@ public class UserServiceTest {
 
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(authentication);
-
-        
-
-
 
     }
 
@@ -109,7 +103,7 @@ public class UserServiceTest {
        userList.add(new User());
        when(userPage.getContent()).thenReturn(userList);
        when(userRepository.findAll(any(Specification.class), any(PageRequest.class))).thenReturn(userPage);
-       when(userDTOMapper.toResponseDTO(any(User.class))).thenReturn(new UserResponseDTO());
+       when(userDTOMapper.toResponseDTO.apply(any(User.class))).thenReturn(new UserResponseDTO(any(User.class), any(BigDecimal.class)));
 
        // Create an instance of MyClass
        V myClass = new MyClass(userRepository, userDTOMapper);
@@ -122,7 +116,7 @@ public class UserServiceTest {
 
        // Verify the method calls
        verify(userRepository).findAll(any(Specification.class), any(PageRequest.class));
-       verify(userDTOMapper, times(1)).toResponseDTO(any(User.class));
+       verify(userDTOMapper, times(1)).toResponseDTO.apply(any(User.class));
     }
 
 
@@ -161,15 +155,15 @@ public class UserServiceTest {
     public void testUpdateUser() {
         List<Integer> roles = new ArrayList<>();
         roles.add(1);
-        UserRequestDTO userRequestDTO = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname",
+        UserUpdateRequestDTO userUpdateRequestDTO = new UserUpdateRequestDTO(1L, List.of(1), "username", "password", "firstname", "lastname",
                 "email@example.com", "1234567890", LocalDate.now());
         // ... set other fields as needed
         User user = new User();
         user.setId(1L);
-        when(userDTOMapper.toUser.apply(userRequestDTO)).thenReturn(user);
+        when(userDTOMapper.toUserFromUpdate.apply(userUpdateRequestDTO)).thenReturn(user);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
-        userService.update(userRequestDTO, 1L);
+        userService.update(userUpdateRequestDTO, 1L);
         verify(userRepository).save(user);
     }
 
@@ -177,13 +171,13 @@ public class UserServiceTest {
     public void testUpdateUser_invalidId() {
         List<Integer> roles = new ArrayList<>();
         roles.add(1);
-        UserRequestDTO userRequestDTO = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname",
+        UserUpdateRequestDTO userUpdateRequestDTO = new UserUpdateRequestDTO(1L, List.of(1), "username", "password", "firstname", "lastname",
                 "email@example.com", "1234567890", LocalDate.now());
         // ... set other fields as needed
         User user = new User();
         user.setId(2L);
-        when(userDTOMapper.toUser.apply(userRequestDTO)).thenReturn(user);
-        EntityNotFoundException  exception = assertThrows(EntityNotFoundException.class, () ->  userService.update(userRequestDTO, 1L));
+        when(userDTOMapper.toUserFromUpdate.apply(userUpdateRequestDTO)).thenReturn(user);
+        EntityNotFoundException  exception = assertThrows(EntityNotFoundException.class, () ->  userService.update(userUpdateRequestDTO, 1L));
 
         assertEquals("User not found!", exception.getMessage());
 

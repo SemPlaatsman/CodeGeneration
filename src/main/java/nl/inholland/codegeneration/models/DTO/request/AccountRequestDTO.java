@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 //@JsonIgnoreProperties(ignoreUnknown = true)
-public record AccountRequestDTO(
+public record AccountRequestDTO (
     @NotNull(message = "Customer id cannot be null!")
     Long customerId,
     @NotNull(message = "Absolute limit cannot be null!")

@@ -62,10 +62,11 @@ public class TransactionServiceTest {
     private Account accountFrom;
     private Account accountTo;
 
-    private User AuthenticationUser = new User(null, null, null, null, null, null, null, null, null, null, null, null);
+    private User authenticationUser = new User(null, null, null, null, null, null, null, null, null, null, null, null);
 
     @BeforeEach
     public void setup() {
+
         // preparing data (could be moved to the individual tests)
         user = new User(1L, null, null, null, null, null, null, null, null, BigDecimal.valueOf(5000),
                 BigDecimal.valueOf(2000), null);
@@ -98,6 +99,7 @@ public class TransactionServiceTest {
 
     @Test
     public void add_ValidTransaction_Success() {
+
 
         validTransaction = new Transaction(1L, LocalDateTime.now(), accountFrom, accountTo, BigDecimal.valueOf(100),
                 AuthenticationUser, "description");
@@ -141,6 +143,7 @@ public class TransactionServiceTest {
     @Test
     public void add_AmountLowerThenZero() {
         BigDecimal amount = new BigDecimal("-100");
+
         Account inValidAccountFrom = new Account("accountFromIban", AccountType.CURRENT, user, new BigDecimal("120"),
                 new BigDecimal("-1000"), false);
         Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),
@@ -156,12 +159,15 @@ public class TransactionServiceTest {
 
         assertEquals("Amount cannot be lower or equal to zero!", exception.getMessage());
 
+//        assertThatThrownBy(() -> transactionService.add(transactionRequestDTO))
+//                .isInstanceOf(IllegalStateException.class).hasMessage("Insufficient balance!");
     }
 
     @Test
     public void add_InsuficientBalance() {
         BigDecimal amount = new BigDecimal("10");
         BigDecimal balance = amount.subtract(new BigDecimal("1"));
+
         Account inValidAccountFrom = new Account("accountFromIban", AccountType.CURRENT, user, balance,
                 new BigDecimal("120"), false);
         Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),
@@ -185,6 +191,7 @@ public class TransactionServiceTest {
 
         BigDecimal dayLimit = new BigDecimal("10");
         user.setDayLimit(dayLimit);
+
         Account inValidAccountFrom = new Account("accountFromIban", AccountType.CURRENT, user, new BigDecimal(200),
                 new BigDecimal("120"), false);
         Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),
@@ -209,6 +216,7 @@ public class TransactionServiceTest {
         BigDecimal transactionLimit = new BigDecimal("100");
         user.setDayLimit(new BigDecimal("1000"));
         user.setTransactionLimit(transactionLimit);
+
         AuthenticationUser.setTransactionLimit(transactionLimit);
         Account inValidAccountFrom = new Account("accountFromIban", AccountType.CURRENT, user, new BigDecimal(200),
                 new BigDecimal("-1000"), false);
@@ -231,6 +239,7 @@ public class TransactionServiceTest {
     // the same user!
     @Test
     public void add_savingAcountAndToAccountNotSameUser() {
+
 
         user = new User(2L, null, null, null, null, null, null, null, null, BigDecimal.valueOf(5000),
                 BigDecimal.valueOf(2000), null);
@@ -294,6 +303,7 @@ public class TransactionServiceTest {
         assertEquals(expectedResponseDTO, actualResponseDTO);
         verify(transactionRepository, times(1)).findById(transactionId);
         verify(transactionDTOMapper.toResponseDTO, times(1)).apply(validTransaction);
+
 
     }
 

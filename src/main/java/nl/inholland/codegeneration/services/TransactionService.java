@@ -3,6 +3,7 @@ package nl.inholland.codegeneration.services;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -55,8 +56,10 @@ public class TransactionService {
             throw new IllegalStateException("Amount cannot surpass day limit!");
         } else if (transaction.getAmount().compareTo(user.getTransactionLimit()) > 0) {
             throw new IllegalStateException("Amount cannot surpass transaction limit!");
-        } else if (transaction.getAccountFrom().getAccountType() == AccountType.SAVINGS && transaction.getAccountFrom().getUser().getId() == transaction.getAccountTo().getUser().getId()) {
+        } else if (transaction.getAccountFrom().getAccountType() == AccountType.SAVINGS && !Objects.equals(transaction.getAccountFrom().getUser().getId(), transaction.getAccountTo().getUser().getId())) {
             throw new IllegalStateException("Cannot make a transaction from a savings account to an account that is not of the same user!");
+        } else if (transaction.getAccountTo().getAccountType() == AccountType.SAVINGS && !Objects.equals(transaction.getAccountTo().getUser().getId(), transaction.getAccountFrom().getUser().getId())) {
+            throw new IllegalStateException("Cannot make a transaction to a savings account to an account that is not of the same user!");
         }
         transaction.getAccountFrom().setBalance(transaction.getAccountFrom().getBalance().subtract(transaction.getAmount()));
         transaction.getAccountTo().setBalance(transaction.getAccountTo().getBalance().add(transaction.getAmount()));

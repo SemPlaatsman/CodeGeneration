@@ -102,9 +102,9 @@ public class AccountControllerTest {
 
         when(accountService.updateAccount(requestDTO, "NL06INHO0000000001")).thenReturn(responseDTO);
         mockMvc.perform(put("/accounts/{iban}", "NL06INHO0000000001")
-                .content(asJsonString(requestDTO))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .content(asJsonString(requestDTO))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
     }
 
     @Test

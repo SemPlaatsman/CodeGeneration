@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
-public record TransactionRequestDTO(
+public record TransactionRequestDTO (
     @NotNull(message = "IBAN from cannot be null!")
     @NotEmpty(message = "IBAN from cannot be empty!")
     String accountFromIban,

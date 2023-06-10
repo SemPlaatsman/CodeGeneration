@@ -17,7 +17,7 @@ import nl.inholland.codegeneration.models.User;
 
 import org.junit.jupiter.api.Test;
 import org.apache.el.stream.Stream;
-import org.h2.mvstore.Page;
+import org.springframework.data.domain.Page;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.commons.JUnitException;
@@ -230,7 +230,7 @@ public class AccountServiceTest {
 
                 when(accountRepository.findAll()).thenReturn(accounts);
                 // TODO: Mock the behavior of the Stream class
-                when(Page.getContent().stream().map(AccountDTOMapper.toResponseDTO).collect(Collectors.toList())).thenReturn(null);
+                when(Page.getContent().stream().map(accountDTOMapper.toResponseDTO).collect(Collectors.toList())).thenReturn(null);
              
 
                 fail("Not yet implemented");

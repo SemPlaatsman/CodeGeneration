@@ -21,7 +21,7 @@ public class FilterSpecificationTest {
     private CriteriaQuery query;
     private CriteriaBuilder builder;
     private FilterCriteria filterCriteria;
-    private FilterSpecification<String> filterSpecification;
+    private FilterSpecification filterSpecification;
 
     @BeforeEach
     public void setUp() {

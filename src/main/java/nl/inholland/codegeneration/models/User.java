@@ -78,7 +78,7 @@ public class User implements UserDetails {
     public User update(User user) {
         this.setRoles(user.getRoles());
         this.setUsername(user.getUsername());
-        this.setPassword(user.getPassword());
+        if (!user.getPassword().isEmpty()) { this.setPassword(user.getPassword()); }
         this.setFirstName(user.getFirstName());
         this.setLastName(user.getLastName());
         this.setEmail(user.getEmail());

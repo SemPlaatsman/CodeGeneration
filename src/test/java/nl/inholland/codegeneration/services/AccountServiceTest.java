@@ -75,7 +75,7 @@ public class AccountServiceTest {
         @InjectMocks
         private AccountService accountService;
 
-        private User authenticationUser = new User(null, null, null, null, null, null, null, null, null, null, null, null);
+        User AuthenticationUser = new User(null, null, null, null, null, null, null, null, null, null, null, null);
 
         @BeforeEach
         public void setup() {

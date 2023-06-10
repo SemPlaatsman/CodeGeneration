@@ -6,6 +6,7 @@ import nl.inholland.codegeneration.models.AccountType;
 import nl.inholland.codegeneration.models.DTO.request.AccountRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.AccountResponseDTO;
 import nl.inholland.codegeneration.models.DTO.response.BalanceResponseDTO;
+import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
 import nl.inholland.codegeneration.repositories.AccountRepository;
 import nl.inholland.codegeneration.repositories.UserRepository;
 import nl.inholland.codegeneration.repositories.TransactionRepository;
@@ -16,6 +17,7 @@ import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.Transaction;
 import nl.inholland.codegeneration.models.User;
 
+import nl.inholland.codegeneration.services.mappers.UserDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.apache.el.stream.Stream;
 import org.springframework.data.domain.Page;
@@ -29,6 +31,9 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -70,21 +75,22 @@ public class AccountServiceTest {
         @InjectMocks
         private AccountService accountService;
 
+        private User authenticationUser = new User(null, null, null, null, null, null, null, null, null, null, null, null);
 
         @BeforeEach
         public void setup() {
 
                 // security mocks
 
-                AuthenticationUser.setUsername("sarawilson");
-                AuthenticationUser.setPassword("sara123");
-                AuthenticationUser.setRoles(Collections.singletonList(Role.EMPLOYEE)); // Assuming the user has the role
+                authenticationUser.setUsername("sarawilson");
+                authenticationUser.setPassword("sara123");
+                authenticationUser.setRoles(Collections.singletonList(Role.EMPLOYEE)); // Assuming the user has the role
                                                                                        // "EMPLOYEE"
 
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
-                                AuthenticationUser,
+                        authenticationUser,
                                 "sara123",
-                                AuthenticationUser.getAuthorities());
+                        authenticationUser.getAuthorities());
 
                 SecurityContext securityContext = SecurityContextHolder.getContext();
                 securityContext.setAuthentication(authentication);
@@ -227,13 +233,15 @@ public class AccountServiceTest {
 
         @Test
         void testGetAll() throws Exception {
-                ArrayList<Account> accounts = new ArrayList<Account>();
+                Specification<Account> specification = mock(FilterSpecification.class);
+                Pageable pageRequest = PageRequest.of(0, 12);
+                List<Account> accounts = new ArrayList<>();
                 accounts.add(new Account("NL88INHO0001204817", AccountType.CURRENT, null, null, null, false));
                 accounts.add(new Account("NL44INHO0003204819", AccountType.SAVINGS, null, null, null, false));
 
-                when(accountRepository.findAll()).thenReturn(accounts);
+                when(accountRepository.findAll(specification, pageRequest).getContent()).thenReturn(accounts);
                 // TODO: Mock the behavior of the Stream class
-                when(accountService.getContent().stream().map(AccountDTOMapper.toResponseDTO)
+                when(accounts.stream().map(accountDTOMapper.toResponseDTO)
                                 .collect(Collectors.toList())).thenReturn(null);
 
                 fail("Not yet implemented");
@@ -242,7 +250,6 @@ public class AccountServiceTest {
                 assertNotNull(result);
                 assertEquals(accounts.size(), result.size());
                 assertEquals(accounts.stream().map(AccountResponseDTO::new).collect(Collectors.toList()), result);
-
         }
 
         @Test
@@ -318,7 +325,7 @@ public class AccountServiceTest {
                                 "0612345678", LocalDate.of(1990, 11, 13), new BigDecimal(1000), new BigDecimal(200),
                                 false);
 
-                AuthenticationUser.setRoles(Collections.singletonList(Role.CUSTOMER)); // Assuming the user has the role
+                authenticationUser.setRoles(Collections.singletonList(Role.CUSTOMER)); // Assuming the user has the role
                                                                                        // "EMPLOYEE"
 
                 Account existingAccount = new Account(iban, AccountType.CURRENT, user, new BigDecimal("120"),

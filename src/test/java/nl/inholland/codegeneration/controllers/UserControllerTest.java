@@ -1,5 +1,9 @@
 package nl.inholland.codegeneration.controllers;
 
+import jakarta.persistence.EntityNotFoundException;
+import nl.inholland.codegeneration.configuration.WebConfig;
+import nl.inholland.codegeneration.exceptions.APIExceptionHandler;
+import nl.inholland.codegeneration.models.DTO.request.UserUpdateRequestDTO;
 import nl.inholland.codegeneration.services.UserService;
 import nl.inholland.codegeneration.services.AccountService;
 import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
@@ -14,12 +18,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 // import org.springframework.security.core.userdetails.User;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.modelmapper.internal.bytebuddy.matcher.ElementMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -33,7 +45,6 @@ import jakarta.validation.constraints.PositiveOrZero;
 
 public class UserControllerTest {
 
-    @InjectMocks
     private UserController userController;
 
     @Mock
@@ -46,9 +57,11 @@ public class UserControllerTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
-
+        MockitoAnnotations.openMocks(this);
+        userController = new UserController(userService, accountService);
+        mockMvc = MockMvcBuilders.standaloneSetup(userController)
+                .setControllerAdvice(new APIExceptionHandler())
+                .build();
     }
 
     @Test
@@ -67,6 +80,19 @@ public class UserControllerTest {
 
     @Test
     @WithMockUser(username = "user", roles = { "EMPLOYEE" })
+    public void testGetByInvalidId() throws Exception {
+        Long invalidId = -1L;
+
+        when(userService.getById(invalidId)).thenThrow(new EntityNotFoundException("User not found!"));
+
+        mockMvc.perform(get("/users/{id}", invalidId).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof EntityNotFoundException))
+                .andExpect(result -> assertEquals("User not found!", result.getResolvedException().getMessage()));
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = { "EMPLOYEE" })
     public void testGetAllAccountsById() throws Exception {
         mockMvc.perform(get("/users/{id}/accounts", 1).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -75,9 +101,7 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "user", roles = { "EMPLOYEE" })
     public void testAdd() throws Exception {
-        List<Integer> roles = new ArrayList<>();
-        roles.add(1);
-        UserRequestDTO user = new UserRequestDTO(roles, "username", "password", "firstname", "lastname",
+        UserRequestDTO user = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname",
                 "email@example.com", "1234567890", LocalDate.now());
         mockMvc.perform(post("/users")
                 .content(asJsonString(user))
@@ -90,7 +114,7 @@ public class UserControllerTest {
     public void testUpdate() throws Exception {
         List<Integer> roles = new ArrayList<>();
         roles.add(1);
-        UserRequestDTO user = new UserRequestDTO(roles, "username", "password", "firstname", "lastname",
+        UserUpdateRequestDTO user = new UserUpdateRequestDTO(1L, roles, "username", "password", "firstname", "lastname",
                 "email@example.com", "1234567890", LocalDate.now());
         mockMvc.perform(put("/users/{id}", 1)
                 .content(asJsonString(user))

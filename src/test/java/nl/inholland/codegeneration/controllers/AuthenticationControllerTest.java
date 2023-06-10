@@ -75,7 +75,7 @@ public class AuthenticationControllerTest {
         RegisterRequest registerRequest = new RegisterRequest();
         registerRequest.setUsername("testUser");
         registerRequest.setPassword("testPassword");
-        AuthenticationResponse expectedResponse = new AuthenticationResponse("dummy_token", List.of(Role.EMPLOYEE.getValue()), "testUser", "user@email.com");
+        AuthenticationResponse expectedResponse = new AuthenticationResponse(1L, "dummy_token", List.of(Role.EMPLOYEE.getValue()), "testUser", "user@email.com");
     
         when(authenticateService.register(any(RegisterRequest.class))).thenReturn(expectedResponse);
     
@@ -93,7 +93,7 @@ public class AuthenticationControllerTest {
         AuthenticationRequest loginRequest = new AuthenticationRequest();
         loginRequest.setUsername("johndoe");
         loginRequest.setPassword("john123");
-        AuthenticationResponse expectedResponse = new AuthenticationResponse("dummy_token", List.of(Role.EMPLOYEE.getValue()), "testUser", "user@email.com");
+        AuthenticationResponse expectedResponse = new AuthenticationResponse(1L, "dummy_token", List.of(Role.EMPLOYEE.getValue()), "testUser", "user@email.com");
     
         when(authenticateService.login(loginRequest)).thenReturn(expectedResponse);
     

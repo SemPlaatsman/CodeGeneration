@@ -33,6 +33,7 @@ public class FilterSpecificationTest {
     private CriteriaBuilder builder;
 
     private FilterCriteria filterCriteria;
+  
     private FilterSpecification<Object, Object> filterSpecification;
 
     @BeforeEach

@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public record UserRequestDTO(
+public record UserRequestDTO (
     @NotEmpty(message = "You need to include at least one role!")
     @Size(min = 1, max = 2, message = "You need to include at least one role!")
 //    @PositiveOrZero(message = "All role ID's must be zero or above!")

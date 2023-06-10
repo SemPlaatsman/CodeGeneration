@@ -10,6 +10,7 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import lombok.RequiredArgsConstructor;
 import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
+import nl.inholland.codegeneration.models.DTO.request.UserUpdateRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
 import nl.inholland.codegeneration.services.mappers.UserDTOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,8 +68,8 @@ public class UserService {
         return userDTOMapper.toResponseDTO.apply(userRepository.save(user));
     }
 
-    public UserResponseDTO update(UserRequestDTO userRequestDTO, Long id) {
-        User user = userDTOMapper.toUser.apply(userRequestDTO);
+    public UserResponseDTO update(UserUpdateRequestDTO userRequestDTO, Long id) {
+        User user = userDTOMapper.toUserFromUpdate.apply(userRequestDTO);
         user.setId(id);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User existingUser = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found!"));

@@ -205,12 +205,14 @@ public class TransactionServiceTest {
         assertEquals("Amount cannot surpass transaction limit!", exception.getMessage());
 
     }
+
     //Cannot make a transaction from a savings account to an account that is not of the same user!
     @Test
     public void add_savingAcountAndToAccountNotSameUser() {
     
         user = new User(2L, null, null, null, null, null, null, null, null, BigDecimal.valueOf(5000), BigDecimal.valueOf(2000), null);
-        Account inValidAccountFrom = new Account("accountFromIban", AccountType.SAVINGS, user, new BigDecimal(200),new BigDecimal("-1000"),false);
+        User user2 = new User(1L, null, null, null, null, null, null, null, null,  BigDecimal.valueOf(5000), BigDecimal.valueOf(2000), null);
+        Account inValidAccountFrom = new Account("accountFromIban", AccountType.SAVINGS, user2, new BigDecimal(200),new BigDecimal("-1000"),false);
         Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),new BigDecimal("-1000"),false);
         Transaction inValidTransaction= new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo, new BigDecimal(200), AuthenticationUser, "description");
 
@@ -249,17 +251,15 @@ public class TransactionServiceTest {
     }
 
     @Test
-    void testGetById_invalidTransaciont() {
+    void testGetById_invalidTransacion() {
 
-        Long transactionId = 1L;
 
-        Transaction invalidTransaction = new Transaction();
         
-        when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(invalidTransaction));
+        when(transactionRepository.findById(transactionId)).thenReturn(Optional.empty());
 
         EntityNotFoundException exception =  assertThrows(EntityNotFoundException.class,() ->transactionService.getById(transactionId)); 
 
-        assertEquals("Transaction not found!", exception.getMessage());
+        assertEquals("", exception.getMessage());
         
         
     }

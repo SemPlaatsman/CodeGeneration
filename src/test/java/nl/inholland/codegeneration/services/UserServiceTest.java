@@ -57,6 +57,7 @@ public class UserServiceTest {
     UserRepository userRepository;
     @Mock
     AccountRepository accountRepository;
+    @Mock
     UserDTOMapper userDTOMapper;
     @InjectMocks
     UserService userService;
@@ -72,6 +73,8 @@ public class UserServiceTest {
         userDTOMapper = new UserDTOMapper(Mockito.mock(TransactionRepository.class));
         userDTOMapper.toUser = Mockito.mock(Function.class);
         userDTOMapper.toResponseDTO = Mockito.mock(Function.class);
+        userDTOMapper.toUserFromUpdate = Mockito.mock(Function.class);
+
 
         userService = new UserService(userRepository, accountRepository, userDTOMapper, passwordEncoder);
 
@@ -160,6 +163,7 @@ public class UserServiceTest {
         // ... set other fields as needed
         User user = new User();
         user.setId(1L);
+        user.setPassword("");
         when(userDTOMapper.toUserFromUpdate.apply(userUpdateRequestDTO)).thenReturn(user);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
@@ -173,10 +177,11 @@ public class UserServiceTest {
         roles.add(1);
         UserUpdateRequestDTO userUpdateRequestDTO = new UserUpdateRequestDTO(1L, List.of(1), "username", "password", "firstname", "lastname",
                 "email@example.com", "1234567890", LocalDate.now());
-        // ... set other fields as needed
         User user = new User();
-        user.setId(2L);
+        user.setId(1L);
+        user.setPassword("");
         when(userDTOMapper.toUserFromUpdate.apply(userUpdateRequestDTO)).thenReturn(user);
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
         EntityNotFoundException  exception = assertThrows(EntityNotFoundException.class, () ->  userService.update(userUpdateRequestDTO, 1L));
 
         assertEquals("User not found!", exception.getMessage());

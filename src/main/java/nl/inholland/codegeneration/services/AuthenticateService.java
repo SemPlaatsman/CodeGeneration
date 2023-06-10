@@ -8,6 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.User;
@@ -71,5 +72,6 @@ public class AuthenticateService {
     .roles(user.getRoles().stream().map(Role::getValue).collect(Collectors.toList()))
     .id(user.getId())
     .build();
+    
   }
 }

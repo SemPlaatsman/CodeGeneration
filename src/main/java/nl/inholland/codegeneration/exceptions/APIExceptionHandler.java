@@ -20,12 +20,16 @@ import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 
 import javax.naming.AuthenticationException;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
+
+import javax.naming.AuthenticationException;
+
 
 @ControllerAdvice
 public class APIExceptionHandler {
@@ -102,11 +106,11 @@ public class APIExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<APIExceptionResponseDTO> handleException(Exception ex, WebRequest request) {
-        APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO(
+        APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO( 
                 (ex.getMessage() != null) ? ex.getMessage() : "Internal Server Error!",
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 LocalDateTime.now()
-        );
+        ); ex.printStackTrace();
         return new ResponseEntity<>(apiExceptionResponseDTO, apiExceptionResponseDTO.httpStatus());
     }
 }

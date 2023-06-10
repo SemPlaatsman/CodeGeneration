@@ -70,7 +70,6 @@ public class AccountServiceTest {
         @InjectMocks
         private AccountService accountService;
 
-        User AuthenticationUser = new User(null, null, null, null, null, null, null, null, null, null, null, null);
 
         @BeforeEach
         public void setup() {

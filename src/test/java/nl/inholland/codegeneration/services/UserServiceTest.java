@@ -67,8 +67,6 @@ public class UserServiceTest {
   
     User AuthenticationUser = new User(null, null, null, null, null, null, null, null, null, null, null, null);
 
-
-
     @BeforeEach
     public void setup() {
         userDTOMapper = new UserDTOMapper(Mockito.mock(TransactionRepository.class));
@@ -157,7 +155,7 @@ public class UserServiceTest {
     public void testUpdateUser() {
         List<Integer> roles = new ArrayList<>();
         roles.add(1);
-        UserUpdateRequestDTO userUpdateRequestDTO = new UserUpdateRequestDTO(List.of(1), "username", "password", "firstname", "lastname",
+        UserUpdateRequestDTO userUpdateRequestDTO = new UserUpdateRequestDTO(1L, List.of(1), "username", "password", "firstname", "lastname",
                 "email@example.com", "1234567890", LocalDate.now());
         // ... set other fields as needed
         User user = new User();
@@ -173,7 +171,7 @@ public class UserServiceTest {
     public void testUpdateUser_invalidId() {
         List<Integer> roles = new ArrayList<>();
         roles.add(1);
-        UserUpdateRequestDTO userUpdateRequestDTO = new UserUpdateRequestDTO(List.of(1), "username", "password", "firstname", "lastname",
+        UserUpdateRequestDTO userUpdateRequestDTO = new UserUpdateRequestDTO(1L, List.of(1), "username", "password", "firstname", "lastname",
                 "email@example.com", "1234567890", LocalDate.now());
         // ... set other fields as needed
         User user = new User();

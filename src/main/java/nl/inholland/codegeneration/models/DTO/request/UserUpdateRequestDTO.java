@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public record UserUpdateRequestDTO (
+        @NotNull(message = "Id cannot be null!")
+        Long id,
         @NotEmpty(message = "You need to include at least one role!")
         @Size(min = 1, max = 2, message = "You need to include at least one role!")
 //    @PositiveOrZero(message = "All role ID's must be zero or above!")
@@ -33,7 +35,8 @@ public record UserUpdateRequestDTO (
         @NotNull(message = "Birthdate cannot be null!")
         LocalDate birthdate
 ) {
-    public UserUpdateRequestDTO(List<Integer> roles, String username, String password, String firstName, String lastName, String email, String phoneNumber, LocalDate birthdate) {
+    public UserUpdateRequestDTO(Long id, List<Integer> roles, String username, String password, String firstName, String lastName, String email, String phoneNumber, LocalDate birthdate) {
+        this.id = id;
         this.roles = roles;
         this.username = username;
         this.password = password;

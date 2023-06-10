@@ -5,6 +5,7 @@ import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
 import nl.inholland.codegeneration.models.DTO.response.APIExceptionResponseDTO;
 import org.hibernate.query.SemanticException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -73,7 +74,7 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(apiExceptionResponseDTO, apiExceptionResponseDTO.httpStatus());
     }
 
-    @ExceptionHandler({InvalidDataAccessApiUsageException.class, SemanticException.class, NullPointerException.class, IllegalArgumentException.class, NoSuchFieldException.class, IllegalStateException.class, HttpMediaTypeException.class})
+    @ExceptionHandler({InvalidDataAccessApiUsageException.class, SemanticException.class, NullPointerException.class, IllegalArgumentException.class, NoSuchFieldException.class, IllegalStateException.class, HttpMediaTypeException.class, ValidationException.class})
     public ResponseEntity<APIExceptionResponseDTO> handleBadRequestException(Exception ex, WebRequest request) {
         APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO(
                 (ex.getMessage() != null) ? (ex instanceof NoSuchFieldException ? "No such field: " : "") + ex.getMessage() : "Bad Request!",

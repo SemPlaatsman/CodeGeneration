@@ -44,6 +44,7 @@ public class UserDTOMapper {
 
     public Function<UserUpdateRequestDTO, User> toUserFromUpdate = (userUpdateRequestDTO) -> {
         User user = new User();
+        user.setId(userUpdateRequestDTO.id());
         user.setRoles(userUpdateRequestDTO.roles().stream().map(Role::fromInt).collect(Collectors.toList()));
         user.setUsername(userUpdateRequestDTO.username());
         user.setPassword(userUpdateRequestDTO.password());

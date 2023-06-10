@@ -15,6 +15,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -59,9 +60,10 @@ public class AccountService {
 
     public AccountResponseDTO insertAccount(AccountRequestDTO request) throws APIException {
         Account account = AccountDTOMapper.toAccount.apply(request);
-
         if (account.getUser().getIsDeleted()) {
             throw new EntityNotFoundException("User not found!");
+        } else if (!account.getUser().getRoles().contains(Role.CUSTOMER)) {
+            throw new AccessDeniedException("Only customers can have accounts!");
         }
         
         Account addedAccount = new Account();

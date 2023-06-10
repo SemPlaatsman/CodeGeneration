@@ -5,16 +5,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import nl.inholland.codegeneration.models.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +25,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -30,11 +34,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.CriteriaBuilder.In;
-import nl.inholland.codegeneration.models.Account;
-import nl.inholland.codegeneration.models.AccountType;
-import nl.inholland.codegeneration.models.Role;
-import nl.inholland.codegeneration.models.Transaction;
-import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
 import nl.inholland.codegeneration.repositories.AccountRepository;
@@ -79,21 +78,21 @@ public class TransactionServiceTest {
                 "description");
 
         validTransaction = new Transaction(1L, LocalDateTime.now(), accountFrom, accountTo, BigDecimal.valueOf(100),
-                AuthenticationUser, "description");
-        AuthenticationUser = new User(null, Collections.singletonList(Role.EMPLOYEE), "sarawilson", "sara123", null,
+                authenticationUser, "description");
+        authenticationUser = new User(null, Collections.singletonList(Role.EMPLOYEE), "sarawilson", "sara123", null,
                 null, null, null, null, new BigDecimal(200), new BigDecimal(400), null);
 
         // security mocks
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(AuthenticationUser, "sara123",
-                AuthenticationUser.getAuthorities());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(authenticationUser, "sara123",
+                authenticationUser.getAuthorities());
 
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(authentication);
 
         transactionDTOMapper = new TransactionDTOMapper(accountRepository);
-        transactionDTOMapper.toTransaction = Mockito.mock(Function.class);
-        transactionDTOMapper.toResponseDTO = Mockito.mock(Function.class);
+        transactionDTOMapper.toTransaction = mock(Function.class);
+        transactionDTOMapper.toResponseDTO = mock(Function.class);
         transactionService = new TransactionService(transactionRepository, transactionDTOMapper);
     }
 
@@ -102,7 +101,7 @@ public class TransactionServiceTest {
 
 
         validTransaction = new Transaction(1L, LocalDateTime.now(), accountFrom, accountTo, BigDecimal.valueOf(100),
-                AuthenticationUser, "description");
+                authenticationUser, "description");
         user = new User(1L, null, null, null, null, null, null, null, null, BigDecimal.valueOf(5000),
                 BigDecimal.valueOf(2000), null);
         transactionResponseDTO = new TransactionResponseDTO(1L, LocalDateTime.now(), "accountFromIban", "sarawilson",
@@ -128,7 +127,7 @@ public class TransactionServiceTest {
         Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),
                 new BigDecimal("-1000"), true);
         Transaction inValidTransaction = new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo,
-                BigDecimal.valueOf(100), AuthenticationUser, "description");
+                BigDecimal.valueOf(100), authenticationUser, "description");
 
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
 
@@ -149,7 +148,7 @@ public class TransactionServiceTest {
         Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),
                 new BigDecimal("-1000"), false);
         Transaction inValidTransaction = new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo,
-                amount, AuthenticationUser, "description");
+                amount, authenticationUser, "description");
 
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
 
@@ -173,7 +172,7 @@ public class TransactionServiceTest {
         Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),
                 new BigDecimal("-1000"), false);
         Transaction inValidTransaction = new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo,
-                amount, AuthenticationUser, "description");
+                amount, authenticationUser, "description");
 
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
 
@@ -197,7 +196,7 @@ public class TransactionServiceTest {
         Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),
                 new BigDecimal("-1000"), false);
         Transaction inValidTransaction = new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo,
-                new BigDecimal("19"), AuthenticationUser, "description");
+                new BigDecimal("19"), authenticationUser, "description");
 
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
 
@@ -217,13 +216,13 @@ public class TransactionServiceTest {
         user.setDayLimit(new BigDecimal("1000"));
         user.setTransactionLimit(transactionLimit);
 
-        AuthenticationUser.setTransactionLimit(transactionLimit);
+        authenticationUser.setTransactionLimit(transactionLimit);
         Account inValidAccountFrom = new Account("accountFromIban", AccountType.CURRENT, user, new BigDecimal(200),
                 new BigDecimal("-1000"), false);
         Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),
                 new BigDecimal("-1000"), false);
         Transaction inValidTransaction = new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo,
-                new BigDecimal(200), AuthenticationUser, "description");
+                new BigDecimal(200), authenticationUser, "description");
 
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
 
@@ -250,7 +249,7 @@ public class TransactionServiceTest {
         Account inValidAccountTo = new Account("accountToIban", AccountType.CURRENT, user, new BigDecimal("120"),
                 new BigDecimal("-1000"), false);
         Transaction inValidTransaction = new Transaction(1L, LocalDateTime.now(), inValidAccountFrom, inValidAccountTo,
-                new BigDecimal(200), AuthenticationUser, "description");
+                new BigDecimal(200), authenticationUser, "description");
 
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
 
@@ -264,11 +263,11 @@ public class TransactionServiceTest {
     }
 
     @Test
-    void testGetAll() {
+    void testGetAll() throws Exception {
         QueryParams<Transaction> queryParams = new QueryParams<>();
         PageRequest pageRequest = PageRequest.of(queryParams.getPage(), queryParams.getLimit());
         List<Transaction> transactionList = Arrays.asList(new Transaction(), new Transaction());
-        List<TransactionResponseDTO> expectedResponseDTOList = Arrays.asList(new TransactionResponseDTO(), new TransactionResponseDTO());
+        List<TransactionResponseDTO> expectedResponseDTOList = Arrays.asList(new TransactionResponseDTO(transactionList.get(0)), new TransactionResponseDTO(transactionList.get(1)));
 
         when(transactionRepository.findAll(queryParams.buildFilter(), pageRequest)).thenReturn(new PageImpl<>(transactionList));
         when(transactionDTOMapper.toResponseDTO).thenReturn(mock(Function.class));
@@ -280,7 +279,7 @@ public class TransactionServiceTest {
  
         assertEquals(expectedResponseDTOList, actualResponseDTOList);
         verify(transactionRepository, times(1)).findAll(queryParams.buildFilter(), pageRequest);
-        verify(transactionDTOMapper, times(1)).toResponseDTO;
+        verify(transactionDTOMapper, times(1)).toResponseDTO.apply(transactionList.get(0));
         verify(transactionList, times(1)).stream();
         verify(transactionDTOMapper.toResponseDTO, times(transactionList.size())).apply(any(Transaction.class));
 

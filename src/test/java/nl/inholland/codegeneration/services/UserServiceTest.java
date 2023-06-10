@@ -36,6 +36,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.fasterxml.jackson.databind.annotation.NoClass;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -78,6 +80,8 @@ public class UserServiceTest {
         userDTOMapper = new UserDTOMapper(Mockito.mock(TransactionRepository.class));
         userDTOMapper.toUser = Mockito.mock(Function.class);
         userDTOMapper.toResponseDTO = Mockito.mock(Function.class);
+        userDTOMapper.toUserFromUpdate = Mockito.mock(Function.class);
+
 
         userService = new UserService(userRepository, accountRepository, userDTOMapper, passwordEncoder);
 
@@ -122,6 +126,7 @@ public class UserServiceTest {
         assertEquals(2, userResponseDTOList.size());
         assertEquals("John", userResponseDTOList.get(0).firstName());
         assertEquals("Jane", userResponseDTOList.get(1).firstName());
+
     }
 
     @Test
@@ -165,11 +170,8 @@ public class UserServiceTest {
         // ... set other fields as needed
         User user = new User();
         user.setId(1L);
-        user.setPassword("password");
-        // userUpdateRequestDTO.setPassword("newPassword");
-        UserDTOMapper userDTOMapper = Mockito.mock(UserDTOMapper.class);
-        userDTOMapper.toUserFromUpdate = Mockito.mock(Function.class);
-        userDTOMapper.toResponseDTO = Mockito.mock(Function.class);
+
+        user.setPassword("");
         when(userDTOMapper.toUserFromUpdate.apply(userUpdateRequestDTO)).thenReturn(user);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
@@ -184,14 +186,13 @@ public class UserServiceTest {
         UserUpdateRequestDTO userUpdateRequestDTO = new UserUpdateRequestDTO(1L, List.of(1), "username", "password",
                 "firstname", "lastname",
                 "email@example.com", "1234567890", LocalDate.now());
-        // ... set other fields as needed
         User user = new User();
         user.setId(1L);
-        UserDTOMapper userDTOMapper = Mockito.mock(UserDTOMapper.class);
+
+        user.setPassword("");
         when(userDTOMapper.toUserFromUpdate.apply(userUpdateRequestDTO)).thenReturn(user);
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-                () -> userService.update(userUpdateRequestDTO, 1L));
+        EntityNotFoundException  exception = assertThrows(EntityNotFoundException.class, () ->  userService.update(userUpdateRequestDTO, 1L));
 
         assertEquals("User not found!", exception.getMessage());
     }

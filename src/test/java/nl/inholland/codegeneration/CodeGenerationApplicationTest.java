@@ -7,5 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class CodeGenerationApplicationTest {
     @Test
 	void contextLoads() {
+		fail("Not yet implemented");
 	}
 }

@@ -8,6 +8,7 @@ class CodeGenerationApplicationTests {
 
 	@Test
 	void contextLoads() {
+		fail("Not yet implemented");
 	}
 
 }

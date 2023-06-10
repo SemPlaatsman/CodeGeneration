@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -36,12 +37,15 @@ public class FilterSpecificationTest {
   
     private FilterSpecification<Object, Object> filterSpecification;
 
+    private Path<Object> path;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
         // Mock the behavior of root.get() method
-        Path<Object> path = mock(Path.class);
+        path = mock(Path.class);
+        
         when(root.get(anyString())).thenReturn(path);
         when(Path.class.cast(path).getJavaType()).thenReturn(String.class);
 
@@ -58,4 +62,45 @@ public class FilterSpecificationTest {
         Predicate result = filterSpecification.toPredicate(root, query, builder);
         assert result != null;
     }
+
+
+
+    @Test
+    public void testToPredicateWithGreaterThanOperation() {
+        when(root.get(anyString())).thenReturn(path);
+        when(Path.class.cast(path).getJavaType()).thenReturn(Integer.class);
+        filterCriteria = new FilterCriteria("1", ">", "0");
+        filterSpecification = new FilterSpecification<>(filterCriteria, null);
+        Predicate result = filterSpecification.toPredicate(root, query, builder);
+        assertEquals("1 > 0", result.toString());
+    }
+
+    @Test
+    public void testToPredicateWithGreaterThanOrEqualOperation() {
+        filterCriteria = new FilterCriteria("key", ">:", "value");
+        filterSpecification = new FilterSpecification<>(filterCriteria, null);
+        Predicate result = filterSpecification.toPredicate(root, query, builder);
+        assertEquals("key >: value", result.toString());
+
+    }
+
+    @Test
+    public void testToPredicateWithLessThanOperation() {
+        filterCriteria = new FilterCriteria("key", "<", "value");
+        filterSpecification = new FilterSpecification<>(filterCriteria, null);
+        Predicate result = filterSpecification.toPredicate(root, query, builder);
+        assertEquals("key < value", result.toString());
+    }
+
+    @Test
+    public void testToPredicateWithLessThanOrEqualOperation() {
+        filterCriteria = new FilterCriteria("key", "<:", "value");
+        filterSpecification = new FilterSpecification<>(filterCriteria, null);
+        Predicate result = filterSpecification.toPredicate(root, query, builder);
+        assertEquals("key <: value", result.toString());
+    }
+
+
+
+    
 }

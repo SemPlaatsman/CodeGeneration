@@ -34,6 +34,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.fasterxml.jackson.databind.annotation.NoClass;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -109,7 +111,7 @@ public class UserServiceTest {
        when(userDTOMapper.toResponseDTO.apply(any(User.class))).thenReturn(new UserResponseDTO(any(User.class), any(BigDecimal.class)));
 
        // Create an instance of MyClass
-       V myClass = new MyClass(userRepository, userDTOMapper);
+       MyClass myClass = new NoClass(userRepository, userDTOMapper);
 
        // Call the method under test
        List<UserResponseDTO> result = myClass.getAll(queryParams, true);

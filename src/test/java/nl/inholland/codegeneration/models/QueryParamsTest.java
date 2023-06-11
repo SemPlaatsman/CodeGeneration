@@ -95,7 +95,7 @@ void testBuildFilter() throws Exception {
   }
 
   @Test
-  void testGetPage() {
+  void testGetPage(){
     assertEquals(1, queryParams.getPage());
   }
 
@@ -127,3 +127,4 @@ void testBuildFilter() throws Exception {
     queryParams.setPage(2);
     assertEquals(2, queryParams.getPage());
   }
+}

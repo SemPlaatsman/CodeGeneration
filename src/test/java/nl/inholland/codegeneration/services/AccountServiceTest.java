@@ -423,7 +423,7 @@ public class AccountServiceTest {
         @Test
         void testDeleteAccount_BalanceNotZero() {
                 String iban = "NL88INHO0001204817";
-                Account existingAccount = new Account(iban, AccountType.CURRENT, null, new BigDecimal(6969), null,
+                Account existingAccount = new Account(iban, AccountType.CURRENT, null, new BigDecimal(0), null,
                                 false);
 
                 Optional<Account> addedAccount = Optional.of(existingAccount);
@@ -438,23 +438,14 @@ public class AccountServiceTest {
         @Test
         void testUpdateAccount() throws APIException {
                 String iban = "NL88INHO0001204817";
-                AccountRequestDTO requestDTO = new AccountRequestDTO(1L, new BigDecimal(100), 0); // Provide necessary
-                                                                                                  // data for account
-                                                                                                  // update
+                AccountRequestDTO requestDTO = new AccountRequestDTO(1L, new BigDecimal(100), 0); 
                 User user = new User(1L, List.of(Role.CUSTOMER), "sarawilson", "sara123", "Sara", "Wilson",
                                 "sara.wilson@yahoo.com",
                                 "0612345678", LocalDate.of(1990, 11, 13), new BigDecimal(1000), new BigDecimal(200),
                                 false);
-                Account existingAccount = new Account(iban, AccountType.CURRENT, user, null, null, null); // Provide
-                                                                                                          // necessary
-                                                                                                          // data for
-                                                                                                          // existing
-                                                                                                          // account
-                Account updatedAccount = new Account(iban, AccountType.SAVINGS, user, null, null, null); // Provide
-                                                                                                         // necessary
-                                                                                                         // data for
-                                                                                                         // updated
-                                                                                                         // account
+                Account existingAccount = new Account(iban, AccountType.CURRENT, user, null, null, null);
+                                                                                                   
+                Account updatedAccount = new Account(iban, AccountType.SAVINGS, user, null, null, null); 
                 AccountResponseDTO expectedResponse = new AccountResponseDTO(updatedAccount);
 
                 // Mock the repository methods

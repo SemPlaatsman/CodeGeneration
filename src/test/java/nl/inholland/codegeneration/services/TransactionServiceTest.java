@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -34,6 +35,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.CriteriaBuilder.In;
+
 import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
 import nl.inholland.codegeneration.repositories.AccountRepository;
@@ -61,7 +63,7 @@ public class TransactionServiceTest {
     private Account accountFrom;
     private Account accountTo;
 
-    private User authenticationUser = new User(null, null, null, null, null, null, null, null, null, null, null, null);
+    private User AuthenticationUser = new User(null, null, null, null, null, null, null, null, null, null, null, null);
 
     @BeforeEach
     public void setup() {

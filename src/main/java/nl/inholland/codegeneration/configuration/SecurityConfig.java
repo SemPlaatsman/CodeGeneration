@@ -19,7 +19,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import lombok.RequiredArgsConstructor;
-import nl.inholland.codegeneration.security.JwtFIlter;
+import nl.inholland.codegeneration.security.JwtFilter;
 
 @Configuration
 @RequiredArgsConstructor
@@ -34,7 +34,7 @@ public class SecurityConfig {
         "/h2-console/**",
         "/authenticate/**"
     };
-    private final JwtFIlter JwtFIlter;
+    private final JwtFilter JwtFilter;
     private final AuthenticationProvider AuthenticationProvider;
 
     @Bean
@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .and()
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(AuthenticationProvider)
-                .addFilterBefore(JwtFIlter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(JwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         // http.csrf().ignoringRequestMatchers("/h2-console/**");
 

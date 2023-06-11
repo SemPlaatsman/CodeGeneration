@@ -1,13 +1,57 @@
 package nl.inholland.codegeneration.configuration;
 
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 public class WebConfigTest {
+
+    @Mock
+    CorsRegistry corsRegistry;
+
+    @Mock
+    CorsRegistry corsRegistration;
+
     @Test
     void testCorsConfigurer() {
-		fail("Not yet implemented");
 
+      // corsRegistry = mock(CorsRegistry.class);
+      // corsRegistration = mock(CorsRegistry.class);
+
+        // Create an instance of WebConfig
+        WebConfig webConfig = new WebConfig();
+
+        when(corsRegistration.allowedOrigins("http://localhost:5173")).thenReturn(corsRegistration);
+        when(corsRegistration.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")).thenReturn(corsRegistration);
+        when(corsRegistration.allowedHeaders("Authorization", "Cache-Control", "Content-Type")).thenReturn(corsRegistration);
+        when(corsRegistration.exposedHeaders("Authorization", "Cache-Control", "Content-Type")).thenReturn(corsRegistration);
+        when(corsRegistration.allowCredentials(true)).thenReturn(corsRegistration);
+
+        // Create a mock CorsRegistry
+        CorsRegistry corsRegistry = mock(CorsRegistry.class);
+        
+        // Mock the behavior of the CorsRegistry method
+        when(corsRegistry.addMapping("/**")).thenReturn(corsRegistration);
+
+        // Create an instance of WebConfig
+        WebConfig webConfig = new WebConfig();
+
+        // Call the corsConfigurer() method
+        WebMvcConfigurer configurer = webConfig.corsConfigurer();
+
+        // Invoke the addCorsMappings method on the mock CorsRegistry
+        configurer.addCorsMappings(corsRegistry);
+
+        // Verify that the CorsRegistration methods were called with the expected arguments
+        verify(corsRegistration).allowedOrigins("http://localhost:5173");
+        verify(corsRegistration).allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
+        verify(corsRegistration).allowedHeaders("Authorization", "Cache-Control", "Content-Type");
+        verify(corsRegistration).exposedHeaders("Authorization", "Cache-Control", "Content-Type");
+        verify(corsRegistration).allowCredentials(true);
     }
 }

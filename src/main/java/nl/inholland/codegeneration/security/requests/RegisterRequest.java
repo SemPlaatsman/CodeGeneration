@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nl.inholland.codegeneration.models.MinAge;
 
 @Data
 @Builder
@@ -41,5 +42,6 @@ public class RegisterRequest {
     private String phoneNumber;
 
     @NotNull(message = "Please fill the birth date field")
+    @MinAge(18)
     private LocalDate birthdate;
 }

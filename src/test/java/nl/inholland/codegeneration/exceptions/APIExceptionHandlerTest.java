@@ -46,56 +46,125 @@ public class APIExceptionHandlerTest {
 
   @Test
   void testHandleAPIException() {
+
+    HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+
     apiException = new APIException("Test exception", HttpStatus.BAD_REQUEST, LocalDateTime.now());
 
-    // Call the method under test
     ResponseEntity<APIExceptionResponseDTO> response = apiExceptionHandler.handleAPIException(apiException, webRequest);
 
-    // Assert the response
     assertNotNull(response);
-    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    assertEquals(httpStatus, response.getStatusCode());
 
     APIExceptionResponseDTO responseBody = response.getBody();
     assertNotNull(responseBody);
     assertEquals("Test exception", responseBody.message());
-    assertEquals(HttpStatus.BAD_REQUEST, responseBody.httpStatus());
+    assertEquals(httpStatus, responseBody.httpStatus());
     assertNotNull(responseBody.timestamp());
 
   }
 
   @Test
   void testHandleNotFoundException() {
-    fail("Not yet implemented");
+    HttpStatus httpStatus = HttpStatus.NOT_FOUND;
 
+     apiException = new APIException("Test exception", httpStatus, LocalDateTime.now());
+
+    ResponseEntity<APIExceptionResponseDTO> response = apiExceptionHandler.handleNotFoundException(apiException, webRequest);
+
+    assertNotNull(response);
+    assertEquals(httpStatus, response.getStatusCode());
+
+    APIExceptionResponseDTO responseBody = response.getBody();
+    assertNotNull(responseBody);
+    assertEquals("Test exception", responseBody.message());
+    assertEquals(httpStatus, responseBody.httpStatus());
+    assertNotNull(responseBody.timestamp());
   }
 
   @Test
   void testHandleForbiddenException() {
-    fail("Not yet implemented");
 
+    HttpStatus httpStatus = HttpStatus.FORBIDDEN;
+    apiException = new APIException("Test exception", httpStatus, LocalDateTime.now());
+
+    ResponseEntity<APIExceptionResponseDTO> response = apiExceptionHandler.handleForbiddenException(apiException, webRequest);
+
+    assertNotNull(response);
+    assertEquals(httpStatus, response.getStatusCode());
+
+    APIExceptionResponseDTO responseBody = response.getBody();
+    assertNotNull(responseBody);
+    assertEquals("Test exception", responseBody.message());
+    assertEquals(httpStatus, responseBody.httpStatus());
+    assertNotNull(responseBody.timestamp());
   }
 
   @Test
   void testHandleUnauthorizedException() {
-    fail("Not yet implemented");
+    HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
+    apiException = new APIException("Test exception", httpStatus, LocalDateTime.now());
 
+    ResponseEntity<APIExceptionResponseDTO> response = apiExceptionHandler.handleUnauthorizedException(apiException, webRequest);
+
+    assertNotNull(response);
+    assertEquals(httpStatus, response.getStatusCode());
+
+    APIExceptionResponseDTO responseBody = response.getBody();
+    assertNotNull(responseBody);
+    assertEquals("Test exception", responseBody.message());
+    assertEquals(httpStatus, responseBody.httpStatus());
+    assertNotNull(responseBody.timestamp());
   }
 
   @Test
   void testHandleBadRequestException() {
+    HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+    apiException = new APIException("Test exception", httpStatus, LocalDateTime.now());
 
-  }
+    ResponseEntity<APIExceptionResponseDTO> response = apiExceptionHandler.handleBadRequestException(apiException, webRequest);
+
+    assertNotNull(response);
+    assertEquals(httpStatus, response.getStatusCode());
+
+    APIExceptionResponseDTO responseBody = response.getBody();
+    assertNotNull(responseBody);
+    assertEquals("Test exception", responseBody.message());
+    assertEquals(httpStatus, responseBody.httpStatus());
+    assertNotNull(responseBody.timestamp());
+    }
 
   @Test
   void testHandleBadRequestExceptionByConstraint() {
-    fail("Not yet implemented");
+    HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+    apiException = new APIException("Test exception", httpStatus, LocalDateTime.now());
 
+    ResponseEntity<APIExceptionResponseDTO> response = apiExceptionHandler.handleBadRequestExceptionByConstraint(apiException, webRequest);
+
+    assertNotNull(response);
+    assertEquals(httpStatus, response.getStatusCode());
+
+    APIExceptionResponseDTO responseBody = response.getBody();
+    assertNotNull(responseBody);
+    assertEquals("Bad Request!", responseBody.message());
+    assertEquals(httpStatus, responseBody.httpStatus());
+    assertNotNull(responseBody.timestamp());
   }
 
   @Test
   void testHandleException() {
-    fail("Not yet implemented");
+    HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+    Exception exception = new Exception("Test exception");
+    ResponseEntity<APIExceptionResponseDTO> response = apiExceptionHandler.handleException(exception, webRequest);
 
+    assertNotNull(response);
+    assertEquals(httpStatus, response.getStatusCode());
+
+    APIExceptionResponseDTO responseBody = response.getBody();
+    assertNotNull(responseBody);
+    assertEquals("Test exception", responseBody.message());
+    assertEquals(httpStatus, responseBody.httpStatus());
+    assertNotNull(responseBody.timestamp());
   }
 
 }

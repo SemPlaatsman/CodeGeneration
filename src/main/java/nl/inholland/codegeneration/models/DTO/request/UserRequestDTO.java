@@ -2,6 +2,7 @@ package nl.inholland.codegeneration.models.DTO.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
+import nl.inholland.codegeneration.models.MinAge;
 import nl.inholland.codegeneration.models.Role;
 
 import java.time.LocalDate;
@@ -40,6 +41,7 @@ public record UserRequestDTO (
     String phoneNumber,
     @Schema(example = "2001-01-01")
     @NotNull(message = "Birthdate cannot be null!")
+    @MinAge(18)
     LocalDate birthdate
 ) {
     public UserRequestDTO(List<Integer> roles, String username, String password, String firstName, String lastName, String email, String phoneNumber, LocalDate birthdate) {

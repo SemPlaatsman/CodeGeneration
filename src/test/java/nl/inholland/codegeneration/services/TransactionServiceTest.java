@@ -63,7 +63,7 @@ public class TransactionServiceTest {
     private Account accountFrom;
     private Account accountTo;
 
-    private User AuthenticationUser = new User(null, null, null, null, null, null, null, null, null, null, null, null);
+    private User authenticationUser = new User(null, null, null, null, null, null, null, null, null, null, null, null);
 
     @BeforeEach
     public void setup() {

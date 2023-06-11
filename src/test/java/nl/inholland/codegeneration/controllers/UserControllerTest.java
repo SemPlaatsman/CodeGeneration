@@ -20,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.internal.bytebuddy.matcher.ElementMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,6 +28,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -192,8 +194,12 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "user", roles = { "EMPLOYEE" })
     public void testGetById() throws Exception {
-        mockMvc.perform(get("/users/{id}", 1).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+        Long id = 1L;
+
+        when(userService.getById(id)).thenReturn(mockUsers.get(0));
+        mockMvc.perform(get("/users/{id}", id).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id", Matchers.is(Integer.valueOf(id.toString()))));
     }
 
     @Test

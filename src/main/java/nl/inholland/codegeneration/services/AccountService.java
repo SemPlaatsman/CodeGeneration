@@ -76,7 +76,7 @@ public class AccountService {
         //     throw new APIException("not accounts found", Htt
     public AccountResponseDTO getAccountByIban(String iban) throws APIException {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Account account = accountRepository.findByIbanAndIsDeletedFalse(iban).orElseThrow(() -> new APIException("Account not found", HttpStatus.NOT_FOUND, LocalDateTime.now()));
+        Account account = accountRepository.findByIbanAndIsDeletedFalse(iban).orElseThrow(() -> new APIException("Account not found!", HttpStatus.NOT_FOUND, LocalDateTime.now()));
         CustomerIbanCheck(user, account);
         if (!user.getRoles().contains(Role.EMPLOYEE) && account.getIsDeleted()) {
             throw new EntityNotFoundException("Account not found!");

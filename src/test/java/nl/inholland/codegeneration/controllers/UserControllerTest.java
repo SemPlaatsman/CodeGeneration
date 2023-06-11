@@ -20,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.internal.bytebuddy.matcher.ElementMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,6 +28,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -119,7 +121,7 @@ public class UserControllerTest {
         when(userService.getAll(any(QueryParams.class), eq(null))).thenReturn(mockUsers);
         mockMvc.perform(get("/users").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(5)))
+            .andExpect(jsonPath("$", hasSize(mockUsers.size())))
             .andExpect(jsonPath("$[0].username", Matchers.is("bob1")))
             .andExpect(jsonPath("$[1].username", Matchers.is("bob2")))
             .andExpect(jsonPath("$[2].username", Matchers.is("bob3")))
@@ -134,7 +136,7 @@ public class UserControllerTest {
         String filter = URLEncoder.encode("isDeleted:'false'", StandardCharsets.UTF_8);
         mockMvc.perform(get("/users").contentType(MediaType.APPLICATION_JSON).queryParam("filter", filter))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(5)))
+            .andExpect(jsonPath("$", hasSize(mockUsers.size())))
             .andExpect(jsonPath("$[0].username", Matchers.is("bob1")))
             .andExpect(jsonPath("$[1].username", Matchers.is("bob2")))
             .andExpect(jsonPath("$[2].username", Matchers.is("bob3")))
@@ -164,7 +166,7 @@ public class UserControllerTest {
         when(userService.getAll(any(QueryParams.class), eq(null))).thenReturn(mockUsers);
         mockMvc.perform(get("/users").contentType(MediaType.APPLICATION_JSON).queryParam("page", Integer.toString(page)))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(5)))
+            .andExpect(jsonPath("$", hasSize(mockUsers.size())))
             .andExpect(jsonPath("$[0].username", Matchers.is("bob1")))
             .andExpect(jsonPath("$[1].username", Matchers.is("bob2")))
             .andExpect(jsonPath("$[2].username", Matchers.is("bob3")))
@@ -179,12 +181,13 @@ public class UserControllerTest {
         int limit = 2;
         int page = 1;
 
-        when(userService.getAll(any(QueryParams.class), eq(null))).thenReturn(mockUsers.subList((page * limit), ((page * limit) + limit)));
+        List<UserResponseDTO> filteredList = mockUsers.subList((page * limit), ((page * limit) + limit));
+        when(userService.getAll(any(QueryParams.class), eq(null))).thenReturn(filteredList);
         mockMvc.perform(get("/users").contentType(MediaType.APPLICATION_JSON).queryParam("filter", filter)
                 .queryParam("limit", Integer.toString(limit))
                 .queryParam("page", Integer.toString(page)))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$", hasSize(filteredList.size())))
             .andExpect(jsonPath("$[0].username", Matchers.is("bob3")))
             .andExpect(jsonPath("$[1].username", Matchers.is("bob4")));
     }
@@ -192,8 +195,12 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "user", roles = { "EMPLOYEE" })
     public void testGetById() throws Exception {
-        mockMvc.perform(get("/users/{id}", 1).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+        Long id = 1L;
+
+        when(userService.getById(id)).thenReturn(mockUsers.get(0));
+        mockMvc.perform(get("/users/{id}", id).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id", Matchers.is(Integer.valueOf(id.toString()))));
     }
 
     @Test

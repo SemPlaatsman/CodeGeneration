@@ -1,5 +1,7 @@
 package nl.inholland.codegeneration.models.DTO.response;
 
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.NoArgsConstructor;
 import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.User;
@@ -10,13 +12,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record UserResponseDTO(
+    @Schema(example = "1")
     Long id,
     List<Integer> roles,
+    @Schema(example = "testUser")
     String username,
+    @Schema(example = "Test")
     String firstName,
+    @Schema(example = "User")
     String lastName,
+    @Schema(example = "test@user.dev")
     String email,
+    @Schema(example = "06 12345678")
     String phoneNumber,
+    @Schema(example = "2001-01-01")
     LocalDate birthdate,
     BigDecimal dayLimit,
     BigDecimal remainingDayLimit,

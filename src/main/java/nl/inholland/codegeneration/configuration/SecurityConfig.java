@@ -28,8 +28,11 @@ import nl.inholland.codegeneration.security.JwtFilter;
 public class SecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
-            "/h2-console/**",
-            "/authenticate/**"
+        "/swagger-ui.html",
+        "/swagger-ui/**",
+        "/v3/api-docs/**",
+        "/h2-console/**",
+        "/authenticate/**"
     };
     private final JwtFilter JwtFilter;
     private final AuthenticationProvider AuthenticationProvider;

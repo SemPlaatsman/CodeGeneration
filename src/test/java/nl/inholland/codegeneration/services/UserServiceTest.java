@@ -27,6 +27,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import java.lang.reflect.Field;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -104,25 +105,24 @@ public class UserServiceTest {
     @Test
     void testGetAll() throws Exception {
 
-    //      @Test
-    // public void testSetClassReference() throws Exception {
-    //     QueryParams<?> queryParams = new QueryParams<>(String.class, null, null);
+        // QueryParams<?> queryParams = new QueryParams<>(String.class, null, null);
 
-    //     // Get the classReference field
-    //     Field field = QueryParams.class.getDeclaredField("classReference");
-    //     // Allow the field to be accessed, even though it's private
-    //     field.setAccessible(true);
-
-    //     // Change the value of classReference
-    //     Class<?> newClassReference = Integer.class;
-    //     field.set(queryParams, newClassReference);
-
-    //     // Check that classReference was changed
-    //     Class<?> actualClassReference = (Class<?>) field.get(queryParams);
-    //     assertEquals(newClassReference, actualClassReference);
-    // }
-        // Arrange
         QueryParams<User> queryParams = new QueryParams<>();
+        // Get the classReference field
+        Field field = QueryParams.class.getDeclaredField("classReference");
+        // Allow the field to be accessed, even though it's private
+        field.setAccessible(true);
+
+        // Change the value of classReference
+        Class<?> newClassReference = Integer.class;
+        field.set(queryParams, newClassReference);
+
+        // Check that classReference was changed
+        Class<?> actualClassReference = (Class<?>) field.get(queryParams);
+        assertEquals(newClassReference, actualClassReference);
+        
+        // Arrange
+
         queryParams.setFilter("firstName:John");
         Boolean hasAccount = true;
         List<User> userList = new ArrayList<>();

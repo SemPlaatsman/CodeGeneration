@@ -127,3 +127,4 @@ void testBuildFilter() throws Exception {
     queryParams.setPage(2);
     assertEquals(2, queryParams.getPage());
   }
+}

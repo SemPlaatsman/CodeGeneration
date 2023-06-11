@@ -103,6 +103,24 @@ public class UserServiceTest {
     // TODO: Add tests for the getAll method
     @Test
     void testGetAll() throws Exception {
+
+    //      @Test
+    // public void testSetClassReference() throws Exception {
+    //     QueryParams<?> queryParams = new QueryParams<>(String.class, null, null);
+
+    //     // Get the classReference field
+    //     Field field = QueryParams.class.getDeclaredField("classReference");
+    //     // Allow the field to be accessed, even though it's private
+    //     field.setAccessible(true);
+
+    //     // Change the value of classReference
+    //     Class<?> newClassReference = Integer.class;
+    //     field.set(queryParams, newClassReference);
+
+    //     // Check that classReference was changed
+    //     Class<?> actualClassReference = (Class<?>) field.get(queryParams);
+    //     assertEquals(newClassReference, actualClassReference);
+    // }
         // Arrange
         QueryParams<User> queryParams = new QueryParams<>();
         queryParams.setFilter("firstName:John");

@@ -118,8 +118,9 @@ public class AccountService {
         }
         if(account.getIsDeleted()) {
             throw new EntityNotFoundException("Account not found!");
-        } else if (BigDecimal.ZERO.equals(account.getBalance())) {
-            System.out.println(account.getBalance());
+        }
+        if (!BigDecimal.ZERO.equals(account.getBalance())) {
+//            System.out.println(account.getBalance());
             throw new InvalidDataAccessApiUsageException("Account balance must be zero before deleting!");
         }
         account.setIsDeleted(true);

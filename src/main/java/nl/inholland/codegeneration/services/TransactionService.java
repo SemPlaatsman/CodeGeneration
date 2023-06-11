@@ -38,7 +38,7 @@ public class TransactionService {
     }
 
     public TransactionResponseDTO getById(Long i) {
-        Transaction transaction = transactionRepository.findById(i).orElseThrow(() -> new EntityNotFoundException(""));
+        Transaction transaction = transactionRepository.findById(i).orElseThrow(() -> new EntityNotFoundException("Transaction not found!"));
         return transactionDTOMapper.toResponseDTO.apply(transaction);
     }
 

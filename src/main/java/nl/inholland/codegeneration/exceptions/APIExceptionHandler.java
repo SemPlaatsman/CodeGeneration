@@ -21,6 +21,7 @@ import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -34,6 +35,7 @@ import javax.naming.AuthenticationException;
 
 @ControllerAdvice
 public class APIExceptionHandler {
+
     @ExceptionHandler(APIException.class)
     public ResponseEntity<APIExceptionResponseDTO> handleAPIException(APIException ex, WebRequest request) {
         APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO(
@@ -44,6 +46,7 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(apiExceptionResponseDTO, apiExceptionResponseDTO.httpStatus());
     }
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<APIExceptionResponseDTO> handleNotFoundException(Exception ex, WebRequest request) {
         APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO(
@@ -54,6 +57,7 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(apiExceptionResponseDTO, apiExceptionResponseDTO.httpStatus());
     }
 
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler({InsufficientAuthenticationException.class, AccessDeniedException.class})
     public ResponseEntity<APIExceptionResponseDTO> handleForbiddenException(Exception ex, WebRequest request) {
         APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO(
@@ -64,6 +68,7 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(apiExceptionResponseDTO, apiExceptionResponseDTO.httpStatus());
     }
 
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler({BadCredentialsException.class, JwtException.class, UsernameNotFoundException.class, AccountExpiredException.class})
     public ResponseEntity<APIExceptionResponseDTO> handleUnauthorizedException(Exception ex, WebRequest request) {
         APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO(
@@ -74,6 +79,7 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(apiExceptionResponseDTO, apiExceptionResponseDTO.httpStatus());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({InvalidDataAccessApiUsageException.class, SemanticException.class, NullPointerException.class, IllegalArgumentException.class, NoSuchFieldException.class, IllegalStateException.class, HttpMediaTypeException.class, ValidationException.class})
     public ResponseEntity<APIExceptionResponseDTO> handleBadRequestException(Exception ex, WebRequest request) {
         APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO(
@@ -84,6 +90,7 @@ public class APIExceptionHandler {
         return new ResponseEntity<>(apiExceptionResponseDTO, apiExceptionResponseDTO.httpStatus());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({MethodArgumentNotValidException.class, ConstraintViolationException.class})
     public ResponseEntity<APIExceptionResponseDTO> handleBadRequestExceptionByConstraint(Exception ex, WebRequest request) {
         APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO(
@@ -105,6 +112,7 @@ public class APIExceptionHandler {
 //        return new ResponseEntity<>(apiExceptionResponseDTO, apiExceptionResponseDTO.httpStatus());
 //    }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<APIExceptionResponseDTO> handleException(Exception ex, WebRequest request) {
         APIExceptionResponseDTO apiExceptionResponseDTO = new APIExceptionResponseDTO( 

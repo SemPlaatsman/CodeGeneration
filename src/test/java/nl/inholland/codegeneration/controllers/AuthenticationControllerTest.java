@@ -1,6 +1,10 @@
 package nl.inholland.codegeneration.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.codegeneration.configuration.apiTestConfiguration;
+import nl.inholland.codegeneration.exceptions.APIExceptionHandler;
 import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.security.requests.AuthenticationRequest;
 import nl.inholland.codegeneration.security.requests.RegisterRequest;
@@ -20,18 +24,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import io.cucumber.core.gherkin.messages.internal.gherkin.internal.com.eclipsesource.json.Json;
-import io.cucumber.messages.internal.com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,29 +50,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(AuthenticationController.class)
-@Import(apiTestConfiguration.class)
+//@ExtendWith(SpringExtension.class)
+//@WebMvcTest(AuthenticationController.class)
+//@Import(apiTestConfiguration.class)
 public class AuthenticationControllerTest {
-    
-    @Autowired
+
     private MockMvc mockMvc;
 
-    @Autowired
-    private AuthenticationController accountController;
+    private AuthenticationController authenticationController;
 
-    @MockBean
+    @Mock
     private AuthenticateService authenticateService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(accountController).build();
+        MockitoAnnotations.openMocks(this);
+        authenticationController = new AuthenticationController(authenticateService);
+        mockMvc = MockMvcBuilders.standaloneSetup(authenticationController)
+                .setControllerAdvice(new APIExceptionHandler())
+                .build();
     }
 
     public static String asJsonString(final Object obj) {
         try {
-            return new ObjectMapper().writeValueAsString(obj);
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule()); // register JavaTimeModule Dit geeft meer errors. Moet iets
+            // extra toevoegen.
+            return mapper.writeValueAsString(obj);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -72,18 +86,35 @@ public class AuthenticationControllerTest {
     @WithMockUser(username = "user", roles = {"EMPLOYEE"})
     void testRegister() throws Exception {
         // Given
-        RegisterRequest registerRequest = new RegisterRequest();
-        registerRequest.setUsername("testUser");
-        registerRequest.setPassword("testPassword");
+        RegisterRequest registerRequest = new RegisterRequest("testUser", "testPassword", "Test", "User", "test@user.dev", "06 12345678", LocalDate.now());
         AuthenticationResponse expectedResponse = new AuthenticationResponse(1L, "dummy_token", List.of(Role.EMPLOYEE.getValue()), "testUser", "user@email.com");
     
-        when(authenticateService.register(any(RegisterRequest.class))).thenReturn(expectedResponse);
+        when(authenticateService.register(registerRequest)).thenReturn(expectedResponse);
     
         // When & Then
         mockMvc.perform(post("/authenticate/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(registerRequest)))
-                .andExpect(status().isCreated());
+            .content(asJsonString(registerRequest))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated());
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
+    void testInvalidRegister() throws Exception {
+        // Given
+        RegisterRequest registerRequest = new RegisterRequest("testUser", "", "Test", "User", "test@user.dev", "06 12345678", LocalDate.now());
+        AuthenticationResponse expectedResponse = new AuthenticationResponse(1L, "dummy_token", List.of(Role.EMPLOYEE.getValue()), "testUser", "user@email.com");
+
+        when(authenticateService.register(registerRequest)).thenReturn(expectedResponse);
+
+        // When & Then
+        mockMvc.perform(post("/authenticate/register")
+            .content(asJsonString(registerRequest))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
+            .andExpect(result -> assertEquals(List.of("Please fill the password field!").toString(),
+                    ((MethodArgumentNotValidException) Objects.requireNonNull(result.getResolvedException())).getBindingResult().getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList().toString()));
     }
     
     @Test
@@ -99,8 +130,27 @@ public class AuthenticationControllerTest {
     
         // When & Then
         mockMvc.perform(post("/authenticate/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(loginRequest)))
-                .andExpect(status().isOk());
-    } 
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonString(loginRequest)))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"EMPLOYEE"})
+    void testInvalidCredentialsLogin() throws Exception {
+        // Given
+        AuthenticationRequest loginRequest = new AuthenticationRequest();
+        loginRequest.setUsername("johndoe");
+        loginRequest.setPassword("johnonetwothree");
+
+        when(authenticateService.login(loginRequest)).thenThrow(new BadCredentialsException("Bad credentials"));
+
+        // When & Then
+        mockMvc.perform(post("/authenticate/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonString(loginRequest)))
+            .andExpect(status().isUnauthorized())
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof BadCredentialsException))
+            .andExpect(result -> assertEquals("Bad credentials", Objects.requireNonNull(result.getResolvedException()).getMessage()));
+    }
 }

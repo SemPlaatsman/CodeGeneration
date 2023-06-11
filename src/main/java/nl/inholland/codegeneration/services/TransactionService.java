@@ -47,7 +47,7 @@ public class TransactionService {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Transaction transaction = transactionDTOMapper.toTransaction.apply(transactionRequestDTO);
         if (!user.getRoles().contains(Role.EMPLOYEE) && !Objects.equals(user.getId(), transaction.getAccountFrom().getUser().getId())) {
-            throw new InvalidDataAccessApiUsageException("Invalid bank account provided PANNENKOEK!");
+            throw new InvalidDataAccessApiUsageException("Invalid bank account provided!");
         } else if (transaction.getAccountFrom().getIsDeleted() || transaction.getAccountTo().getIsDeleted()) {
             throw new InvalidDataAccessApiUsageException("Invalid bank account provided!");
         } else if (transaction.getAmount().compareTo(BigDecimal.ZERO) <= 0) {

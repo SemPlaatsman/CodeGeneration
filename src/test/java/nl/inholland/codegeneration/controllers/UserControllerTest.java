@@ -121,7 +121,7 @@ public class UserControllerTest {
         when(userService.getAll(any(QueryParams.class), eq(null))).thenReturn(mockUsers);
         mockMvc.perform(get("/users").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(5)))
+            .andExpect(jsonPath("$", hasSize(mockUsers.size())))
             .andExpect(jsonPath("$[0].username", Matchers.is("bob1")))
             .andExpect(jsonPath("$[1].username", Matchers.is("bob2")))
             .andExpect(jsonPath("$[2].username", Matchers.is("bob3")))
@@ -136,7 +136,7 @@ public class UserControllerTest {
         String filter = URLEncoder.encode("isDeleted:'false'", StandardCharsets.UTF_8);
         mockMvc.perform(get("/users").contentType(MediaType.APPLICATION_JSON).queryParam("filter", filter))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(5)))
+            .andExpect(jsonPath("$", hasSize(mockUsers.size())))
             .andExpect(jsonPath("$[0].username", Matchers.is("bob1")))
             .andExpect(jsonPath("$[1].username", Matchers.is("bob2")))
             .andExpect(jsonPath("$[2].username", Matchers.is("bob3")))
@@ -166,7 +166,7 @@ public class UserControllerTest {
         when(userService.getAll(any(QueryParams.class), eq(null))).thenReturn(mockUsers);
         mockMvc.perform(get("/users").contentType(MediaType.APPLICATION_JSON).queryParam("page", Integer.toString(page)))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(5)))
+            .andExpect(jsonPath("$", hasSize(mockUsers.size())))
             .andExpect(jsonPath("$[0].username", Matchers.is("bob1")))
             .andExpect(jsonPath("$[1].username", Matchers.is("bob2")))
             .andExpect(jsonPath("$[2].username", Matchers.is("bob3")))
@@ -181,12 +181,13 @@ public class UserControllerTest {
         int limit = 2;
         int page = 1;
 
-        when(userService.getAll(any(QueryParams.class), eq(null))).thenReturn(mockUsers.subList((page * limit), ((page * limit) + limit)));
+        List<UserResponseDTO> filteredList = mockUsers.subList((page * limit), ((page * limit) + limit));
+        when(userService.getAll(any(QueryParams.class), eq(null))).thenReturn(filteredList);
         mockMvc.perform(get("/users").contentType(MediaType.APPLICATION_JSON).queryParam("filter", filter)
                 .queryParam("limit", Integer.toString(limit))
                 .queryParam("page", Integer.toString(page)))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$", hasSize(filteredList.size())))
             .andExpect(jsonPath("$[0].username", Matchers.is("bob3")))
             .andExpect(jsonPath("$[1].username", Matchers.is("bob4")));
     }

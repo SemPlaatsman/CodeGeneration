@@ -77,7 +77,7 @@ public class TransactionControllerTest {
         mockMvc.perform(get("/transactions")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(5)));
+                .andExpect(jsonPath("$", hasSize(mockTransactions.size())));
     }
 
     @Test
@@ -100,7 +100,7 @@ public class TransactionControllerTest {
         mockMvc.perform(get("/transactions").param("filter", filter)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(4)))
+                .andExpect(jsonPath("$", hasSize(filteredTransactions.size())))
                 .andExpect(jsonPath("$[0].id", Matchers.greaterThan(1)))
                 .andExpect(jsonPath("$[1].id", Matchers.greaterThan(1)))
                 .andExpect(jsonPath("$[2].id", Matchers.greaterThan(1)))
@@ -115,7 +115,7 @@ public class TransactionControllerTest {
         List<TransactionResponseDTO> filteredTransactions = mockTransactions.subList(0, limit);
 
         when(transactionService.getAll(any(QueryParams.class))).thenAnswer(invocation -> {
-            if(invocation.getArgument(0) instanceof QueryParams) {
+            if(invocation.getArgument(0) instanceof QueryParams && ((QueryParams<?>) invocation.getArgument(0)).getLimit() == limit) {
                 return filteredTransactions;
             } else {
                 return mockTransactions;
@@ -139,7 +139,7 @@ public class TransactionControllerTest {
         List<TransactionResponseDTO> filteredTransactions = mockTransactions.subList((page * limit), ((page * limit) + limit));
 
         when(transactionService.getAll(any(QueryParams.class))).thenAnswer(invocation -> {
-            if(invocation.getArgument(0) instanceof QueryParams) {
+            if(invocation.getArgument(0) instanceof QueryParams && ((QueryParams<?>) invocation.getArgument(0)).getLimit() == limit && ((QueryParams<?>) invocation.getArgument(0)).getPage() == page) {
                 return filteredTransactions;
             } else {
                 return mockTransactions;
@@ -169,7 +169,7 @@ public class TransactionControllerTest {
                 .subList((page * limit), ((page * limit) + limit));
 
         when(transactionService.getAll(any(QueryParams.class))).thenAnswer(invocation -> {
-            if(invocation.getArgument(0) instanceof QueryParams) {
+            if(invocation.getArgument(0) instanceof QueryParams && ((QueryParams<?>) invocation.getArgument(0)).getLimit() == limit && ((QueryParams<?>) invocation.getArgument(0)).getPage() == page) {
                 return filteredTransactions;
             } else {
                 return mockTransactions;

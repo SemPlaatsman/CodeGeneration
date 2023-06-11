@@ -24,62 +24,62 @@ import static org.mockito.Mockito.*;
 
 class QueryParamsTest {
 
-  private QueryParams<Object> queryParams;
+    private QueryParams<Object> queryParams;
 
-  @Mock
-  private Authentication authentication;
+    @Mock
+    private Authentication authentication;
 
-  @Mock
-  private SecurityContext securityContext;
+    @Mock
+    private SecurityContext securityContext;
 
-  @Mock
-  private User mockUser;
+    @Mock
+    private User mockUser;
 
-  // @Mock
-  // private Root<Object> root;
+    // @Mock
+    // private Root<Object> root;
 
-  // @Mock
-  // private CriteriaQuery<?> query;
+    // @Mock
+    // private CriteriaQuery<?> query;
 
-  // @Mock
-  // private CriteriaBuilder builder;
+    // @Mock
+    // private CriteriaBuilder builder;
 
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.openMocks(this);
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
 
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
 
-    queryParams = new QueryParams<>(Object.class, 10, 1);
-  }
+        queryParams = new QueryParams<>(Object.class, 10, 1);
+    }
 
-  @Test
-void testAddFilter() throws Exception {
-    when(authentication.getPrincipal()).thenReturn(mockUser);
-    when(mockUser.getRoles()).thenReturn(Collections.singletonList(Role.EMPLOYEE));
+    @Test
+    void testAddFilter() throws Exception {
+        when(authentication.getPrincipal()).thenReturn(mockUser);
+        when(mockUser.getRoles()).thenReturn(Collections.singletonList(Role.EMPLOYEE));
 
-    FilterCriteria filterCriteria = new FilterCriteria("sampleKey", ":", "sampleValue");
+        FilterCriteria filterCriteria = new FilterCriteria("sampleKey", ":", "sampleValue");
 
-    assertTrue(queryParams.addFilter(filterCriteria));
-}
+        assertTrue(queryParams.addFilter(filterCriteria));
+    }
 
-@Test
-void testBuildFilter() throws Exception {
-    when(authentication.getPrincipal()).thenReturn(mockUser);
-    when(mockUser.getRoles()).thenReturn(Collections.singletonList(Role.EMPLOYEE));
+    @Test
+    void testBuildFilter() throws Exception {
+        when(authentication.getPrincipal()).thenReturn(mockUser);
+        when(mockUser.getRoles()).thenReturn(Collections.singletonList(Role.EMPLOYEE));
 
-    queryParams.setFilter("sampleKey:>:'sampleValue'");
+        queryParams.setFilter("sampleKey:>:'sampleValue'");
 
-    assertNotNull(queryParams.buildFilter());
-}
+        assertNotNull(queryParams.buildFilter());
+    }
 
-  @Test
-  void testGetClassReference() {
-    assertEquals(Object.class, queryParams.getClassReference());
-  }
+    @Test
+    void testGetClassReference() {
+        assertEquals(Object.class, queryParams.getClassReference());
+    }
 
-  @Test
+    @Test
     void testGetFilterCriteria() throws Exception {
         when(authentication.getPrincipal()).thenReturn(mockUser);
         when(mockUser.getRoles()).thenReturn(Collections.singletonList(Role.EMPLOYEE));
@@ -89,23 +89,23 @@ void testBuildFilter() throws Exception {
         assertEquals(1, queryParams.getFilterCriteria().size());
     }
 
-  @Test
-  void testGetLimit() {
-    assertEquals(10, queryParams.getLimit());
-  }
+    @Test
+    void testGetLimit() {
+        assertEquals(10, queryParams.getLimit());
+    }
 
-  @Test
-  void testGetPage() {
-    assertEquals(1, queryParams.getPage());
-  }
+    @Test
+    void testGetPage() {
+        assertEquals(1, queryParams.getPage());
+    }
 
-  @Test
-  void testSetClassReference() {
-    queryParams.setClassReference(String.class);
-    assertEquals(String.class, queryParams.getClassReference());
-  }
+    @Test
+    void testSetClassReference() {
+        queryParams.setClassReference(String.class);
+        assertEquals(String.class, queryParams.getClassReference());
+    }
 
-  @Test
+    @Test
     void testSetFilter() throws Exception {
         when(authentication.getPrincipal()).thenReturn(mockUser);
         when(mockUser.getRoles()).thenReturn(Collections.singletonList(Role.EMPLOYEE));
@@ -116,15 +116,15 @@ void testBuildFilter() throws Exception {
         assertFalse(queryParams.getFilterCriteria().isEmpty());
     }
 
-  @Test
-  void testSetLimit() {
-    queryParams.setLimit(5);
-    assertEquals(5, queryParams.getLimit());
-  }
+    @Test
+    void testSetLimit() {
+        queryParams.setLimit(5);
+        assertEquals(5, queryParams.getLimit());
+    }
 
-  @Test
-  void testSetPage() {
-    queryParams.setPage(2);
-    assertEquals(2, queryParams.getPage());
-  }
+    @Test
+    void testSetPage() {
+        queryParams.setPage(2);
+        assertEquals(2, queryParams.getPage());
+    }
 }

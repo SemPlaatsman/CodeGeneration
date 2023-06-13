@@ -6,6 +6,7 @@ import nl.inholland.codegeneration.models.AccountType;
 import nl.inholland.codegeneration.models.DTO.request.AccountRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.AccountResponseDTO;
 import nl.inholland.codegeneration.models.DTO.response.BalanceResponseDTO;
+import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
 import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
 import nl.inholland.codegeneration.repositories.AccountRepository;
 import nl.inholland.codegeneration.repositories.UserRepository;
@@ -56,6 +57,7 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 
@@ -71,6 +73,8 @@ public class AccountServiceTest {
         private AccountDTOMapper accountDTOMapper;
         @Mock
         private TransactionDTOMapper transactionDTOMapper;
+        @Mock
+        private TransactionService transactionService;
 
         @InjectMocks
         private AccountService accountService;
@@ -88,9 +92,9 @@ public class AccountServiceTest {
                                                                                        // "EMPLOYEE"
 
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        authenticationUser,
+                                authenticationUser,
                                 "sara123",
-                        authenticationUser.getAuthorities());
+                                authenticationUser.getAuthorities());
 
                 SecurityContext securityContext = SecurityContextHolder.getContext();
                 securityContext.setAuthentication(authentication);
@@ -244,7 +248,6 @@ public class AccountServiceTest {
                 when(accounts.stream().map(accountDTOMapper.toResponseDTO)
                                 .collect(Collectors.toList())).thenReturn(null);
 
-                fail("Not yet implemented");
                 List<AccountResponseDTO> result = accountService.getAll(null);
 
                 assertNotNull(result);
@@ -290,11 +293,11 @@ public class AccountServiceTest {
         }
 
         @Test
-        void testGetTransactions() {
-                // TODO: Mock the behavior of the Stream class
-
-                fail("Not yet implemented");
-
+        void testGetTransactions() throws Exception {
+                QueryParams<Transaction> queryParams = new QueryParams<>(); // Add necessary arguments
+                List<TransactionResponseDTO> transactions = transactionService.getTransactions(queryParams, iban);
+                assertNotNull(transactions); // Checking if the transactions are not null
+                // Add more assertions here depending on your requirements
         }
 
         @Test
@@ -438,14 +441,14 @@ public class AccountServiceTest {
         @Test
         void testUpdateAccount() throws APIException {
                 String iban = "NL88INHO0001204817";
-                AccountRequestDTO requestDTO = new AccountRequestDTO(1L, new BigDecimal(100), 0); 
+                AccountRequestDTO requestDTO = new AccountRequestDTO(1L, new BigDecimal(100), 0);
                 User user = new User(1L, List.of(Role.CUSTOMER), "sarawilson", "sara123", "Sara", "Wilson",
                                 "sara.wilson@yahoo.com",
                                 "0612345678", LocalDate.of(1990, 11, 13), new BigDecimal(1000), new BigDecimal(200),
                                 false);
                 Account existingAccount = new Account(iban, AccountType.CURRENT, user, null, null, null);
-                                                                                                   
-                Account updatedAccount = new Account(iban, AccountType.SAVINGS, user, null, null, null); 
+
+                Account updatedAccount = new Account(iban, AccountType.SAVINGS, user, null, null, null);
                 AccountResponseDTO expectedResponse = new AccountResponseDTO(updatedAccount);
 
                 // Mock the repository methods
@@ -473,33 +476,43 @@ public class AccountServiceTest {
         @Test
         public void testUpdateAccount_Unauthorized() throws APIException {
                 String iban = "NL88INHO0001204817";
-                AccountRequestDTO requestDTO = new AccountRequestDTO(null, null,AccountType.CURRENT.getValue() ); // Provide necessary data for account update
-                Account existingAccount = new Account(iban, AccountType.CURRENT, null, null, null, null); // Existing account with no user
+                AccountRequestDTO requestDTO = new AccountRequestDTO(null, null, AccountType.CURRENT.getValue()); // Provide
+                                                                                                                  // necessary
+                                                                                                                  // data
+                                                                                                                  // for
+                                                                                                                  // account
+                                                                                                                  // update
+                Account existingAccount = new Account(iban, AccountType.CURRENT, null, null, null, null); // Existing
+                                                                                                          // account
+                                                                                                          // with no
+                                                                                                          // user
 
                 when(accountDTOMapper.toAccount.apply(requestDTO)).thenReturn(existingAccount);
 
-                APIException exception = assertThrows( APIException.class,()->accountService.updateAccount(requestDTO, iban));
+                APIException exception = assertThrows(APIException.class,
+                                () -> accountService.updateAccount(requestDTO, iban));
                 assertEquals("Unauthorized!", exception.getMessage());
                 assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
         }
 
         @Test
         public void testUpdateAccount_AccountNotFound() throws APIException {
-                 String iban = "NL88INHO0001204817";
-                 AccountRequestDTO requestDTO = new AccountRequestDTO(null, null, 0); // Provide necessary data for account update
-                 User user = new User(1L, List.of(Role.CUSTOMER), "sarawilson", "sara123", "Sara", "Wilson",null,null,null,null,null,null);
-                 Account account = new Account(iban, AccountType.CURRENT, user, null, null, null); // Existing account with no user
-                 Optional <User> existingUser = Optional.of(user);
-                 Optional <Account> existingAccount = Optional.empty();
-
-
+                String iban = "NL88INHO0001204817";
+                AccountRequestDTO requestDTO = new AccountRequestDTO(null, null, 0); // Provide necessary data for
+                                                                                     // account update
+                User user = new User(1L, List.of(Role.CUSTOMER), "sarawilson", "sara123", "Sara", "Wilson", null, null,
+                                null, null, null, null);
+                Account account = new Account(iban, AccountType.CURRENT, user, null, null, null); // Existing account
+                                                                                                  // with no user
+                Optional<User> existingUser = Optional.of(user);
+                Optional<Account> existingAccount = Optional.empty();
 
                 when(accountDTOMapper.toAccount.apply(requestDTO)).thenReturn(account);
                 when(accountRepository.findByIbanAndIsDeletedFalse(iban)).thenReturn(existingAccount);
                 when(userRepository.findById(anyLong())).thenReturn(existingUser);
-                
 
-                APIException exception = assertThrows( APIException.class,()->accountService.updateAccount(requestDTO, iban));
+                APIException exception = assertThrows(APIException.class,
+                                () -> accountService.updateAccount(requestDTO, iban));
                 assertEquals("Account not for this user", exception.getMessage());
                 assertEquals(HttpStatus.UNAUTHORIZED, exception.getHttpStatus());
 

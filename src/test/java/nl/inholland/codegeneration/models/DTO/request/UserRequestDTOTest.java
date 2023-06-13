@@ -3,6 +3,7 @@ package nl.inholland.codegeneration.models.DTO.request;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
@@ -21,9 +22,11 @@ public class UserRequestDTOTest {
         String email = "john.doe@test.com";
         String phoneNumber = "1234567890";
         LocalDate birthdate = LocalDate.now();
+        BigDecimal dailyLimit = new BigDecimal("1000");
+        BigDecimal transactionLimit = new BigDecimal("200");
 
         // When
-        UserRequestDTO dto = new UserRequestDTO(roles, username, password, firstName, lastName, email, phoneNumber, birthdate);
+        UserRequestDTO dto = new UserRequestDTO(roles, username, password, firstName, lastName, email, phoneNumber, birthdate, dailyLimit, transactionLimit);
 
         // Then
         assertEquals(dto.roles(), roles);

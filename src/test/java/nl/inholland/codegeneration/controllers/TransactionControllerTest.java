@@ -221,14 +221,14 @@ public class TransactionControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"EMPLOYEE", "CUSTOMER"})
     public void testInvalidAdd() throws Exception {
-        TransactionRequestDTO transactionRequestDTO = new TransactionRequestDTO("", "NL01INHO0000000002", new BigDecimal(100), "description");
+        TransactionRequestDTO transactionRequestDTO = new TransactionRequestDTO("Frans Bauer", "NL01INHO0000000002", new BigDecimal(100), "description");
         // Fill the object according to your needs
         mockMvc.perform(post("/transactions")
                         .content(asJsonString(transactionRequestDTO))
                         .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-            .andExpect(result -> assertEquals(List.of("IBAN from cannot be empty!").toString(),
+            .andExpect(result -> assertEquals(List.of("Invalid IBAN provided!").toString(),
                     ((MethodArgumentNotValidException) Objects.requireNonNull(result.getResolvedException())).getBindingResult().getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList().toString()));
     }
 

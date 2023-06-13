@@ -68,7 +68,7 @@ public class UserService {
         if (!Objects.equals(id, userUpdateRequestDTO.id())) {
             throw new IllegalStateException("Id in request body must match id in url!");
         }
-        User user = userDTOMapper.toUserFromUpdate.apply(userUpdateRequestDTO);
+        User user = userDTOMapper.toUser.apply(userUpdateRequestDTO);
         if (!user.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }

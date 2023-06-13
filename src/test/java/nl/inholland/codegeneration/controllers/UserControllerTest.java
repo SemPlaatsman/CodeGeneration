@@ -220,7 +220,7 @@ public class UserControllerTest {
     @WithMockUser(username = "user", roles = { "EMPLOYEE" })
     public void testAdd() throws Exception {
         UserRequestDTO user = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname",
-                "email@example.com", "1234567890", LocalDate.now());
+                "email@example.com", "1234567890", LocalDate.of(2001, 1, 1), new BigDecimal("1000"), new BigDecimal("200"));
         mockMvc.perform(post("/users")
             .content(asJsonString(user))
             .contentType(MediaType.APPLICATION_JSON))
@@ -231,14 +231,14 @@ public class UserControllerTest {
     @WithMockUser(username = "user", roles = { "EMPLOYEE" })
     public void testInvalidAdd() throws Exception {
         UserRequestDTO user = new UserRequestDTO(List.of(1), "username", "", "firstname", "lastname",
-                "email@example.com", "1234567890", LocalDate.now());
+                "email@example.com", "1234567890", LocalDate.of(2001, 1, 1), new BigDecimal("1000"), new BigDecimal("200"));
 
         mockMvc.perform(post("/users")
             .content(asJsonString(user))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-            .andExpect(result -> assertEquals(List.of("Password cannot be empty!").toString(),
+            .andExpect(result -> assertEquals(List.of("Password is too short!", "Password cannot be empty!").toString(),
                     ((MethodArgumentNotValidException) Objects.requireNonNull(result.getResolvedException())).getBindingResult().getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList().toString()));
     }
 
@@ -246,7 +246,7 @@ public class UserControllerTest {
     @WithMockUser(username = "user", roles = { "EMPLOYEE" })
     public void testUpdate() throws Exception {
         UserUpdateRequestDTO user = new UserUpdateRequestDTO(1L, List.of(Role.CUSTOMER.getValue()), "username", "password", "firstname", "lastname",
-                "email@example.com", "1234567890", LocalDate.now());
+                "email@example.com", "1234567890", LocalDate.of(2001, 1, 1), new BigDecimal("1000"), new BigDecimal("200"));
 
         mockMvc.perform(put("/users/{id}", 1)
             .content(asJsonString(user))
@@ -257,14 +257,14 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "user", roles = { "EMPLOYEE" })
     public void testInvalidUpdate() throws Exception {
-        UserUpdateRequestDTO user = new UserUpdateRequestDTO(1L, List.of(Role.CUSTOMER.getValue()), "", "password", "firstname", "lastname",
-                "email@example.com", "1234567890", LocalDate.now());
+        UserUpdateRequestDTO user = new UserUpdateRequestDTO(1L, List.of(Role.CUSTOMER.getValue()), "testUser", "password", "firstname", "lastname",
+                "email@example.com", "1234567890", LocalDate.of(2007, 1, 1), new BigDecimal("1000"), new BigDecimal("200"));
         mockMvc.perform(put("/users/{id}", 1)
             .content(asJsonString(user))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-            .andExpect(result -> assertEquals(List.of("Username cannot be empty!").toString(),
+            .andExpect(result -> assertEquals(List.of("User must be at least 18 years old!").toString(),
                     ((MethodArgumentNotValidException) Objects.requireNonNull(result.getResolvedException())).getBindingResult().getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList().toString()));
     }
 
@@ -273,7 +273,7 @@ public class UserControllerTest {
     public void testInvalidUpdateId() throws Exception {
         Long invalidId = -1L;
         UserUpdateRequestDTO user = new UserUpdateRequestDTO(1L, List.of(Role.CUSTOMER.getValue()), "username", "password", "firstname", "lastname",
-                "email@example.com", "1234567890", LocalDate.now());
+                "email@example.com", "1234567890", LocalDate.of(2001, 1, 1), new BigDecimal("1000"), new BigDecimal("200"));
 
         when(userService.update(user, invalidId)).thenThrow(new IllegalStateException("Id in request body must match id in url!"));
 

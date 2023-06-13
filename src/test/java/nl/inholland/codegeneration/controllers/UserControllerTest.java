@@ -1,8 +1,6 @@
 package nl.inholland.codegeneration.controllers;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.ConstraintViolationException;
-import nl.inholland.codegeneration.configuration.WebConfig;
 import nl.inholland.codegeneration.exceptions.APIExceptionHandler;
 import nl.inholland.codegeneration.models.DTO.request.UserUpdateRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
@@ -15,46 +13,29 @@ import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.internal.bytebuddy.matcher.ElementMatchers;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 // import org.springframework.security.core.userdetails.User;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.modelmapper.internal.bytebuddy.matcher.ElementMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.time.LocalDate;
@@ -63,7 +44,6 @@ import java.util.Objects;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 public class UserControllerTest {

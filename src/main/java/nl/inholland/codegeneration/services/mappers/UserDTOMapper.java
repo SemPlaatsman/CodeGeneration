@@ -1,22 +1,16 @@
 package nl.inholland.codegeneration.services.mappers;
 
-import jakarta.persistence.EntityNotFoundException;
-import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
 import nl.inholland.codegeneration.models.DTO.request.UserUpdateRequestDTO;
-import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
 import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
 import nl.inholland.codegeneration.models.Role;
-import nl.inholland.codegeneration.models.Transaction;
 import nl.inholland.codegeneration.models.User;
 
 import java.math.BigDecimal;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import nl.inholland.codegeneration.repositories.AccountRepository;
 import nl.inholland.codegeneration.repositories.TransactionRepository;
-import nl.inholland.codegeneration.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

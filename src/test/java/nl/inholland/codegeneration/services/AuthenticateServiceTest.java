@@ -16,7 +16,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -57,8 +56,6 @@ public class AuthenticateServiceTest {
 
     @Test
     void testRegister() throws APIException {
-        List<Role> roles = new ArrayList<>();
-        roles.add(Role.CUSTOMER);
         User savedUser = new User(1L, List.of(Role.CUSTOMER), "sarawilson", "sara123", "Sara", "Wilson",
                 "sara.wilson@yahoo.com",
                 "0612345678", LocalDate.of(1990, 11, 13), new BigDecimal(1000), new BigDecimal(200),

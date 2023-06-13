@@ -14,8 +14,7 @@ import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
 import nl.inholland.codegeneration.models.DTO.request.UserUpdateRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
 import nl.inholland.codegeneration.services.mappers.UserDTOMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -40,21 +39,16 @@ public class UserService {
     private final UserDTOMapper userDTOMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public List<UserResponseDTO> getAll(@Nullable QueryParams<User> queryParams, @Nullable Boolean hasAccount) throws Exception {
+    public List<UserResponseDTO> getAll(QueryParams<User> queryParams, @Nullable Boolean hasAccount) throws Exception {
         Specification<User> specification = queryParams.buildFilter();
         if (hasAccount != null) {
-            Specification<User> hasAccountSpecification = (Root<User> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
-                Subquery<Account> accountSubquery = query.subquery(Account.class);
-                Root<Account> account = accountSubquery.from(Account.class);
-                accountSubquery.select(account);
-                accountSubquery.where(builder.equal(account.get("user"), root));
-                return builder.exists(accountSubquery);
-            };
-            if (hasAccount) { specification = Specification.where(hasAccountSpecification).and(specification); }
-            else { specification = Specification.not(hasAccountSpecification).and(specification); }
+            specification = addHasAccountSpecification(hasAccount, specification);
         }
 
-        return (List<UserResponseDTO>) userRepository.findAll(specification, PageRequest.of(queryParams.getPage(), queryParams.getLimit())).getContent().stream().map(userDTOMapper.toResponseDTO).collect(Collectors.toList());
+        // Get page with query params
+        Page<User> userPage = userRepository.findAll(specification, PageRequest.of(queryParams.getPage(), queryParams.getLimit()));
+        // Map page to list of UserResponseDTOs with userDTOMapper
+        return userPage.getContent().stream().map(userDTOMapper.toResponseDTO).collect(Collectors.toList());
     }
 
     public UserResponseDTO getById(Long id) {
@@ -91,11 +85,29 @@ public class UserService {
         }
         user.setIsDeleted(true);
         User deletedUser = userRepository.save(user);
+        // Get all accounts of deleted user
         List<Account> accounts = accountRepository.findAllByUserIdAndIsDeletedFalse(id);
+        // Delete all accounts of deleted user
         accounts.forEach(account -> account.setIsDeleted(true));
         List<Account> deletedAccounts = accountRepository.saveAll(accounts);
+        // Check user is deleted and all accounts are deleted
         if (!deletedUser.getIsDeleted() || deletedAccounts.stream().anyMatch(account -> !account.getIsDeleted())) {
             throw new APIException("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR, LocalDateTime.now());
         }
+    }
+
+    // Add account specification to current specification
+    private Specification<User> addHasAccountSpecification(boolean hasAccount, Specification<User> currentSpecification) {
+        Specification<User> hasAccountSpecification = (Root<User> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
+            Subquery<Account> accountSubquery = query.subquery(Account.class);
+            Root<Account> account = accountSubquery.from(Account.class);
+            accountSubquery.select(account);
+            accountSubquery.where(builder.equal(account.get("user"), root));
+            return builder.exists(accountSubquery);
+        };
+        if (hasAccount) {
+            return Specification.where(hasAccountSpecification).and(currentSpecification);
+        }
+        return Specification.not(hasAccountSpecification).and(currentSpecification);
     }
 }

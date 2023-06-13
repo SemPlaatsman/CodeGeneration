@@ -2,7 +2,6 @@ package nl.inholland.codegeneration.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -56,15 +55,12 @@ public class JwtFilterTest {
     @InjectMocks
     private JwtFilter jwtFilter;
 
-  
-
     @BeforeEach
     public void setup() {
 
         //  jwtService = new JwtService();
     }
 
-    
     @Test
     public void testDoFilterInternal_WithValidToken_ShouldSetAuthenticationInSecurityContextHolder() throws ServletException, IOException {
     String jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg2NDgzNzI2LCJleHAiOjE2ODY1MTk3MjZ9.6oXgxlZBznZ1kUFWN1w5aAKlh0fX0Nu28sxA_xPAw84";

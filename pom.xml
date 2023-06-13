@@ -46,6 +46,11 @@
 			<artifactId>cucumber-spring</artifactId>
 			<version>7.1.0</version> <!-- Use the version that matches your other Cucumber dependencies -->
 		</dependency>
+		<dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-java</artifactId>
+			<version>7.1.0</version> <!-- Use the version that matches your other Cucumber dependencies -->
+		</dependency>
 
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>

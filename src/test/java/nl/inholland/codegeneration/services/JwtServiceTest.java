@@ -1,5 +1,6 @@
 package nl.inholland.codegeneration.services;
 
+import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.userdetails.User;
@@ -10,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
 
 public class JwtServiceTest {
 
@@ -102,10 +102,9 @@ public class JwtServiceTest {
     //TODO: make this a good test
     @Test
     void testExtractClaim() {
-    String token = jwtService.generateToken(userDetails);
-    String jwt = jwtService.extractClaim(token, claims -> claims.getSubject());
+        String token = jwtService.generateToken(userDetails);
+        String jwt = jwtService.extractClaim(token, Claims::getSubject);
         assertEquals(jwt, jwt);
-
     }
 
   

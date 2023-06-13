@@ -3,8 +3,6 @@ package nl.inholland.codegeneration.services;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 
@@ -23,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageImpl;
@@ -34,7 +31,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 
 import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
@@ -133,9 +129,7 @@ public class TransactionServiceTest {
 
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
 
-        InvalidDataAccessApiUsageException exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> {
-            transactionService.add(transactionRequestDTO);
-        });
+        InvalidDataAccessApiUsageException exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> transactionService.add(transactionRequestDTO));
 
         assertEquals("Invalid bank account provided!", exception.getMessage());
 
@@ -154,9 +148,7 @@ public class TransactionServiceTest {
 
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
-            transactionService.add(transactionRequestDTO);
-        });
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> transactionService.add(transactionRequestDTO));
 
         assertEquals("Amount cannot be lower or equal to zero!", exception.getMessage());
 
@@ -178,15 +170,13 @@ public class TransactionServiceTest {
 
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
-            transactionService.add(transactionRequestDTO);
-        });
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> transactionService.add(transactionRequestDTO));
 
         assertEquals("Insufficient balance!", exception.getMessage());
 
     }
 
-    // Amount cannot surpass day limit!
+    // Amount cannot surpass daily limit!
     @Test
     public void add_pastDayLimit() {
 
@@ -202,11 +192,9 @@ public class TransactionServiceTest {
 
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
-            transactionService.add(transactionRequestDTO);
-        });
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> transactionService.add(transactionRequestDTO));
 
-        assertEquals("Amount cannot surpass day limit!", exception.getMessage());
+        assertEquals("Amount cannot surpass daily limit!", exception.getMessage());
 
     }
 
@@ -228,9 +216,7 @@ public class TransactionServiceTest {
 
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
-            transactionService.add(transactionRequestDTO);
-        });
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> transactionService.add(transactionRequestDTO));
 
         assertEquals("Amount cannot surpass transaction limit!", exception.getMessage());
 
@@ -255,9 +241,7 @@ public class TransactionServiceTest {
 
         when(transactionDTOMapper.toTransaction.apply(transactionRequestDTO)).thenReturn(inValidTransaction);
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
-            transactionService.add(transactionRequestDTO);
-        });
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> transactionService.add(transactionRequestDTO));
 
         assertEquals("Cannot make a transaction from a savings account to an account that is not of the same user!",
                 exception.getMessage());

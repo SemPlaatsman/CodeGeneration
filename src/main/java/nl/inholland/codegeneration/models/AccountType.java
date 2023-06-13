@@ -8,7 +8,7 @@ public enum AccountType {
 
     private final int value;
 
-    private AccountType(int value) {
+    AccountType(int value) {
         this.value = value;
     }
 

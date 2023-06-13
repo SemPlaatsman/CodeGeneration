@@ -3,7 +3,6 @@ package nl.inholland.codegeneration.models;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
-import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

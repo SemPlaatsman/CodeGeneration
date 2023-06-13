@@ -3,11 +3,9 @@ package nl.inholland.codegeneration.models.DTO.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import nl.inholland.codegeneration.models.MinAge;
-import nl.inholland.codegeneration.models.Role;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public record UserUpdateRequestDTO (
         @Schema(example = "1")

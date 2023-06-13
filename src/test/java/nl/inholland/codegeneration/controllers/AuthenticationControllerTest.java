@@ -2,8 +2,6 @@ package nl.inholland.codegeneration.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import jakarta.persistence.EntityNotFoundException;
-import nl.inholland.codegeneration.configuration.apiTestConfiguration;
 import nl.inholland.codegeneration.exceptions.APIExceptionHandler;
 import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.security.requests.AuthenticationRequest;
@@ -13,41 +11,27 @@ import nl.inholland.codegeneration.services.AuthenticateService;
 // import nl.inholland.codegeneration.services.TransactionService;
 // import nl.inholland.codegeneration.services.UserService;
 // import nl.inholland.codegeneration.services.AccountService;
-import nl.inholland.codegeneration.services.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import io.cucumber.core.gherkin.messages.internal.gherkin.internal.com.eclipsesource.json.Json;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class AuthenticationControllerTest {
@@ -83,7 +67,7 @@ public class AuthenticationControllerTest {
     @WithMockUser(username = "user", roles = {"EMPLOYEE"})
     void testRegister() throws Exception {
         // Given
-        RegisterRequest registerRequest = new RegisterRequest("testUser", "testPassword", "Test", "User", "test@user.dev", "06 12345678", LocalDate.now());
+        RegisterRequest registerRequest = new RegisterRequest("testUser", "testPassword", "Test", "User", "test@user.dev", "06 12345678", LocalDate.of(2001, 1, 1));
         AuthenticationResponse expectedResponse = new AuthenticationResponse(1L, "dummy_token", List.of(Role.EMPLOYEE.getValue()), "testUser", "user@email.com");
     
         when(authenticateService.register(registerRequest)).thenReturn(expectedResponse);
@@ -110,7 +94,7 @@ public class AuthenticationControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-            .andExpect(result -> assertEquals(List.of("Please fill the password field!").toString(),
+            .andExpect(result -> assertEquals(List.of("User must be at least 18 years old!", "Please fill the password field!").toString(),
                     ((MethodArgumentNotValidException) Objects.requireNonNull(result.getResolvedException())).getBindingResult().getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList().toString()));
     }
     

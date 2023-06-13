@@ -1,22 +1,17 @@
 package nl.inholland.codegeneration.models;
 
-import org.hibernate.query.SemanticException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import nl.inholland.codegeneration.exceptions.APIException;
 
 // import javax.persistence.criteria.CriteriaBuilder;
 // import javax.persistence.criteria.CriteriaQuery;
 // import javax.persistence.criteria.Root;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,15 +29,6 @@ class QueryParamsTest {
 
     @Mock
     private User mockUser;
-
-    // @Mock
-    // private Root<Object> root;
-
-    // @Mock
-    // private CriteriaQuery<?> query;
-
-    // @Mock
-    // private CriteriaBuilder builder;
 
     @BeforeEach
     void setUp() {

@@ -1,6 +1,5 @@
 package nl.inholland.codegeneration.services;
 
-import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.codegeneration.exceptions.APIException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -47,7 +46,7 @@ public class AuthenticateService {
     user.setPhoneNumber(request.getPhoneNumber());
     user.setBirthdate(request.getBirthdate());
 
-    //registering user is by default customer
+    // Registering user is by default customer
     user.setRoles(List.of(Role.CUSTOMER));
     userRepository.save(user);
 

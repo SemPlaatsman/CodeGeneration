@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -110,11 +111,16 @@ public class AccountService {
     }
 
     public void deleteAccount(String iban) throws APIException {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Account account = accountRepository.findByIbanAndIsDeletedFalse(iban).orElseThrow(() -> new EntityNotFoundException("Account not found!"));
+        if (!user.getRoles().contains(Role.EMPLOYEE) && !Objects.equals(account.getUser().getId(), user.getId())) {
+            throw new InsufficientAuthenticationException("Forbidden!");
+        }
         if(account.getIsDeleted()) {
             throw new EntityNotFoundException("Account not found!");
-        } else if (BigDecimal.ZERO.equals(account.getBalance())) {
-            System.out.println(account.getBalance());
+        }
+        if (!BigDecimal.ZERO.equals(account.getBalance())) {
+//            System.out.println(account.getBalance());
             throw new InvalidDataAccessApiUsageException("Account balance must be zero before deleting!");
         }
         account.setIsDeleted(true);

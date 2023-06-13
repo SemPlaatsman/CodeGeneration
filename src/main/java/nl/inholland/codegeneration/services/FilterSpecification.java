@@ -23,8 +23,8 @@ public class FilterSpecification<T, J> implements Specification<T> {
         } else {
             path = root.get(filterCriteria.getKey());
         }
-        System.out.println("Predicate path: ");
-        System.out.println(path.toString() + " : " + filterCriteria.getKey());
+//        System.out.println("Predicate path: ");
+//        System.out.println(path.toString() + " : " + filterCriteria.getKey());
         if (filterCriteria.getOperation().equalsIgnoreCase(">:")) {
             return builder.greaterThanOrEqualTo(path, filterCriteria.getValue().toString());
         } else if (filterCriteria.getOperation().equalsIgnoreCase("<:")) {

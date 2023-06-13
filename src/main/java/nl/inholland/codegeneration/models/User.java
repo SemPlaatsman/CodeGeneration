@@ -79,7 +79,7 @@ public class User implements UserDetails {
         this.setRoles(user.getRoles());
         this.setUsername(user.getUsername());
         if (!user.getPassword().isEmpty()) {
-            System.out.println("THIS CANNOT HAPPEN");
+//            System.out.println("THIS CANNOT HAPPEN");
             this.setPassword(user.getPassword());
         }
         this.setFirstName(user.getFirstName());

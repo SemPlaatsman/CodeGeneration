@@ -1,8 +1,7 @@
 package nl.inholland.codegeneration.configuration;
 
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

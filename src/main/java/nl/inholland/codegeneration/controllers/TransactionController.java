@@ -44,7 +44,7 @@ public class TransactionController {
 
     private final TransactionService transactionService;
 
-    @Parameter(in = ParameterIn.QUERY, name ="filter", description = "Filter in the following format &lt;field&gt;&lt;operator&gt;'&lt;value&gt;' separated by a comma. Example: accountFrom.user.firstName:'John',accountTo.user.id:'1'", schema = @Schema(type = "string"))
+    @Parameter(in = ParameterIn.QUERY, name ="filter", description = "Filter in the following format &lt;field&gt;&lt;operator&gt;'&lt;value&gt;' separated by a comma. Example: accountFrom.user.firstName:'John',accountTo.user.id&gt;:'3'", schema = @Schema(type = "string"))
     @Parameter(in = ParameterIn.QUERY, name ="limit", description = "The number of users that are to be returned (default: 12).", schema = @Schema(type = "int"))
     @Parameter(in = ParameterIn.QUERY, name ="page", description = "The page number (default: 0).", schema = @Schema(type = "int"))
     @Operation(summary = "Get all transactions", description = "Get all transactions", tags = { "Transactions", "Employee", "Customer" } )

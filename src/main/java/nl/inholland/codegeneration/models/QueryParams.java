@@ -51,7 +51,7 @@ public class QueryParams<T> {
         Pattern pattern = Pattern.compile("(\\w.+?)(:|<|>|>:|<:)'([a-zA-Z0-9:.-]+?)',");
         Matcher matcher = pattern.matcher(filterQuery + ",");
         while (matcher.find()) {
-            System.out.println("First: (" + matcher.group(1) + ")[" + matcher.group(1).getClass() + "]. Second: (" + matcher.group(2) + ")[" + matcher.group(2).getClass() + "]. Third: (" + matcher.group(3) + ")[" + matcher.group(3).getClass() + "]");
+//            System.out.println("First: (" + matcher.group(1) + ")[" + matcher.group(1).getClass() + "]. Second: (" + matcher.group(2) + ")[" + matcher.group(2).getClass() + "]. Third: (" + matcher.group(3) + ")[" + matcher.group(3).getClass() + "]");
             this.addFilter(new FilterCriteria(matcher.group(1), matcher.group(2), matcher.group(3)));
         }
     }
@@ -95,7 +95,7 @@ public class QueryParams<T> {
         // Cast to correct field type
         filterCriterion.setValue(this.castToFieldType(field.getType(), filterCriterion.getValue().toString()));
 
-        System.out.println(filterCriterion.getKey() + filterCriterion.getOperation() + filterCriterion.getValue() + " (" + filterCriterion.getValue().getClass() + ")");
+//        System.out.println(filterCriterion.getKey() + filterCriterion.getOperation() + filterCriterion.getValue() + " (" + filterCriterion.getValue().getClass() + ")");
 
         return this.filterCriteria.add(filterCriterion);
     }

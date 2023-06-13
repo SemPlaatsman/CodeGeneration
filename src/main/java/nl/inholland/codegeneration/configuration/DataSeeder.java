@@ -38,58 +38,66 @@ public class DataSeeder implements ApplicationRunner {
                 userRepository.save(new User(null, List.of(Role.EMPLOYEE, Role.CUSTOMER), "johndoe",
                                 passwordEncoder.encode("john123"), "John",
                                 "Doe", "john.doe@gmail.com",
-                                "0671122334", LocalDate.of(2003, 9, 1), new BigDecimal(1000), new BigDecimal(200),
+                                "06 71122334", LocalDate.of(2003, 9, 1), new BigDecimal(100000), new BigDecimal(1000),
                                 false));
                 userRepository.save(new User(null, List.of(Role.CUSTOMER), "sarawilson",
                                 passwordEncoder.encode("sara123"),
                                 "Sara", "Wilson", "sara.wilson@yahoo.com",
-                                "0612345678", LocalDate.of(1990, 11, 13), new BigDecimal(2000), new BigDecimal(200),
+                                "06 12345678", LocalDate.of(1990, 11, 13), new BigDecimal(2000), new BigDecimal(200),
                                 false));
                 userRepository.save(new User(null, List.of(Role.CUSTOMER), "tomlee", passwordEncoder.encode("tom123"),
                                 "Tom",
                                 "Lee", "tom.lee@hotmail.com",
-                                "0642154678", LocalDate.of(1978, 7, 6), new BigDecimal(1000), new BigDecimal(200),
+                                "06 42154678", LocalDate.of(1978, 7, 6), new BigDecimal(1000), new BigDecimal(200),
                                 false));
                 userRepository.save(new User(null, List.of(Role.CUSTOMER), "luukbakkum",
                                 passwordEncoder.encode("luuk123"),
                                 "Luuk", "Bakkum", "luuk.bakkum@gmail.com",
-                                "0651239876", LocalDate.of(2000, 3, 8), new BigDecimal(3000), new BigDecimal(200),
+                                "06 51239876", LocalDate.of(2000, 3, 8), new BigDecimal(3000), new BigDecimal(200),
                                 false));
                 userRepository.save(new User(null, List.of(Role.CUSTOMER), "bown", passwordEncoder.encode("bob123"), "",
                                 "",
                                 "bob.brown@hotmail.com",
-                                "0620123456", LocalDate.of(1995, 9, 21), new BigDecimal(1000), new BigDecimal(200),
+                                "06 20123456", LocalDate.of(1995, 9, 21), new BigDecimal(1000), new BigDecimal(200),
                                 false));
                 userRepository.save(new User(null, List.of(Role.CUSTOMER), "maryjo", passwordEncoder.encode("mary123"),
                                 "Mary",
                                 "Johnson", "mary.johnson@yahoo.com",
-                                "0612345678", LocalDate.of(1992, 12, 18), new BigDecimal(1000), new BigDecimal(200),
+                                "06 12345678", LocalDate.of(1992, 12, 18), new BigDecimal(1000), new BigDecimal(200),
                                 false));
                 userRepository.save(new User(null, List.of(Role.CUSTOMER), "tomsmith", passwordEncoder.encode("tom123"),
                                 "Tom",
                                 "Smith", "tom.smith@hotmail.com",
-                                "0636549871", LocalDate.of(1987, 8, 4), new BigDecimal(1000), new BigDecimal(200),
+                                "06 36549871", LocalDate.of(1987, 8, 4), new BigDecimal(1000), new BigDecimal(200),
                                 false));
                 userRepository.save(new User(null, List.of(Role.CUSTOMER), "saradoe", passwordEncoder.encode("sara123"),
                                 "Sara",
                                 "Doe", "sara.doe@gmail.com",
-                                "0687654321", LocalDate.of(1975, 6, 17), new BigDecimal(1000), new BigDecimal(200),
+                                "06 87654321", LocalDate.of(1975, 6, 17), new BigDecimal(1000), new BigDecimal(200),
                                 false));
                 userRepository.save(new User(null, List.of(Role.CUSTOMER), "johnwilson",
                                 passwordEncoder.encode("john123"),
                                 "John", "Wilson", "john.wilson@yahoo.com",
-                                "0654321098", LocalDate.of(1983, 4, 29), new BigDecimal(1000), new BigDecimal(200),
+                                "06 54321098", LocalDate.of(1983, 4, 29), new BigDecimal(1000), new BigDecimal(200),
                                 false));
                 userRepository.save(new User(null, List.of(Role.CUSTOMER), "markbark",
                                 passwordEncoder.encode("mark123"),
-                                "Mark", "Bark", "mark.bark@gmail.com", "0620587883", LocalDate.of(1965, 6, 13),
+                                "Mark", "Bark", "mark.bark@gmail.com", "06 20587883", LocalDate.of(1903, 6, 13),
                                 new BigDecimal(1000), new BigDecimal(200), true));
+                userRepository.save(new User(null, List.of(Role.CUSTOMER), "franktank",
+                        passwordEncoder.encode("frank123"),
+                        "Frank", "Tank", "frank@tank.dev", "0620587883", LocalDate.of(2005, 1, 13),
+                        new BigDecimal(1000), new BigDecimal(200), false));
+                userRepository.save(new User(null, List.of(Role.CUSTOMER), "floortje",
+                        passwordEncoder.encode("floortje123"),
+                        "Floortje", "Tjeertes", "floortje@tjeertes.dev", "06 00000001", LocalDate.of(1950, 11, 1),
+                        new BigDecimal(10000), new BigDecimal(1000), false));
                 // Transactions
                 // transactionRepository.save(new Transaction(null, LocalDateTime.of(2023, 4,
                 // 26, 13, 8, 0), ));
 
                 // Accounts
-                accountRepository.save(new Account("NL01INHO0000000001", AccountType.CURRENT,
+                accountRepository.save(new Account("NL06INHO0000000001", AccountType.CURRENT,
                                 userRepository.findById(1L).orElseThrow(),
                                 new BigDecimal("120"), new BigDecimal("-1000"), false));
                 accountRepository.save(new Account(null, AccountType.SAVINGS, userRepository.findById(1L).orElseThrow(),

@@ -99,6 +99,7 @@ class QueryParamsTest {
         assertEquals(1, queryParams.getPage());
     }
 
+
     @Test
     void testSetClassReference() {
         queryParams.setClassReference(String.class);
@@ -128,3 +129,4 @@ class QueryParamsTest {
         assertEquals(2, queryParams.getPage());
     }
 }
+

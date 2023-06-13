@@ -13,7 +13,6 @@ import nl.inholland.codegeneration.repositories.UserRepository;
 import nl.inholland.codegeneration.services.mappers.AccountDTOMapper;
 import nl.inholland.codegeneration.services.mappers.UserDTOMapper;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,8 +22,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import java.lang.reflect.Field;
@@ -37,23 +34,17 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.fasterxml.jackson.databind.annotation.NoClass;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -109,7 +100,7 @@ public class UserServiceTest {
 
         QueryParams<User> queryParams = new QueryParams<>();
         // Get the classReference field
-        Field field = QueryParams.class.getDeclaredField("classReference");
+        Field field = User.class.getDeclaredField("username");
         // Allow the field to be accessed, even though it's private
         field.setAccessible(true);
 
@@ -123,14 +114,14 @@ public class UserServiceTest {
         
         // Arrange
 
-        queryParams.setFilter("firstName:John");
+        queryParams.setFilter("username:'johndoe'");
         Boolean hasAccount = true;
         List<User> userList = new ArrayList<>();
         User user1 = new User();
-        user1.setFirstName("John");
+        user1.setUsername("johndoe");
         User user2 = new User();
         user2.setId(2L);
-        user2.setFirstName("Jane");
+        user2.setUsername("janedoe");
         userList.add(user1);
         userList.add(user2);
         Specification<User> specification = Specification.where(null);
@@ -144,7 +135,6 @@ public class UserServiceTest {
         assertEquals(2, userResponseDTOList.size());
         assertEquals("John", userResponseDTOList.get(0).firstName());
         assertEquals("Jane", userResponseDTOList.get(1).firstName());
-
     }
 
     @Test
@@ -180,8 +170,6 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateUser() {
-        List<Integer> roles = new ArrayList<>();
-        roles.add(1);
         UserUpdateRequestDTO userUpdateRequestDTO = new UserUpdateRequestDTO(1L, List.of(1), "username", "password",
                 "firstname", "lastname",
                 "email@example.com", "1234567890", LocalDate.now());
@@ -199,8 +187,6 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateUser_invalidId() {
-        List<Integer> roles = new ArrayList<>();
-        roles.add(1);
         UserUpdateRequestDTO userUpdateRequestDTO = new UserUpdateRequestDTO(1L, List.of(1), "username", "password",
                 "firstname", "lastname",
                 "email@example.com", "1234567890", LocalDate.now());

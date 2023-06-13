@@ -6,8 +6,6 @@ import nl.inholland.codegeneration.models.AccountType;
 import nl.inholland.codegeneration.models.DTO.request.AccountRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.AccountResponseDTO;
 import nl.inholland.codegeneration.models.DTO.response.BalanceResponseDTO;
-import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
-import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
 import nl.inholland.codegeneration.repositories.AccountRepository;
 import nl.inholland.codegeneration.repositories.UserRepository;
 import nl.inholland.codegeneration.repositories.TransactionRepository;
@@ -18,18 +16,12 @@ import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.Transaction;
 import nl.inholland.codegeneration.models.User;
 
-import nl.inholland.codegeneration.services.mappers.UserDTOMapper;
 import org.junit.jupiter.api.Test;
-import org.apache.el.stream.Stream;
-import org.springframework.data.domain.Page;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.platform.commons.JUnitException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
@@ -38,10 +30,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -56,10 +46,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
 
 @ExtendWith(MockitoExtension.class)
 public class AccountServiceTest {
@@ -183,7 +170,7 @@ public class AccountServiceTest {
 
         @Test
         @WithMockUser(roles = { "EMPLOYEE" }, username = "user")
-        public void testInsertAccount() throws APIException {
+        public void testInsertAccount() {
 
                 String iban = "NL88INHO0001204817";
                 // make test user
@@ -213,7 +200,7 @@ public class AccountServiceTest {
 
         @Test
         @WithMockUser(roles = { "EMPLOYEE" }, username = "user")
-        public void testInsertAccount_userDoesNotExist() throws APIException {
+        public void testInsertAccount_userDoesNotExist() {
 
                 String iban = "NL88INHO0001204817";
                 // make test user
@@ -304,7 +291,7 @@ public class AccountServiceTest {
         void testGetTransactions_AccountNotPressent() {
                 String iban = "NL88INHO0001204817";
 
-                QueryParams<Transaction> queryParams = new QueryParams<Transaction>();
+                QueryParams<Transaction> queryParams = new QueryParams<>();
 
                 Optional<Account> Account = Optional.empty();
 
@@ -322,7 +309,7 @@ public class AccountServiceTest {
 
                 String iban = "NL88INHO0001204817";
 
-                QueryParams<Transaction> queryParams = new QueryParams<Transaction>();
+                QueryParams<Transaction> queryParams = new QueryParams<>();
                 User user = new User(1L, List.of(Role.CUSTOMER), "sarawilson", "sara123", "Sara", "Wilson",
                                 "sara.wilson@yahoo.com",
                                 "0612345678", LocalDate.of(1990, 11, 13), new BigDecimal(1000), new BigDecimal(200),
@@ -382,7 +369,7 @@ public class AccountServiceTest {
         }
 
         @Test
-        public void getAllByUserId_userDoesNotExist() throws Exception {
+        public void getAllByUserId_userDoesNotExist() {
                 Long userId = 1L;
 
                 when(userRepository.existsById(userId)).thenReturn(false);
@@ -474,7 +461,7 @@ public class AccountServiceTest {
         }
 
         @Test
-        public void testUpdateAccount_Unauthorized() throws APIException {
+        public void testUpdateAccount_Unauthorized() {
                 String iban = "NL88INHO0001204817";
                 AccountRequestDTO requestDTO = new AccountRequestDTO(null, null, AccountType.CURRENT.getValue()); // Provide
                                                                                                                   // necessary
@@ -496,16 +483,15 @@ public class AccountServiceTest {
         }
 
         @Test
-        public void testUpdateAccount_AccountNotFound() throws APIException {
-                String iban = "NL88INHO0001204817";
-                AccountRequestDTO requestDTO = new AccountRequestDTO(null, null, 0); // Provide necessary data for
-                                                                                     // account update
-                User user = new User(1L, List.of(Role.CUSTOMER), "sarawilson", "sara123", "Sara", "Wilson", null, null,
-                                null, null, null, null);
-                Account account = new Account(iban, AccountType.CURRENT, user, null, null, null); // Existing account
-                                                                                                  // with no user
-                Optional<User> existingUser = Optional.of(user);
-                Optional<Account> existingAccount = Optional.empty();
+        public void testUpdateAccount_AccountNotFound() {
+                 String iban = "NL88INHO0001204817";
+                 AccountRequestDTO requestDTO = new AccountRequestDTO(null, null, 0); // Provide necessary data for account update
+                 User user = new User(1L, List.of(Role.CUSTOMER), "sarawilson", "sara123", "Sara", "Wilson",null,null,null,null,null,null);
+                 Account account = new Account(iban, AccountType.CURRENT, user, null, null, null); // Existing account with no user
+                 Optional <User> existingUser = Optional.of(user);
+                 Optional <Account> existingAccount = Optional.empty();
+
+
 
                 when(accountDTOMapper.toAccount.apply(requestDTO)).thenReturn(account);
                 when(accountRepository.findByIbanAndIsDeletedFalse(iban)).thenReturn(existingAccount);

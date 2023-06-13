@@ -2,9 +2,7 @@ package nl.inholland.codegeneration.services.mappers;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
 import nl.inholland.codegeneration.models.Transaction;

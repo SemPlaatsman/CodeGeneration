@@ -49,7 +49,7 @@ public class Account {
 
     @JsonProperty("user")
     public void setUserById(Long userId) {
-        // create a new user object from the given id
+        // Create a new user object from the given id
         User newUser = new User();
         newUser.setId(userId);
         this.user = newUser;

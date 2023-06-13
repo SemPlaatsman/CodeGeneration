@@ -11,7 +11,7 @@ public enum Role implements GrantedAuthority{
 
     private final int value;
 
-    private Role(int value) {
+    Role(int value) {
         this.value = value;
     }
 

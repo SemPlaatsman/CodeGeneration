@@ -40,9 +40,8 @@ public class IBANGeneratorTest {
         // a sample invalid IBAN because the length is not correct
         String invalidIban = "NL01";
         
-        assertThrows(IdentifierGenerationException.class, () -> {
-            ibanGenerator.calculateMod97(invalidIban);
-        }, "Should throw IdentifierGenerationException for an invalid IBAN length");
+        assertThrows(IdentifierGenerationException.class, () -> ibanGenerator.calculateMod97(invalidIban),
+                "Should throw IdentifierGenerationException for an invalid IBAN length");
     }
 
     @Test
@@ -58,8 +57,7 @@ public class IBANGeneratorTest {
     public void testValidateIBANWithException() {
         String invalidIban = "NL91INHO0123456789ABC"; // a sample invalid IBAN
 
-        assertThrows(IdentifierGenerationException.class, () -> {
-            ibanGenerator.validateIBAN(invalidIban);
-        }, "Should throw IdentifierGenerationException for an invalid IBAN");
+        assertThrows(IdentifierGenerationException.class, () -> ibanGenerator.validateIBAN(invalidIban),
+                "Should throw IdentifierGenerationException for an invalid IBAN");
     }
 }

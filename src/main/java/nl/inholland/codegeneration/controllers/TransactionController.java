@@ -18,8 +18,6 @@ import lombok.RequiredArgsConstructor;
 import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.APIExceptionResponseDTO;
 import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
-import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

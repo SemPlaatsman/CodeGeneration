@@ -39,6 +39,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,7 +73,6 @@ public class UserServiceTest {
         userDTOMapper = new UserDTOMapper(Mockito.mock(TransactionRepository.class));
         userDTOMapper.toUser = Mockito.mock(Function.class);
         userDTOMapper.toResponseDTO = Mockito.mock(Function.class);
-        userDTOMapper.toUserFromUpdate = Mockito.mock(Function.class);
 
 
         userService = new UserService(userRepository, accountRepository, userDTOMapper, passwordEncoder);
@@ -159,7 +159,7 @@ public class UserServiceTest {
     @Test
     public void testAddUser() {
         UserRequestDTO userRequestDTO = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname",
-                "email@example.com", "1234567890", LocalDate.now());
+                "email@example.com", "1234567890", LocalDate.now(), new BigDecimal("1000"), new BigDecimal("200"));
         // ... set other fields as needed
         User user = new User();
         when(userDTOMapper.toUser.apply(userRequestDTO)).thenReturn(user);
@@ -172,13 +172,13 @@ public class UserServiceTest {
     public void testUpdateUser() {
         UserUpdateRequestDTO userUpdateRequestDTO = new UserUpdateRequestDTO(1L, List.of(1), "username", "password",
                 "firstname", "lastname",
-                "email@example.com", "1234567890", LocalDate.now());
+                "email@example.com", "1234567890", LocalDate.now(), new BigDecimal("1000"), new BigDecimal("200"));
         // ... set other fields as needed
         User user = new User();
         user.setId(1L);
 
         user.setPassword("");
-        when(userDTOMapper.toUserFromUpdate.apply(userUpdateRequestDTO)).thenReturn(user);
+        when(userDTOMapper.toUser.apply(userUpdateRequestDTO)).thenReturn(user);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
         userService.update(userUpdateRequestDTO, 1L);
@@ -189,12 +189,12 @@ public class UserServiceTest {
     public void testUpdateUser_invalidId() {
         UserUpdateRequestDTO userUpdateRequestDTO = new UserUpdateRequestDTO(1L, List.of(1), "username", "password",
                 "firstname", "lastname",
-                "email@example.com", "1234567890", LocalDate.now());
+                "email@example.com", "1234567890", LocalDate.now(), new BigDecimal("1000"), new BigDecimal("200"));
         User user = new User();
         user.setId(1L);
 
         user.setPassword("");
-        when(userDTOMapper.toUserFromUpdate.apply(userUpdateRequestDTO)).thenReturn(user);
+        when(userDTOMapper.toUser.apply(userUpdateRequestDTO)).thenReturn(user);
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
         EntityNotFoundException  exception = assertThrows(EntityNotFoundException.class, () ->  userService.update(userUpdateRequestDTO, 1L));
 

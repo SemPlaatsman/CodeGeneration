@@ -2,7 +2,6 @@ package nl.inholland.codegeneration.models.DTO.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import nl.inholland.codegeneration.models.Account;
-import nl.inholland.codegeneration.models.AccountType;
 
 import java.math.BigDecimal;
 

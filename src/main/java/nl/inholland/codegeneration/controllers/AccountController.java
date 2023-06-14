@@ -1,10 +1,6 @@
 package nl.inholland.codegeneration.controllers;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,18 +13,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
-import lombok.EqualsAndHashCode.Include;
 
-import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.APIExceptionResponseDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,9 +33,7 @@ import jakarta.validation.Valid;
 import nl.inholland.codegeneration.exceptions.APIException;
 import nl.inholland.codegeneration.models.Account;
 import nl.inholland.codegeneration.models.QueryParams;
-import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.Transaction;
-import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.models.DTO.request.AccountRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.AccountResponseDTO;
 import nl.inholland.codegeneration.models.DTO.response.BalanceResponseDTO;
@@ -60,7 +48,7 @@ import nl.inholland.codegeneration.services.AccountService;
 public class AccountController {
     private final AccountService accountService;
 
-    // get /accounts
+    // GET /accounts
     @Parameter(in = ParameterIn.QUERY, name ="filter", description = "Filter in the following format &lt;field&gt;&lt;operator&gt;'&lt;value&gt;' separated by a comma. Example: user.firstName:'John',user.id:'1'", schema = @Schema(type = "string"))
     @Parameter(in = ParameterIn.QUERY, name ="limit", description = "The number of users that are to be returned (default: 12).", schema = @Schema(type = "int"))
     @Parameter(in = ParameterIn.QUERY, name ="page", description = "The page number (default: 0).", schema = @Schema(type = "int"))
@@ -84,7 +72,7 @@ public class AccountController {
         return ResponseEntity.status(200).body(accounts);
     }
 
-    // get /accounts/{iban}
+    // GET /accounts/{iban}
     @Parameter(in = ParameterIn.PATH, required = true, name ="iban", description = "The iban of the account you want to get.", schema = @Schema(type = "string"))
     @Operation(summary = "Get an account by id", description = "Get an account by id", tags = { "Accounts", "Employee", "Customer" } )
     @ApiResponses(value = {
@@ -104,7 +92,7 @@ public class AccountController {
         return ResponseEntity.status(200).body(account);
     }
 
-    // post /accounts
+    // POST /accounts
     @Operation(summary = "Add an account", description = "Add an account", tags = { "Accounts", "Employee", "Customer" } )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransactionResponseDTO.class))),
@@ -116,13 +104,13 @@ public class AccountController {
     })
     @PreAuthorize("hasAuthority('CUSTOMER') OR hasAuthority('EMPLOYEE')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> insertAccount(@RequestBody @Valid AccountRequestDTO account) throws APIException {
+    public ResponseEntity<?> insertAccount(@RequestBody @Valid AccountRequestDTO account) {
 
         AccountResponseDTO addedAccount = accountService.insertAccount(account);
         return ResponseEntity.status(201).body(addedAccount);
     }
 
-    // put /accounts/{iban}
+    // PUT /accounts/{iban}
     @Parameter(in = ParameterIn.PATH, required = true, name ="iban", description = "The iban of the account you want to update.", schema = @Schema(type = "string"))
     @Operation(summary = "Update an account", description = "Update an account", tags = { "Accounts", "Employee" } )
     @ApiResponses(value = {
@@ -142,7 +130,7 @@ public class AccountController {
 
     }
 
-    // delete /accounts/{iban}
+    // DELETE /accounts/{iban}
     @Parameter(in = ParameterIn.PATH, required = true, name ="iban", description = "The iban of the account you want to delete.", schema = @Schema(type = "string"))
     @Operation(summary = "Delete an account", description = "Delete an account", tags = { "Accounts", "Employee", "Customer" } )
     @ApiResponses(value = {
@@ -155,12 +143,12 @@ public class AccountController {
     })
     @PreAuthorize("hasAuthority('EMPLOYEE') OR hasAuthority('CUSTOMER')")
     @DeleteMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> deleteAccount(@PathVariable("iban") String iban) throws APIException {
+    public ResponseEntity<?> deleteAccount(@PathVariable("iban") String iban) {
         accountService.deleteAccount(iban);
         return ResponseEntity.status(204).body(null);
     }
 
-    // get /accounts/{iban}/transactions
+    // GET /accounts/{iban}/transactions
     @Parameter(in = ParameterIn.QUERY, name ="filter", description = "Filter in the following format &lt;field&gt;&lt;operator&gt;'&lt;value&gt;' separated by a comma. Example: accountFrom.user.firstName:'John',accountTo.user.id:'1'", schema = @Schema(type = "string"))
     @Parameter(in = ParameterIn.QUERY, name ="limit", description = "The number of users that are to be returned (default: 12).", schema = @Schema(type = "int"))
     @Parameter(in = ParameterIn.QUERY, name ="page", description = "The page number (default: 0).", schema = @Schema(type = "int"))
@@ -186,7 +174,7 @@ public class AccountController {
         return ResponseEntity.status(200).body(accounts);
     }
 
-    // get /accounts/{id}/balance
+    // GET /accounts/{id}/balance
     @Parameter(in = ParameterIn.PATH, required = true, name ="iban", description = "The iban of which you want to get the balance.", schema = @Schema(type = "string"))
     @Operation(summary = "Get the balance of an account", description = "Get the balance of an account", tags = { "Accounts", "Employee", "Customer" } )
     @ApiResponses(value = {

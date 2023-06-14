@@ -4,14 +4,11 @@ import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.codegeneration.exceptions.APIExceptionHandler;
 import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
-import nl.inholland.codegeneration.models.FilterCriteria;
 import nl.inholland.codegeneration.models.QueryParams;
-import nl.inholland.codegeneration.models.Transaction;
 import nl.inholland.codegeneration.services.TransactionService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -25,10 +22,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -226,14 +221,14 @@ public class TransactionControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"EMPLOYEE", "CUSTOMER"})
     public void testInvalidAdd() throws Exception {
-        TransactionRequestDTO transactionRequestDTO = new TransactionRequestDTO("", "NL01INHO0000000002", new BigDecimal(100), "description");
+        TransactionRequestDTO transactionRequestDTO = new TransactionRequestDTO("Frans Bauer", "NL01INHO0000000002", new BigDecimal(100), "description");
         // Fill the object according to your needs
         mockMvc.perform(post("/transactions")
                         .content(asJsonString(transactionRequestDTO))
                         .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-            .andExpect(result -> assertEquals(List.of("IBAN from cannot be empty!").toString(),
+            .andExpect(result -> assertEquals(List.of("Invalid IBAN provided!").toString(),
                     ((MethodArgumentNotValidException) Objects.requireNonNull(result.getResolvedException())).getBindingResult().getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList().toString()));
     }
 

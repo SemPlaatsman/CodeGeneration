@@ -1,10 +1,10 @@
 package nl.inholland.codegeneration.configuration;
 
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.springframework.web.servlet.config.annotation.CorsRegistration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -14,13 +14,13 @@ public class WebConfigTest {
     CorsRegistry corsRegistry;
 
     @Mock
-    CorsRegistry corsRegistration;
+    CorsRegistration corsRegistration;
 
     @Test
     void testCorsConfigurer() {
 
       // corsRegistry = mock(CorsRegistry.class);
-      // corsRegistration = mock(CorsRegistry.class);
+       corsRegistration = mock(CorsRegistration.class);
 
         // Create an instance of WebConfig
         WebConfig webConfig = new WebConfig();
@@ -36,9 +36,6 @@ public class WebConfigTest {
         
         // Mock the behavior of the CorsRegistry method
         when(corsRegistry.addMapping("/**")).thenReturn(corsRegistration);
-
-        // Create an instance of WebConfig
-        WebConfig webConfig = new WebConfig();
 
         // Call the corsConfigurer() method
         WebMvcConfigurer configurer = webConfig.corsConfigurer();

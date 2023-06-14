@@ -1,8 +1,6 @@
 package nl.inholland.codegeneration.models.DTO.response;
 
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.NoArgsConstructor;
 import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.User;
 

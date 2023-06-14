@@ -4,12 +4,10 @@ import java.util.List;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nl.inholland.codegeneration.models.Role;
 
 @Data
 @Builder

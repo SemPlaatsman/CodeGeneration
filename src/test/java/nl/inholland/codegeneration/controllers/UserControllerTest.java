@@ -1,8 +1,6 @@
 package nl.inholland.codegeneration.controllers;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.ConstraintViolationException;
-import nl.inholland.codegeneration.configuration.WebConfig;
 import nl.inholland.codegeneration.exceptions.APIExceptionHandler;
 import nl.inholland.codegeneration.models.DTO.request.UserUpdateRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
@@ -15,46 +13,29 @@ import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.internal.bytebuddy.matcher.ElementMatchers;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 // import org.springframework.security.core.userdetails.User;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.modelmapper.internal.bytebuddy.matcher.ElementMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.time.LocalDate;
@@ -63,7 +44,6 @@ import java.util.Objects;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 public class UserControllerTest {
@@ -240,7 +220,7 @@ public class UserControllerTest {
     @WithMockUser(username = "user", roles = { "EMPLOYEE" })
     public void testAdd() throws Exception {
         UserRequestDTO user = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname",
-                "email@example.com", "1234567890", LocalDate.now());
+                "email@example.com", "1234567890", LocalDate.of(2001, 1, 1), new BigDecimal("1000"), new BigDecimal("200"));
         mockMvc.perform(post("/users")
             .content(asJsonString(user))
             .contentType(MediaType.APPLICATION_JSON))
@@ -251,14 +231,14 @@ public class UserControllerTest {
     @WithMockUser(username = "user", roles = { "EMPLOYEE" })
     public void testInvalidAdd() throws Exception {
         UserRequestDTO user = new UserRequestDTO(List.of(1), "username", "", "firstname", "lastname",
-                "email@example.com", "1234567890", LocalDate.now());
+                "email@example.com", "1234567890", LocalDate.of(2001, 1, 1), new BigDecimal("1000"), new BigDecimal("200"));
 
         mockMvc.perform(post("/users")
             .content(asJsonString(user))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-            .andExpect(result -> assertEquals(List.of("Password cannot be empty!").toString(),
+            .andExpect(result -> assertEquals(List.of("Password is too short!", "Password cannot be empty!").toString(),
                     ((MethodArgumentNotValidException) Objects.requireNonNull(result.getResolvedException())).getBindingResult().getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList().toString()));
     }
 
@@ -266,7 +246,7 @@ public class UserControllerTest {
     @WithMockUser(username = "user", roles = { "EMPLOYEE" })
     public void testUpdate() throws Exception {
         UserUpdateRequestDTO user = new UserUpdateRequestDTO(1L, List.of(Role.CUSTOMER.getValue()), "username", "password", "firstname", "lastname",
-                "email@example.com", "1234567890", LocalDate.now());
+                "email@example.com", "1234567890", LocalDate.of(2001, 1, 1), new BigDecimal("1000"), new BigDecimal("200"));
 
         mockMvc.perform(put("/users/{id}", 1)
             .content(asJsonString(user))
@@ -277,14 +257,14 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "user", roles = { "EMPLOYEE" })
     public void testInvalidUpdate() throws Exception {
-        UserUpdateRequestDTO user = new UserUpdateRequestDTO(1L, List.of(Role.CUSTOMER.getValue()), "", "password", "firstname", "lastname",
-                "email@example.com", "1234567890", LocalDate.now());
+        UserUpdateRequestDTO user = new UserUpdateRequestDTO(1L, List.of(Role.CUSTOMER.getValue()), "testUser", "password", "firstname", "lastname",
+                "email@example.com", "1234567890", LocalDate.of(2007, 1, 1), new BigDecimal("1000"), new BigDecimal("200"));
         mockMvc.perform(put("/users/{id}", 1)
             .content(asJsonString(user))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-            .andExpect(result -> assertEquals(List.of("Username cannot be empty!").toString(),
+            .andExpect(result -> assertEquals(List.of("User must be at least 18 years old!").toString(),
                     ((MethodArgumentNotValidException) Objects.requireNonNull(result.getResolvedException())).getBindingResult().getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList().toString()));
     }
 
@@ -293,7 +273,7 @@ public class UserControllerTest {
     public void testInvalidUpdateId() throws Exception {
         Long invalidId = -1L;
         UserUpdateRequestDTO user = new UserUpdateRequestDTO(1L, List.of(Role.CUSTOMER.getValue()), "username", "password", "firstname", "lastname",
-                "email@example.com", "1234567890", LocalDate.now());
+                "email@example.com", "1234567890", LocalDate.of(2001, 1, 1), new BigDecimal("1000"), new BigDecimal("200"));
 
         when(userService.update(user, invalidId)).thenThrow(new IllegalStateException("Id in request body must match id in url!"));
 

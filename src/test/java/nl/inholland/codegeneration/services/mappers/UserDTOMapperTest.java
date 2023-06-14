@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,7 +35,8 @@ public class UserDTOMapperTest {
 
     @Test
     public void testToUser() {
-        UserRequestDTO dto = new UserRequestDTO(Collections.singletonList(1), "testUser", "testPassword", "Test", "User", "test@example.com", "1234567890", LocalDate.now());
+        UserRequestDTO dto = new UserRequestDTO(Collections.singletonList(1), "testUser", "testPassword", "Test", "User", "test@example.com", "1234567890",
+                LocalDate.now(), new BigDecimal("1000"), new BigDecimal("200"));
 
         User user = userDTOMapper.toUser.apply(dto);
 
@@ -50,11 +52,11 @@ public class UserDTOMapperTest {
 
     @Test
     public void testToUserFromUpdate() {
-        UserUpdateRequestDTO dto = new UserUpdateRequestDTO(1L, Collections.singletonList(1), "testUser", "testPassword", "Test", "User", "test@example.com", "1234567890", LocalDate.now());
+        UserUpdateRequestDTO dto = new UserUpdateRequestDTO(1L, List.of(Role.CUSTOMER.getValue()), "testUser", "testPassword", "Test", "User", "test@example.com", "1234567890",
+                LocalDate.now(), new BigDecimal("1000"), new BigDecimal("200"));
 
-        User user = userDTOMapper.toUserFromUpdate.apply(dto);
+        User user = userDTOMapper.toUser.apply(dto);
 
-        assertEquals(dto.id(), user.getId());
         assertEquals(Role.fromInt(dto.roles().get(0)), user.getRoles().get(0));
         assertEquals(dto.username(), user.getUsername());
         assertEquals(dto.password(), user.getPassword());

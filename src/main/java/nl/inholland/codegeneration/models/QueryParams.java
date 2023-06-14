@@ -8,16 +8,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import jakarta.persistence.criteria.*;
-import jakarta.validation.constraints.Null;
 import org.hibernate.query.SemanticException;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.config.JpaRepositoryConfigExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -62,6 +58,13 @@ public class QueryParams<T> {
             throw new BadCredentialsException("Unauthorized!");
         }
 
+        // Fill filterCriterion with valid fields
+        finalizeFilterCriterion(filterCriterion, user);
+
+        return this.filterCriteria.add(filterCriterion);
+    }
+
+    private void finalizeFilterCriterion(FilterCriteria filterCriterion, User user) throws Exception {
         String[] parts = filterCriterion.getKey().split("\\.");
 
         // Check if it's a nested variable using the NestedFilterable annotation and change the current class reference if it is nested
@@ -78,30 +81,37 @@ public class QueryParams<T> {
             }
         }
 
+        if (field == null) {
+            throw new SemanticException("Invalid field!");
+        }
+
         // Check for Filterable annotations in the current class or field
+        this.validateFilterableAnnotation(currentClass, field, filterCriterion, user);
+
+        // Cast to correct field type
+        filterCriterion.setValue(this.castToFieldType(field.getType(), filterCriterion.getValue().toString()));
+    }
+
+    private void validateFilterableAnnotation(Class<?> currentClass, Field field, FilterCriteria filterCriterion, User user) {
         if (!currentClass.isAnnotationPresent(Filterable.class)) {
             if (!field.isAnnotationPresent(Filterable.class)) {
                 throw new SemanticException("Invalid filter option!");
             }
             Filterable filterable = field.getAnnotation(Filterable.class);
             if (filterable.role() == Role.EMPLOYEE && !user.getRoles().contains(Role.EMPLOYEE)) {
-                if (!filterable.defaultValue().isEmpty()) { filterCriterion.setValue(filterable.defaultValue()); }
-                else { throw new BadCredentialsException("Invalid permissions!"); }
+                if (!filterable.defaultValue().isEmpty()) {
+                    filterCriterion.setValue(filterable.defaultValue());
+                }
+                else {
+                    throw new BadCredentialsException("Invalid permissions!");
+                }
             }
         } else if (this.classReference.getAnnotation(Filterable.class).role() == Role.EMPLOYEE && !user.getRoles().contains(Role.EMPLOYEE)) {
             throw new BadCredentialsException("Invalid permissions!");
         }
-
-        // Cast to correct field type
-        filterCriterion.setValue(this.castToFieldType(field.getType(), filterCriterion.getValue().toString()));
-
-//        System.out.println(filterCriterion.getKey() + filterCriterion.getOperation() + filterCriterion.getValue() + " (" + filterCriterion.getValue().getClass() + ")");
-
-        return this.filterCriteria.add(filterCriterion);
     }
 
     private Object castToFieldType(Class<?> fieldType, String value) throws Exception {
-        //why not use multiple if statements? it breaks out of the method anyway when the return is called
         if (fieldType.isAssignableFrom(String.class)) {
             return value;
         } else if (fieldType.isAssignableFrom(Long.class) || fieldType.isAssignableFrom(Long.TYPE)) {
@@ -151,11 +161,6 @@ public class QueryParams<T> {
                 }
                 predicates.add(spec.toPredicate(root, query, builder));
             }
-//            System.out.println("Predicates: ");
-//            for (Predicate predicate : predicates) {
-//                System.out.println(predicate);
-//            }
-//            System.out.println("End of predicates");
             return builder.and(predicates.toArray(new Predicate[0]));
         };
     }

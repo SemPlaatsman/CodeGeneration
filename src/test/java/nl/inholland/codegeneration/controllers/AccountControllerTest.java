@@ -6,7 +6,6 @@ import nl.inholland.codegeneration.exceptions.APIExceptionHandler;
 import nl.inholland.codegeneration.models.*;
 import nl.inholland.codegeneration.models.DTO.response.BalanceResponseDTO;
 import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
-import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
 import nl.inholland.codegeneration.models.DTO.request.AccountRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.AccountResponseDTO;
 import nl.inholland.codegeneration.services.AccountService;
@@ -20,7 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -41,22 +39,14 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.security.auth.x500.X500Principal;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.in;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -137,7 +127,7 @@ public class AccountControllerTest {
         String filter = URLEncoder.encode("iban:'NL06INHO0000000001',", StandardCharsets.UTF_8);
 
         List<AccountResponseDTO> filteredAccounts = mockAccounts.stream()
-                .filter(account -> account.iban() == "NL06INHO0000000001")
+                .filter(account -> Objects.equals(account.iban(), "NL06INHO0000000001"))
                 .toList();
 
         when(accountService.getAll(any(QueryParams.class))).thenAnswer(invocation -> {

@@ -4,9 +4,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.*;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,9 +41,6 @@ public class User implements UserDetails {
     @CollectionTable(name = "roles")
     @Column(name = "role")
     private List<Role> roles;
-
-    // @ElementCollection(fetch = FetchType.EAGER)
-    // private List<Role> role;
 
     @Filterable(role = Role.EMPLOYEE)
     @Column(name = "username", nullable = false, unique = true, precision = 255)
@@ -79,7 +80,9 @@ public class User implements UserDetails {
         this.setRoles(user.getRoles());
         this.setUsername(user.getUsername());
         if (!user.getPassword().isEmpty()) {
-//            System.out.println("THIS CANNOT HAPPEN");
+            if (!(user.getPassword().length() >= 5)) {
+                throw new ValidationException("Password is too short!");
+            }
             this.setPassword(user.getPassword());
         }
         this.setFirstName(user.getFirstName());

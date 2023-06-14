@@ -6,6 +6,7 @@ import nl.inholland.codegeneration.models.AccountType;
 import nl.inholland.codegeneration.models.DTO.request.AccountRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.AccountResponseDTO;
 import nl.inholland.codegeneration.models.DTO.response.BalanceResponseDTO;
+import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
 import nl.inholland.codegeneration.repositories.AccountRepository;
 import nl.inholland.codegeneration.repositories.UserRepository;
 import nl.inholland.codegeneration.repositories.TransactionRepository;
@@ -46,6 +47,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

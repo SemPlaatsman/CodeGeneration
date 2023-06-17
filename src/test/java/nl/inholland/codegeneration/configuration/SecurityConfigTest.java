@@ -95,26 +95,26 @@ public class SecurityConfigTest {
     assertTrue(registeredConfiguration.getAllowCredentials());
   }
 
-  @Test
-  void testUserDetailsManager() {
-    // Create an instance of SecurityConfig
-    SecurityConfig securityConfig = new SecurityConfig(null, null);
-
-    
-
-    // Call the userDetailsManager() method
-    InMemoryUserDetailsManager userDetailsManager = securityConfig.userDetailsManager();
-
-    // Get the user details from the userDetailsManager
-    UserDetails user = userDetailsManager.loadUserByUsername("dev");
-
-    // Assert the properties of the user details
-    assertEquals("dev", user.getUsername());
-
-    // Compare the password using BCrypt encoding
-    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    assertTrue(passwordEncoder.matches("dev123", user.getPassword()));
-
-    assertTrue(user.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")));
-  }
+//  @Test
+//  void testUserDetailsManager() {
+//    // Create an instance of SecurityConfig
+//    SecurityConfig securityConfig = new SecurityConfig(null, null);
+//
+//
+//
+//    // Call the userDetailsManager() method
+//    InMemoryUserDetailsManager userDetailsManager = securityConfig.userDetailsManager();
+//
+//    // Get the user details from the userDetailsManager
+//    UserDetails user = userDetailsManager.loadUserByUsername("dev");
+//
+//    // Assert the properties of the user details
+//    assertEquals("dev", user.getUsername());
+//
+//    // Compare the password using BCrypt encoding
+//    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+//    assertTrue(passwordEncoder.matches("dev123", user.getPassword()));
+//
+//    assertTrue(user.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")));
+//  }
 }

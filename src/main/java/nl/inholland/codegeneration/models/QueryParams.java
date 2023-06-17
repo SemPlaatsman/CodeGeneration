@@ -161,11 +161,6 @@ public class QueryParams<T> {
                 }
                 predicates.add(spec.toPredicate(root, query, builder));
             }
-//            System.out.println("Predicates: ");
-//            for (Predicate predicate : predicates) {
-//                System.out.println(predicate);
-//            }
-//            System.out.println("End of predicates");
             return builder.and(predicates.toArray(new Predicate[0]));
         };
     }

@@ -1,6 +1,7 @@
 package nl.inholland.codegeneration.stepdefinitions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +34,10 @@ public class AuthenticationSteps {
     }
 
     @When("I send a POST request to {string} with:")
-    public void i_send_a_post_request_to_with(String string, User user) {
-        response = restTemplate.postForEntity("http://localhost:8080/authenticate/register", user, String.class);
+    public void i_send_a_post_request_to_with(String path, String body) {
+        String url = "http://localhost:8080" + path;
+        HttpEntity<String> request = new HttpEntity<>(body);
+        this.response = restTemplate.postForEntity(url, request, String.class);
     }
 
     @Then("the response status should be {int}")
@@ -44,7 +47,7 @@ public class AuthenticationSteps {
 
     @And("the response should contain an authentication token")
     public void the_response_should_contain_an_authentication_token() {
-        response.getBody().contains("token");
+        assertTrue(response.getBody().contains("token"));
     }
 
     // Scenario: Try to register a new user with an invalid request

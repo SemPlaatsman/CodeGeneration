@@ -76,9 +76,9 @@ public class TransactionSteps {
         }
     }
     @WithMockUser(username = "testUser", roles = {"EMPLOYEE"})
-    @When("a request is to GET transactions")
-    public void a_request_is_to_GET_transactions() {
-        String url = "http://localhost:8080/transactions";
+    @When("a request is to GET {string}")
+    public void a_request_is_to_GET_transactions(String path) {
+        String url = "http://localhost:8080" + path;
         //  + path.toString()
         responses = restTemplate.getForEntity(url, List.class);
     }
@@ -116,9 +116,9 @@ public class TransactionSteps {
         transactionById2.setDescription("cucumber test");
     }
 
-    @When("a request is to GET a transaction by id {int}")
-    public void a_request_is_to_GET_a_transaction_by_id(Integer id) {
-        String url = "http://localhost:8080/transactions/" + id.toString();
+    @When("a request is to GET a {string} by id {int}")
+    public void a_request_is_to_GET_a_transaction_by_id(String path, Integer id) {
+        String url = "http://localhost:8080" + path + id.toString();
         responseById = restTemplate.getForEntity(url, TransactionResponseDTO.class);
         transactionResponseDTO = responseById.getBody();
     }
@@ -132,9 +132,9 @@ public class TransactionSteps {
 // try to get transaction with bad id
 private ResponseEntity<String> response;
 
-@Given("no transaction with id {int} exists")
-public void no_transaction_with_id_exists(Integer id) {
-    String url = "http://localhost:8080/transactions/" + id;
+@Given("no {string} with id {int} exists")
+public void no_transaction_with_id_exists(String path, Integer id) {
+    String url = "http://localhost:8080" + path + id;
     try {
         restTemplate.getForEntity(url, String.class);
         throw new RuntimeException("Transaction with id " + id + " should not exist.");
@@ -143,9 +143,9 @@ public void no_transaction_with_id_exists(Integer id) {
     }
 }
 
-@When("a request is to GET a transaction by bad id {int}")
-public void a_request_is_to_GET_a_transaction_by_bad_id(Integer id) {
-    String url = "http://localhost:8080/transactions/" + Long.valueOf(id);
+@When("a request is to GET a {string} by bad id {int}")
+public void a_request_is_to_GET_a_transaction_by_bad_id(String path, Integer id) {
+    String url = "http://localhost:8080" + path + Long.valueOf(id);
     try {
         response = restTemplate.getForEntity(url, String.class);
     } catch (HttpClientErrorException ex) {

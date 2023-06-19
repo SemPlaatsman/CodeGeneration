@@ -5,8 +5,8 @@ Feature: Authentication
     When I send a POST request to "/authenticate/register" with:
       """
       {
-        "username": "testUser",
-        "password": "testPassword",
+        "username": "johndoe",
+        "password": "john123",
         "firstName": "testFirstName",
         "lastName": "testLastName",
         "email": "testEmail",
@@ -39,8 +39,8 @@ Feature: Authentication
     When I send a POST request to "/authenticate/register" with:
       """
       {
-        "username": "testUser",
-        "password": "testPassword",
+        "username": "johndoe",
+        "password": "john123",
         "firstName": "testFirstName",
         "lastName": "testLastName",
         "email": "testEmail",
@@ -57,8 +57,8 @@ Feature: Authentication
     When I send a POST request to login "/authenticate/login" with:
       """
       {
-        "username": "testUser",
-        "password": "testPassword"
+        "username": "johndoe",
+        "password": "john123"
       }
       """
     Then the login response status should be 200
@@ -70,7 +70,7 @@ Feature: Authentication
     When I send a POST request to login "/authenticate/login" with:
       """
       {
-        "username": "testUser",
+        "username": "johndoe",
         "password": "wrongPassword"
       }
       """

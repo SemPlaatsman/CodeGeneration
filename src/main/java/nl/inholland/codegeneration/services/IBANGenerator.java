@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 // IBAN Generator class based on: https://en.wikipedia.org/wiki/International_Bank_Account_Number#Algorithms
 @Component
 public class IBANGenerator implements IdentifierGenerator {
+    public static String meinBankIBAN;
     private static final Random RND = new Random(94837L); // Possibly replace with seed from e.g. config file
     private final int RND_ORIGIN = 2; // 0 is an invalid IBAN account number and 1 is reserved for the bank
     private final int RND_BOUND = 1000000000; // Makes sure IBAN account numbers won't have more than 9 characters
@@ -25,11 +26,20 @@ public class IBANGenerator implements IdentifierGenerator {
     public Object generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
         String IBAN;
         do {
-            String accountNumber = String.format("%09d", RND.nextInt(RND_ORIGIN, RND_BOUND));
+            int randomAccountNr = RND.nextInt(RND_ORIGIN, RND_BOUND);
+            // First IBAN always has account number 1
+            if (meinBankIBAN == null) {
+                randomAccountNr = 1;
+            }
+            String accountNumber = String.format("%09d", randomAccountNr);
             IBAN = COUNTRY_CODE + "00" + BANK_CODE + accountNumber;
             int checkDigits = calculateCheckDigits(IBAN);
             IBAN = IBAN.substring(0, COUNTRY_CODE.length()) + String.format("%02d", checkDigits) + IBAN.substring(2 + COUNTRY_CODE.length());
         } while (!this.validateIBAN(IBAN));
+        // After first IBAN is generated set it to the meinBankIBAN for future reference
+        if (meinBankIBAN == null) {
+            meinBankIBAN = IBAN;
+        }
         return IBAN;
     }
 

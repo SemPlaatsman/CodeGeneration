@@ -1,4 +1,5 @@
-Feature: Get All Accounts
+Feature: Accounts
+  
   Scenario: Successfully get all accounts
     Given the API is running
     When a request is made to GET /accounts
@@ -6,7 +7,7 @@ Feature: Get All Accounts
     And the response body should contain a list of account objects
 
 
-Feature: Get Account by IBAN
+# Feature: Get Account by IBAN
   Scenario: Successfully get an account by IBAN
     Given the API is running
     And there is an account with IBAN "123456789"
@@ -20,7 +21,7 @@ Feature: Get Account by IBAN
     When a request is made to GET /accounts/987654321
     Then the response status should be 404
 
-Feature: Insert Account
+# Feature: Insert Account
   Scenario: Successfully insert an account
     Given the API is running
     And the request body contains valid account data
@@ -34,7 +35,7 @@ Feature: Insert Account
     When a request is made to POST /accounts
     Then the response status should be 400
 
-Feature: Update Account
+# Feature: Update Account
   Scenario: Successfully update an account
     Given the API is running
     And there is an account with IBAN "123456789"
@@ -50,7 +51,7 @@ Feature: Update Account
     When a request is made to PUT /accounts/987654321
     Then the response status should be 404
 
-Feature: Delete Account
+# Feature: Delete Account
   Scenario: Successfully delete an account
     Given the API is running
     And there is an account with IBAN "123456789"

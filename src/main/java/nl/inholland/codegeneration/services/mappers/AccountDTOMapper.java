@@ -29,7 +29,6 @@ public class AccountDTOMapper {
         return account;
     };
 
-
     public Function<Account, AccountResponseDTO> toResponseDTO = AccountResponseDTO::new;
 
     public Function<Account, BalanceResponseDTO> toBalanceDTO = BalanceResponseDTO::new;

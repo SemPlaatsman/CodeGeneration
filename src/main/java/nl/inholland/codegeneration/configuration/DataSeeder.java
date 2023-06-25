@@ -103,9 +103,9 @@ public class DataSeeder implements ApplicationRunner {
         }
 
         private void saveTestAccounts() {
-                accountRepository.save(new Account("NL06INHO0000000001", AccountType.CURRENT,
+                accountRepository.save(new Account(null, AccountType.CURRENT,
                         userRepository.findById(1L).orElseThrow(),
-                        new BigDecimal("120"), new BigDecimal("-1000"), false));
+                        new BigDecimal("18000000000"), new BigDecimal("-100000000"), false));
                 accountRepository.save(new Account(null, AccountType.SAVINGS, userRepository.findById(1L).orElseThrow(),
                         new BigDecimal("436000"), new BigDecimal("-1000"), false));
                 accountRepository.save(new Account(null, AccountType.CURRENT, userRepository.findById(2L).orElseThrow(),

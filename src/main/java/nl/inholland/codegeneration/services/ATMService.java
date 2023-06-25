@@ -19,10 +19,10 @@ public class ATMService extends TransactionService {
     }
 
     public TransactionResponseDTO deposit(ATMRequestDTO atmRequestDTO) {
-        return this.add(new TransactionRequestDTO(IBANGenerator.meinBankIBAN, atmRequestDTO.accountIban(), atmRequestDTO.amount(), "Mock ATM deposit at Mein Bank HQ"));
+        return this.add(new TransactionRequestDTO(IBANGenerator.getMeinBankIBAN(), atmRequestDTO.accountIban(), atmRequestDTO.amount(), "Mock ATM deposit at Mein Bank HQ"));
     }
 
     public TransactionResponseDTO withdraw(ATMRequestDTO atmRequestDTO) {
-        return this.add(new TransactionRequestDTO(atmRequestDTO.accountIban(), IBANGenerator.meinBankIBAN, atmRequestDTO.amount(), "Mock ATM withdrawal at Mein Bank HQ"));
+        return this.add(new TransactionRequestDTO(atmRequestDTO.accountIban(), IBANGenerator.getMeinBankIBAN(), atmRequestDTO.amount(), "Mock ATM withdrawal at Mein Bank HQ"));
     }
 }

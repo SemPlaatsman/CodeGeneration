@@ -57,7 +57,9 @@ public class TransactionService {
     }
 
     private void ValidateTransaction(Transaction transaction, User user) {
-        if (checkAccountPermissions(transaction, user)) {
+        if (checkEqualIBAN(transaction)) {
+            throw new InvalidDataAccessApiUsageException("Cannot make a transaction with the same account!");
+        } else if (checkAccountPermissions(transaction, user)) {
             throw new InvalidDataAccessApiUsageException("Invalid bank account provided!");
         } else if (checkDeletedAccount(transaction)) {
             throw new InvalidDataAccessApiUsageException("Invalid bank account provided!");
@@ -74,6 +76,11 @@ public class TransactionService {
         } else if (checkAccountType(transaction, transaction.getAccountTo())) {
             throw new IllegalStateException("Cannot make a transaction to a savings account to an account that is not of the same user!");
         }
+    }
+
+    // Check if IBAN from is not equal to IBAN to
+    private boolean checkEqualIBAN(Transaction transaction) {
+        return Objects.equals(transaction.getAccountFrom().getIban(), transaction.getAccountTo().getIban());
     }
 
     // If user is not employee; check if users don't match

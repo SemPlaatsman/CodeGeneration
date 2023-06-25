@@ -74,7 +74,7 @@ public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_and_limit_se
     //Scenario: Fetching a Specific User
     @Given("there are users in the system and I have 'EMPLOYEE' or 'CUSTOMER' authority.")
     public void there_are_users_in_the_system_and_I_have_EMPLOYEE_or_CUSTOMER_authority() {
-
+        //hier moet nog auth bij
     }
     @When("I send a GET request to {string} endpoint with a valid user ID.")
     public void i_send_a_GET_request_to_users_endpoint_with_a_valid_user_ID(String path) {
@@ -101,7 +101,7 @@ public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_and_limit_se
     //Scenario: Unauthorized Access to Fetch a Specific User
     @Given("there are users in the system and I do not have 'EMPLOYEE' or 'CUSTOMER' authority.")
     public void there_are_users_in_the_system_and_I_do_not_have_EMPLOYEE_or_CUSTOMER_authority() {
-
+//hier moet nog auth bij
     }
     @Then("I should receive a 401 Unauthorized response.")
     public void i_should_receive_a_401_Unauthorized_response() {
@@ -122,12 +122,12 @@ public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_and_limit_se
     //Scenario: Unauthorized Access to Fetch All Accounts of a Specific User
     @Given("there are users with accounts in the system and I do not have 'EMPLOYEE' authority.")
     public void there_are_users_with_accounts_in_the_system_and_I_do_not_have_EMPLOYEE_authority() {
-
+//hier moet nog auth bij
     }
     //Scenario: Add a user successfully
     @Given("I am authorized with 'EMPLOYEE' role")
     public void i_am_authorized_with_EMPLOYEE_role() {
-
+//hier moet nog auth bij
     }
     @When("I send POST request to {string} with valid user details")
     public void i_send_POST_request_to_users_with_valid_user_details(String path) {

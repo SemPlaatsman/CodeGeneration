@@ -61,7 +61,7 @@ public class AccountSteps {
     //Scenario: Successfully get an account by iban
     // @Given("the API is running")
     // public void the_api_is_running() {
-    //     // should be running
+    // should be running
     // }
     @And("there is an account with IBAN {string}")
     public void there_is_an_account_with_iban(String iban) {
@@ -136,7 +136,7 @@ public class AccountSteps {
     //Scenario: Attempt to insert an account with invalid data
     // @Given("the API is running")
     // public void the_api_is_running() {
-    //     // should be running
+    // should be running
     // }
     @And("the request body contains invalid account data")
     public void the_request_body_contains_invalid_account_data() {

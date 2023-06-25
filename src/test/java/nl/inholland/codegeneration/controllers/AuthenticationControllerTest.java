@@ -83,7 +83,7 @@ public class AuthenticationControllerTest {
     @WithMockUser(username = "user", roles = {"EMPLOYEE"})
     void testInvalidRegister() throws Exception {
         // Given
-        RegisterRequest registerRequest = new RegisterRequest("testUser", "", "Test", "User", "test@user.dev", "06 12345678", LocalDate.of(2001, 1, 1));
+        RegisterRequest registerRequest = new RegisterRequest("testUser", "p", "Test", "User", "test@user.dev", "06 12345678", LocalDate.of(2001, 1, 1));
         AuthenticationResponse expectedResponse = new AuthenticationResponse(1L, "dummy_token", List.of(Role.EMPLOYEE.getValue()), "testUser", "user@email.com");
 
         when(authenticateService.register(registerRequest)).thenReturn(expectedResponse);
@@ -94,7 +94,7 @@ public class AuthenticationControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-            .andExpect(result -> assertEquals(List.of("Please fill the password field!").toString(),
+            .andExpect(result -> assertEquals(List.of("Password is too short!").toString(),
                     ((MethodArgumentNotValidException) Objects.requireNonNull(result.getResolvedException())).getBindingResult().getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList().toString()));
     }
     

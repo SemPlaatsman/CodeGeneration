@@ -65,7 +65,7 @@ public class DataSeederTest {
 
     dataSeeder.run(args);
 
-    Mockito.verify(userRepository, Mockito.times(10)).save(Mockito.any(User.class));
+    Mockito.verify(userRepository, Mockito.times(13)).save(Mockito.any(User.class));
 
     Mockito.verify(accountRepository, Mockito.times(15)).save(Mockito.any(Account.class));
 

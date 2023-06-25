@@ -145,7 +145,7 @@ public class QueryParams<T> {
 
     public Specification<T> buildFilter() throws Exception {
         this.addBaseSpecifications();
-        
+
         return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
             List<Predicate> predicates = new ArrayList<>();
             for (FilterCriteria criterion : filterCriteria) {

@@ -67,14 +67,6 @@ public class TransactionSteps {
     private RestTemplate restTemplate = new RestTemplate();
     private ResponseEntity<List> responses;
     
-    @Given("the api is running")
-    public void the_api_is_running() {
-        String url = "http://localhost:8080/health";
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        if (!response.getBody().equals("UP")) {
-            throw new RuntimeException("API is not running");
-        }
-    }
     @WithMockUser(username = "testUser", roles = {"EMPLOYEE"})
     @When("a request is to GET {string}")
     public void a_request_is_to_GET_transactions(String path) {
@@ -82,11 +74,11 @@ public class TransactionSteps {
         //  + path.toString()
         responses = restTemplate.getForEntity(url, List.class);
     }
-    @WithMockUser(username = "testUser", roles = {"EMPLOYEE"})
-    @Then("the response should be {int}")
-    public void the_response_should_be(Integer int1) {
-        assertEquals(responses.getStatusCode().value(), int1.intValue());
-    }
+    // @WithMockUser(username = "testUser", roles = {"EMPLOYEE"})
+    // @Then("the response should be {int}")
+    // public void the_response_should_be(Integer int1) {
+    //     assertEquals(responses.getStatusCode().value(), int1.intValue());
+    // }
     @WithMockUser(username = "testUser", roles = {"EMPLOYEE"})
     @And("should contain a List of transaction objects")
     public void should_contain_a_List_of_transaction_objects() {
@@ -153,9 +145,9 @@ public void a_request_is_to_GET_a_transaction_by_bad_id(String path, Integer id)
     }
 }
 
-@Then("the error response should be {int}")
-public void the_error_response_should_be(Integer int1) {
-    assertEquals(response.getStatusCode().value(), int1.intValue());
-}
+// @Then("the error response should be {int}")
+// public void the_error_response_should_be(Integer int1) {
+//     assertEquals(response.getStatusCode().value(), int1.intValue());
+// }
 
 }

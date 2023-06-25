@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 @RunWith(Cucumber.class)
 @CucumberOptions(
        features = "src/test/resources/features",
-       glue = "nl.inholland.codegeneration.stepdefinitions/AuthenticationControllerSteps.java",
+       glue = "nl.inholland.codegeneration.stepdefinitions",
        plugin = {"pretty", "html:target/cucumber-reports"}
 )
 

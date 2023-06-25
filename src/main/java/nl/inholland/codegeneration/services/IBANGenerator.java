@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 // IBAN Generator class based on: https://en.wikipedia.org/wiki/International_Bank_Account_Number#Algorithms
 @Component
 public class IBANGenerator implements IdentifierGenerator {
-    public static String meinBankIBAN;
+    private static String meinBankIBAN;
     private static final Random RND = new Random(94837L); // Possibly replace with seed from e.g. config file
     private final int RND_ORIGIN = 2; // 0 is an invalid IBAN account number and 1 is reserved for the bank
     private final int RND_BOUND = 1000000000; // Makes sure IBAN account numbers won't have more than 9 characters
@@ -69,5 +69,15 @@ public class IBANGenerator implements IdentifierGenerator {
     // If the remainder is 1, the IBAN is valid. More information is provided at https://en.wikipedia.org/wiki/International_Bank_Account_Number#Algorithms
     public boolean validateIBAN(String IBAN) throws HibernateException {
         return calculateMod97(IBAN) == 1;
+    }
+
+    // used for future references to the meinBankIBAN
+    public static String getMeinBankIBAN() {
+        return meinBankIBAN;
+    }
+
+    // used for PreAuthorize since it can't access static members
+    public String getNonStaticMeinBankIBAN() {
+        return meinBankIBAN;
     }
 }

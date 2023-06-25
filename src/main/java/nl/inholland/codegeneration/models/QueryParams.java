@@ -144,9 +144,8 @@ public class QueryParams<T> {
     }
 
     public Specification<T> buildFilter() throws Exception {
-        if (!this.fieldHasBeenAdded("isDeleted") && this.classReference != Transaction.class) {
-            this.addFilter(new FilterCriteria("isDeleted", ":", false));
-        }
+        this.addBaseSpecifications();
+        
         return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
             List<Predicate> predicates = new ArrayList<>();
             for (FilterCriteria criterion : filterCriteria) {
@@ -163,6 +162,18 @@ public class QueryParams<T> {
             }
             return builder.and(predicates.toArray(new Predicate[0]));
         };
+    }
+
+    private void addBaseSpecifications() throws Exception {
+        if (!this.fieldHasBeenAdded("isDeleted") && this.classReference != Transaction.class) {
+            this.addFilter(new FilterCriteria("isDeleted", ":", false));
+        }
+        if (this.classReference == Account.class) {
+            this.addFilter(new FilterCriteria("user.id", ">", 1));
+        }
+        if (this.classReference == User.class) {
+            this.addFilter(new FilterCriteria("id", ">", 1));
+        }
     }
 
     public boolean fieldHasBeenAdded(String field) {

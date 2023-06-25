@@ -121,13 +121,12 @@ public class AccountController {
         @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = APIExceptionResponseDTO.class), examples = @ExampleObject(value = "{\"message\": \"Not Found!\",\"httpStatus\": \"NOT_FOUND\",\"timestamp\": \"2001-01-01T00:00:00\"}"))),
         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = APIExceptionResponseDTO.class), examples = @ExampleObject(value = "{\"message\": \"Internal Server Error!\",\"httpStatus\": \"INTERNAL_SERVER_ERROR\",\"timestamp\": \"2001-01-01T00:00:00\"}")))
     })
-    @PreAuthorize("hasAuthority('EMPLOYEE')")
+    @PreAuthorize("hasAuthority('EMPLOYEE') && #iban != @IBANGenerator.getNonStaticMeinBankIBAN()")
     @PutMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateAccount(@RequestBody @Valid AccountRequestDTO account, @PathVariable("iban") String iban)
             throws APIException {
         AccountResponseDTO updatedAccount = accountService.updateAccount(account, iban);
         return ResponseEntity.status(200).body(updatedAccount);
-
     }
 
     // DELETE /accounts/{iban}
@@ -141,7 +140,7 @@ public class AccountController {
         @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = APIExceptionResponseDTO.class), examples = @ExampleObject(value = "{\"message\": \"Not Found!\",\"httpStatus\": \"NOT_FOUND\",\"timestamp\": \"2001-01-01T00:00:00\"}"))),
         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = APIExceptionResponseDTO.class), examples = @ExampleObject(value = "{\"message\": \"Internal Server Error!\",\"httpStatus\": \"INTERNAL_SERVER_ERROR\",\"timestamp\": \"2001-01-01T00:00:00\"}")))
     })
-    @PreAuthorize("hasAuthority('EMPLOYEE') OR hasAuthority('CUSTOMER')")
+    @PreAuthorize("(hasAuthority('EMPLOYEE') OR hasAuthority('CUSTOMER')) && #iban != @IBANGenerator.getNonStaticMeinBankIBAN()")
     @DeleteMapping(path = "/{iban}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteAccount(@PathVariable("iban") String iban) {
         accountService.deleteAccount(iban);

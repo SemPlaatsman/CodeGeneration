@@ -1,6 +1,5 @@
 package nl.inholland.codegeneration.stepdefinitions;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -14,8 +13,8 @@ import io.cucumber.java.en.When;
 import nl.inholland.codegeneration.models.User;
 
 public class SharedSteps {
-    private final RestTemplate restTemplate = new RestTemplate();
-    private ResponseEntity<String> response;
+    public final RestTemplate restTemplate = new RestTemplate();
+    public ResponseEntity<String> response;
 
     @Given("the API is running")
     public void the_api_is_running() {
@@ -41,5 +40,10 @@ public class SharedSteps {
     @Then("the response should contain an authentication token")
     public void the_response_should_contain_an_authentication_token() {
         assertTrue(response.getBody().contains("token"));
+    }
+
+    @Then("the error response should be {int}")
+    public void the_error_response_should_be(Integer int1) {
+        assertEquals(response.getStatusCode().value(), int1.intValue());
     }
 }

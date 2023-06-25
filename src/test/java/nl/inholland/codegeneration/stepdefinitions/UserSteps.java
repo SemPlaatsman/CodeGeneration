@@ -45,6 +45,11 @@ public class UserSteps {
         response = restTemplate.getForEntity(url, UserResponseDTO[].class);
         this.response = restTemplate.getForEntity(url, UserResponseDTO[].class);
     }
+    @When("I send a GET request to {string} endpoint with the filter set as {string} and limit set as {string}.")
+public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_and_limit_set_as(String string, String string2, String string3) {
+    // Write code here that turns the phrase above into concrete actions
+    throw new io.cucumber.java.PendingException();
+}
     @Then("I should receive a 200 OK response with a list of UserResponseDTOs of users with first name 'John' and the list should not contain more than 20 users.")
     public void i_should_receive_a_200_OK_response_with_a_list_of_UserResponseDTOs_of_users_with_first_name_John_and_the_list_should_not_contain_more_than_20_users() {
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -180,6 +185,14 @@ public class UserSteps {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
+    @Given("I have {string} authority.")
+public void i_have_authority(String string) {
+        
+}
+@When("I send a GET request to {string} endpoint with the filter set as {string} \\(invalid format).")
+public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_invalid_format(String string, String string2) {
+    
+}
     
     //Scenario: Fetching All Users with Invalid Filter Format
     // @Given("there are users in the system and I have 'EMPLOYEE' authority.")

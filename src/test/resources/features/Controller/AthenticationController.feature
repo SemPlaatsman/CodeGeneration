@@ -5,18 +5,19 @@ Feature: Authentication
     When I send a POST request to "/authenticate/register" with:
       """
       {
-        "username": "johndoe",
-        "password": "john123",
-        "firstName": "testFirstName",
-        "lastName": "testLastName",
-        "email": "testEmail",
-        "phoneNumber": "testPhoneNumber",
-        "birthDate": "testBirthDate",
+        "username": "janedoe",
+        "password": "jane123",
+        "firstName": "jane",
+        "lastName": "doe",
+        "email": "jane@doe.com",
+        "phoneNumber": "1234567890",
+        "birthDate": "2000-01-01"
       }
       """
     Then the response status should be 201
     And the response should contain an authentication token
 
+    #werkt
   Scenario: Try to register a new user with an invalid request
     Given the API is running
     When I send a POST request to "/authenticate/register" with:
@@ -25,17 +26,18 @@ Feature: Authentication
         "username": "",
         "password": "",
         "firstName": "",
-        "lastName": ""
+        "lastName": "",
         "email": "",
         "phoneNumber": "",
-        "birthDate": "",
+        "birthDate": ""
       }
       """
-    Then the response status should be 400
+    Then the error response should be 400
 
+    #werkt
   Scenario: Register a new user with an already existing username or email
     Given the API is running
-    And a user with username "testUser" and password "testPassword" already exists
+    And a user with username "johndoe" and password "john123" already exists
     When I send a POST request to "/authenticate/register" with:
       """
       {
@@ -43,12 +45,12 @@ Feature: Authentication
         "password": "john123",
         "firstName": "testFirstName",
         "lastName": "testLastName",
-        "email": "testEmail",
-        "phoneNumber": "testPhoneNumber",
-        "birthDate": "testBirthDate",
+        "email": "testEmail@example.com",
+        "phoneNumber": "1234567890",
+        "birthDate": "2000-01-01"
       }
       """
-    Then the response status should be 400
+    Then the error response should be 400
 
 # Steps made
   Scenario: Login with valid credentials

@@ -40,6 +40,7 @@ public class AuthenticationSteps {
     
     // @And("the response should contain an authentication token")
     // public void the_response_should_contain_an_authentication_token() {
+        
     //     sharedSteps.the_response_should_contain_an_authentication_token();
     // }
 
@@ -77,17 +78,6 @@ public class AuthenticationSteps {
 //         }
 //     }
 //
-//    @And("a user with username {string} and password {string} already exists")
-//    public void a_user_with_username_and_password_already_exists(String username, String password) {
-//        Object user = new User();
-//        ((User) user).setUsername(username);
-//        ((User) user).setPassword(password);
-//        String url = "http://localhost:8080/authenticate/login" + user;
-//        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-//        if (response.getStatusCode().value() != 200) {
-//            throw new RuntimeException("User could not be created");
-//        }
-//    }
 //
 //     @When("I send a POST request to {string} with:")
 //     public void i_send_a_post_request_to_with(String string, User user) {

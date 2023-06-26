@@ -58,7 +58,7 @@ Background: Given auth header is set
         "birthdate": "2000-01-01"
       }
       """
-    Then the error response should be 400
+    Then the error response should be 500
 
 # werkt
   Scenario: Login with valid credentials

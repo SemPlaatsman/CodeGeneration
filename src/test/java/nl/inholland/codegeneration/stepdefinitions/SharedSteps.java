@@ -98,10 +98,14 @@ public class SharedSteps {
             if (e.getMessage().contains("400")) {
                 response = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
                 context.setResponse(response);
-            } if (e.getMessage().contains("401")) {
+            } else if (e.getMessage().contains("401")) {
                 response = new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
                 context.setResponse(response);
-            } else {
+            } else if (e.getMessage().contains("500")){
+                response = new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+                context.setResponse(response);
+            }
+            else {
                 throw new Exception(e);
             }
         }

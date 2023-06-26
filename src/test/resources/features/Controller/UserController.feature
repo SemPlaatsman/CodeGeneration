@@ -1,4 +1,6 @@
 Feature: Users
+    Background:
+       Given given im authenticated as a user and have jwt
 
     #getAllUsers
     Scenario: Fetching All Users with specific filter and limit

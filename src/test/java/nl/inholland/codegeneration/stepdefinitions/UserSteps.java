@@ -5,17 +5,19 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.lu.an;
 import io.cucumber.java.en.Then;
+import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import nl.inholland.codegeneration.models.Role;
 import nl.inholland.codegeneration.models.User;
 import nl.inholland.codegeneration.models.DTO.request.UserRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.UserResponseDTO;
 
+import java.io.Console;
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.assertj.core.util.Lists;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpClientErrorException.Forbidden;
@@ -33,9 +35,46 @@ public class UserSteps {
 
     RestTemplate restTemplate = new RestTemplate();
     ResponseEntity<UserResponseDTO[]> response;
+    RequestEntity<UserResponseDTO[]> request;
+
+    private String authToken;
+    private HttpHeaders headers;
+    String BaseUrl = "http://localhost:8080/api";
+
+    HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+
+    @Given("given im authenticated as a user and have jwt")
+    public void given_im_authenticated_as_a_user_and_have_jwt(){
+       authToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg3ODAxODU5LCJleHAiOjE2ODc4Mzc4NTl9.enFcEp8OFULIwQ7aYYLW0g-sGpSLiubr9BRd9zxdt9M";
+        //authToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg3ODE4Mjg0LCJleHAiOjE2ODc4NTQyODR9.aJZB29mYCMRcxxrch30Sw7KJRRyycP-g2PxdoxTruSE";
+
+        this.headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + authToken);
+    }
+
     // Scenario: Fetching All Users with specific filter and limit
     @Given("there are users in the system and I have 'EMPLOYEE' authority.")
     public void there_are_users_in_the_system_and_I_have_EMPLOYEE_authority() {
+
+        System.out.println(authToken);
+        // fill userRequestDTO with data
+        UserRequestDTO userRequestDTO = new UserRequestDTO(List.of(1), "username", "password", "firstname", "lastname",
+                "email@example.com", "1234567890", LocalDate.now(), new BigDecimal("1000"), new BigDecimal("200"));
+        HttpEntity<UserRequestDTO> entity = new HttpEntity<>(userRequestDTO, headers);
+        System.out.println(entity.getBody());
+        response = restTemplate.postForEntity(BaseUrl+"/users", new HttpEntity<>(userRequestDTO, headers), UserResponseDTO[].class);
+
+        // I have employee authority
+//        assertEquals();
+//        System.out.println(this.response.getBody());
+
+    }
+    //
+    @When("I send a GET request to {string} endpoint with the filter set as {string} and limit set as {string}.")
+    public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_and_limit_set_as(String endpoint, String filter, String limit) {
+        String url = BaseUrl+endpoint+ "?filter=" + filter + "&limit=" + limit;
+
+        this.response = restTemplate.exchange(url, HttpMethod.GET, entity, ParameterizedTypeReference.forType(List.class));
 
     }
     @When("I send a GET request to {string} endpoint with the filter set as {string} and limit set as {int}.")
@@ -45,11 +84,7 @@ public class UserSteps {
         response = restTemplate.getForEntity(url, UserResponseDTO[].class);
         this.response = restTemplate.getForEntity(url, UserResponseDTO[].class);
     }
-    @When("I send a GET request to {string} endpoint with the filter set as {string} and limit set as {string}.")
-public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_and_limit_set_as(String string, String string2, String string3) {
-    // Write code here that turns the phrase above into concrete actions
-    throw new io.cucumber.java.PendingException();
-}
+
     @Then("I should receive a 200 OK response with a list of UserResponseDTOs of users with first name 'John' and the list should not contain more than 20 users.")
     public void i_should_receive_a_200_OK_response_with_a_list_of_UserResponseDTOs_of_users_with_first_name_John_and_the_list_should_not_contain_more_than_20_users() {
         assertEquals(HttpStatus.OK, response.getStatusCode());

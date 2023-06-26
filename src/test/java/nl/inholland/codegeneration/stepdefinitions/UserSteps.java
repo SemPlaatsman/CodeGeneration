@@ -158,10 +158,10 @@ public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_and_limit_se
         String url = "http://localhost:8080/api" + path;
         response = restTemplate.getForEntity(url, UserResponseDTO[].class);
     }
-    @Then("the response status should be 200")
-    public void the_response_status_should_be_200() {
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
+    // @Then("the response status should be 200")
+    // public void the_response_status_should_be_200() {
+    //     assertEquals(HttpStatus.OK, response.getStatusCode());
+    // }
     @And("the response should contain the updated user details")
     public void the_response_should_contain_the_updated_user_details() {
         assertEquals(HttpStatus.OK, response.getStatusCode());

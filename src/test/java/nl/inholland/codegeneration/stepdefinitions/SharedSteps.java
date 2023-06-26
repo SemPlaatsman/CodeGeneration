@@ -38,7 +38,7 @@ public class SharedSteps {
     @Given("the API is running")
     public void the_api_is_running() {
 
-        authToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg3Nzg4NzYxLCJleHAiOjE2ODc4MjQ3NjF9.K0JcOgEBY6pmxWfRGAjrRJTVRc_qpGeYOY2bWd1pYKY";
+        authToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg3ODAxODU5LCJleHAiOjE2ODc4Mzc4NTl9.enFcEp8OFULIwQ7aYYLW0g-sGpSLiubr9BRd9zxdt9M";
         String url = "http://localhost:8080/health";
 
         headers = new HttpHeaders();

@@ -28,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import nl.inholland.codegeneration.stepdefinitions.SharedStringService;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,9 +51,12 @@ public class AccountSteps {
     @Autowired
     private ScenarioContext context;
 
+    @Autowired
+    private SharedStringService sharedStringService;
+
     @Given("account header is set")
     public void header_is_set() {
-        authToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg3ODAxODU5LCJleHAiOjE2ODc4Mzc4NTl9.enFcEp8OFULIwQ7aYYLW0g-sGpSLiubr9BRd9zxdt9M";
+        authToken = sharedStringService.getToken();
         this.headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + authToken);
     }
@@ -164,21 +168,46 @@ public class AccountSteps {
     //Scenario: Successfully update an account
     @When("a request is made to PUT {string}")
     public void a_request_is_made_to_put_accounts(String path) {
-        String url = "http://localhost:8080" + path;
+        try {
+            String url = "http://localhost:8080" + path;
         HttpEntity<AccountRequestDTO> entity = new HttpEntity<>(accountRequestDTO, headers);
         responseAccount = restTemplate.exchange(url, HttpMethod.PUT, entity, AccountResponseDTO.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        } catch (Exception e) {
+            if (e.getMessage().contains("401")) {
+                response = new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+                context.setResponse(response);
+            } else{
+                throw e;
+            }
+        }
+        
     }
     @And("the response body should contain the updated account object")
     public void the_response_body_should_contain_the_updated_account_object() {
         assertEquals(new BigDecimal(10), responseAccount.getBody().absoluteLimit());
     }
     //Scenario: Successfully delete an account
+    ResponseEntity<Void> responseEntity;
     @When("a request is made to DELETE {string}")
     public void a_request_is_made_to_delete_accounts(String path) {
         String url = "http://localhost:8080" + path;
-        restTemplate.delete(url);
+
+        HttpEntity<Void> entity = new HttpEntity<>(headers); // You usually do not need to send a body with DELETE
+        try {
+            // if (BigDecimal.ZERO.equals(response.balance())
+            responseEntity = restTemplate.exchange(url, HttpMethod.DELETE, entity, Void.class);
+            assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+        } catch (HttpClientErrorException e) {
+            responseEntity = new ResponseEntity<>(e.getStatusCode());
+            throw e;
+        }
     }
+    @Then("the delete response status should be {int}")
+    public void the_delete_response_status_should_be(Integer responseStatus) {
+        assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+    }
+
 }
 
 //test

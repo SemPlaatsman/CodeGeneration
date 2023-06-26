@@ -20,8 +20,12 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.cucumber.java.lu.a;
+import io.cucumber.messages.internal.com.fasterxml.jackson.core.JsonProcessingException;
+import io.cucumber.messages.internal.com.fasterxml.jackson.databind.JsonMappingException;
+import io.cucumber.messages.internal.com.fasterxml.jackson.databind.JsonNode;
 import io.cucumber.messages.internal.com.fasterxml.jackson.databind.ObjectMapper;
 import nl.inholland.codegeneration.models.User;
+import nl.inholland.codegeneration.stepdefinitions.SharedStringService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,28 +34,56 @@ public class SharedSteps {
     @Autowired
     private ScenarioContext context;
 
+    @Autowired
+    private SharedStringService sharedStringService;
+
     private ResponseEntity<String> response;
-    // @Autowired
     private String authToken;
     private HttpHeaders headers;
 
     @Given("the API is running")
     public void the_api_is_running() {
 
-        authToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg3ODAxODU5LCJleHAiOjE2ODc4Mzc4NTl9.enFcEp8OFULIwQ7aYYLW0g-sGpSLiubr9BRd9zxdt9M";
+        // authToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg3ODAxODU5LCJleHAiOjE2ODc4Mzc4NTl9.enFcEp8OFULIwQ7aYYLW0g-sGpSLiubr9BRd9zxdt9M";
         String url = "http://localhost:8080/health";
 
-        headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.set("Authorization", "Bearer " + authToken);
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-
-
+        
+        
         ResponseEntity<String> healthCheckResponse = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-
+        
         if (!"UP".equals(healthCheckResponse.getBody())) {
             throw new RuntimeException("API is not running");
         }
+    }
+    @Given("user is logged in as {string} with username {string} password {string}")
+    public void user_is_logged_in_as_with_username_password(String role, String username, String password) throws JsonMappingException, JsonProcessingException {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        
+        this.headers = new HttpHeaders();
+        String url = "http://localhost:8080/authenticate/login";
+        HttpEntity<User> request = new HttpEntity<>(user, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+
+        System.out.println("Response Body: " + response.getBody());
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(response.getBody());
+
+        
+        
+        if (response.getStatusCode().value() != 200) { // Assuming 201 is the status for successful creation
+            throw new RuntimeException("User could not be created");
+        }
+
+        authToken = root.path("token").asText();
+        sharedStringService.setToken(authToken);
+        // authToken = response.getBody();
+        headers.set("Authorization", "Bearer " + authToken);
     }
 
     // @When("I send a POST request to {string} with:")
@@ -66,10 +98,9 @@ public class SharedSteps {
             User user = new User();
             user.setUsername(username);
             user.setPassword(password);
-            // assuming you have setters for the other user fields, you should set those as well
 
             String url = "http://localhost:8080/authenticate/login";
-            HttpEntity<User> request = new HttpEntity<>(user, headers); //assuming headers are set properly
+            HttpEntity<User> request = new HttpEntity<>(user, headers);
             ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
 
             if (response.getStatusCode().value() != 200) { // Assuming 201 is the status for successful creation

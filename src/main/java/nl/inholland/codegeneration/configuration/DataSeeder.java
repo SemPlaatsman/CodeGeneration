@@ -120,7 +120,7 @@ public class DataSeeder implements ApplicationRunner {
                 accountRepository.save(new Account(null, AccountType.CURRENT, userRepository.findById(5L).orElseThrow(),
                         new BigDecimal("-25"), new BigDecimal("-300"), false));
                 accountRepository.save(new Account(null, AccountType.SAVINGS, userRepository.findById(5L).orElseThrow(),
-                        new BigDecimal("300"), new BigDecimal("-1200"), false));
+                        new BigDecimal("0"), new BigDecimal("-1200"), false));
                 accountRepository.save(new Account(null, AccountType.SAVINGS, userRepository.findById(5L).orElseThrow(),
                         new BigDecimal("12000000"), new BigDecimal("-2600"), false));
                 accountRepository.save(new Account(null, AccountType.CURRENT, userRepository.findById(6L).orElseThrow(),

@@ -1,6 +1,7 @@
 Feature: Accounts
 
 Background:
+  Given user is logged in as "EMPLOYEE" with username "johndoe" password "john123"
   Given the API is running
   Given account header is set
 
@@ -53,6 +54,7 @@ Background:
     Then the response status should be 200
     And the response body should contain the updated account object
 
+    #werkt
   Scenario: Attempt to update a non-existent account
     # Given the API is running
     And there is no account with IBAN "NL82INHO03412347476"
@@ -60,15 +62,16 @@ Background:
     When a request is made to PUT "/accounts/NL82INHO03412347476"
     Then the response status should be 404
 
+
 # Feature: Delete Account
   Scenario: Successfully delete an account
     # Given the API is running
-    And there is an account with IBAN "NL82INHO0341537476"
-    When a request is made to DELETE "/accounts/NL82INHO0341537476"
-    Then the response status should be 204
+    And there is an account with IBAN "NL06INHO0857625210"
+    When a request is made to DELETE "/accounts/NL06INHO0857625210"
+    Then the delete response status should be 204
 
   Scenario: Attempt to delete a non-existent account
     # Given the API is running
-    And there is no account with IBAN "NL82INHO03412347476"
-    When a request is made to DELETE "/accounts/NL82INHO03412347476"
-    Then the response status should be 404
+    And there is no account with IBAN "NL06INHO0857625210"
+    When a request is made to DELETE "/accounts/NL06INHO0857625210"
+    Then the delete response status should be 404

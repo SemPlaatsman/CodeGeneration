@@ -42,14 +42,15 @@ public class TransactionSteps {
 
     @Autowired
     private ScenarioContext context;
-    // @Autowired
+    @Autowired
+    private SharedStringService sharedStringService;
     private String authToken;
 
     private HttpHeaders headers = new HttpHeaders();
 
     @Given("header is set")
     public void header_is_set() {
-        authToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg3ODAxODU5LCJleHAiOjE2ODc4Mzc4NTl9.enFcEp8OFULIwQ7aYYLW0g-sGpSLiubr9BRd9zxdt9M";
+        authToken = sharedStringService.getToken();
         this.headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + authToken);
     }

@@ -4,8 +4,9 @@ Feature: Transactions
   So that I can pay for my groceries
 
   Background:
-    Given header is set
+    Given user is logged in as "EMPLOYEE" with username "johndoe" password "john123"
     Given the API is running
+    Given header is set
 
   #werkt
   Scenario: Transfer money to another bank account

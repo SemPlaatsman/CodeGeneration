@@ -1,10 +1,13 @@
 Feature: Authentication
 
-Background: Given auth header is set
+Background:
+  Given user is logged in as "EMPLOYEE" with username "johndoe" password "john123"
+  Given the API is running
+  Given auth header is set
 
   #werkt
   Scenario: Register a new user with valid request
-    Given the API is running
+#    Given the API is running
     When I send a POST request to "/authenticate/register" with:
       """
       {
@@ -27,7 +30,7 @@ Background: Given auth header is set
 
     #werkt
   Scenario: Try to register a new user with an invalid request
-    Given the API is running
+#    Given the API is running
     When I send a POST request to "/authenticate/register" with:
       """
       {
@@ -44,7 +47,7 @@ Background: Given auth header is set
 
     #werkt
   Scenario: Register a new user with an already existing username or email
-    Given the API is running
+#    Given the API is running
     And a user with username "johndoe" and password "john123" already exists
     When I send a POST request to "/authenticate/register" with:
       """
@@ -62,7 +65,7 @@ Background: Given auth header is set
 
 # werkt
   Scenario: Login with valid credentials
-    Given the API is running
+#    Given the API is running
     And a user with username "johndoe" and password "john123" already exists
     When I send a POST request to "/authenticate/login" with:
       """
@@ -76,7 +79,7 @@ Background: Given auth header is set
 
 # werkt
   Scenario: Login with invalid credentials
-    Given the API is running
+#    Given the API is running
     When I send a POST request to "/authenticate/login" with:
       """
       {
@@ -88,7 +91,7 @@ Background: Given auth header is set
 
 # werkt
   Scenario: Login with non-existent user credentials
-    Given the API is running
+#    Given the API is running
     When I send a POST request to "/authenticate/login" with:
       """
       {

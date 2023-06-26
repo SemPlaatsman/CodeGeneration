@@ -20,9 +20,11 @@ import io.cucumber.java.lu.an;
 import nl.inholland.codegeneration.models.User;
 
 public class AuthenticationSteps {
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final SharedSteps sharedSteps = new SharedSteps();
-    public ResponseEntity<String> response;
+    // private final RestTemplate restTemplate = new RestTemplate();
+    // private final SharedSteps sharedSteps = new SharedSteps();
+    // public ResponseEntity<String> response;
+
+    //test
 
     // Scenario: Register a new user with valid request
     // @Given("the API is running")

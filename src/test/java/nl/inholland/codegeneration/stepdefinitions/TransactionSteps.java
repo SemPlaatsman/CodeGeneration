@@ -1,7 +1,6 @@
-// Path: src\test\java\nl\inholland\codegeneration\stepdefinitions\TransactionSteps.java
-
 package nl.inholland.codegeneration.stepdefinitions;
 
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
@@ -12,10 +11,17 @@ import nl.inholland.codegeneration.models.DTO.request.TransactionRequestDTO;
 import nl.inholland.codegeneration.models.DTO.response.TransactionResponseDTO;
 import nl.inholland.codegeneration.services.TransactionService;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.assertj.core.util.Lists;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.client.HttpClientErrorException;
@@ -30,7 +36,23 @@ public class TransactionSteps {
     Transaction transaction = new Transaction();
     private Account myAccount;
     private Account theirAccount;
+    private ResponseEntity<List> responses;
+    private RestTemplate restTemplate = new RestTemplate();
     TransactionService transactionService;
+
+    @Autowired
+    private ScenarioContext context;
+    // @Autowired
+    private String authToken;
+
+    private HttpHeaders headers = new HttpHeaders();
+
+    @Given("header is set")
+    public void header_is_set() {
+        authToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg3Nzc5NTg2LCJleHAiOjE2ODc4MTU1ODZ9.q9IzpS6-Iwe_gsEhi0rQDJ3eKWgJ_Pqvb9Hn64yetEk";
+        this.headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + authToken);
+    }
 
     //Make transaction
     @Given("I have {int} on my bank account")
@@ -64,21 +86,21 @@ public class TransactionSteps {
     }
 
     //Get transactions
-    private RestTemplate restTemplate = new RestTemplate();
-    private ResponseEntity<List> responses;
     
     @WithMockUser(username = "testUser", roles = {"EMPLOYEE"})
     @When("a request is to GET {string}")
     public void a_request_is_to_GET_transactions(String path) {
+
+        // Test implementation ------------------------------------------
+        this.headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + authToken);
+        // --------------------------------------------------------------
+
         String url = "http://localhost:8080" + path;
-        //  + path.toString()
-        responses = restTemplate.getForEntity(url, List.class);
+
+        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+        responses = restTemplate.exchange(url, HttpMethod.GET, entity, ParameterizedTypeReference.forType(List.class));
     }
-    // @WithMockUser(username = "testUser", roles = {"EMPLOYEE"})
-    // @Then("the response should be {int}")
-    // public void the_response_should_be(Integer int1) {
-    //     assertEquals(responses.getStatusCode().value(), int1.intValue());
-    // }
     @WithMockUser(username = "testUser", roles = {"EMPLOYEE"})
     @And("should contain a List of transaction objects")
     public void should_contain_a_List_of_transaction_objects() {
@@ -94,6 +116,7 @@ public class TransactionSteps {
 
     @Given("a transaction with id {int} exists")
     public void a_transaction_with_id_exists(Integer id) {
+
         transactionById = new Transaction();
         transactionById.setId(Long.valueOf(id));
         transactionById.setAmount(BigDecimal.valueOf(20));
@@ -107,47 +130,99 @@ public class TransactionSteps {
         transactionById2.setAccountTo(theirAccount);
         transactionById2.setDescription("cucumber test");
     }
-
+    
     @When("a request is to GET a {string} by id {int}")
     public void a_request_is_to_GET_a_transaction_by_id(String path, Integer id) {
+
+         // Test implementation ------------------------------------------
+        this.headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + authToken);
+        // --------------------------------------------------------------
+
         String url = "http://localhost:8080" + path + id.toString();
-        responseById = restTemplate.getForEntity(url, TransactionResponseDTO.class);
+        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+        responseById = restTemplate.exchange(url, HttpMethod.GET, entity, TransactionResponseDTO.class);
         transactionResponseDTO = responseById.getBody();
     }
-
+    
     @Then("the response should be {int} and contain the transaction with id {int}")
     public void the_response_should_be_and_contain_the_transaction_with_id(Integer int1, Integer id) {
         assertEquals(responseById.getStatusCode().value(), int1.intValue());
         assertEquals(transactionResponseDTO.id(), id.intValue());
     }
 
-// try to get transaction with bad id
-private ResponseEntity<String> response;
+    // try to get transaction with bad id
+    private ResponseEntity<String> response;
 
-@Given("no {string} with id {int} exists")
-public void no_transaction_with_id_exists(String path, Integer id) {
-    String url = "http://localhost:8080" + path + id;
-    try {
-        restTemplate.getForEntity(url, String.class);
-        throw new RuntimeException("Transaction with id " + id + " should not exist.");
-    } catch (HttpClientErrorException.NotFound ex) {
-        // Transaction doesn't exist, which is what we want
+    @Given("no {string} with id {int} exists")
+    public void no_transaction_with_id_exists(String path, Integer id) {
+
+            // Test implementation ------------------------------------------
+            this.headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + authToken);
+            // --------------------------------------------------------------
+
+        String url = "http://localhost:8080" + path + id;
+        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+        try {
+            response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            throw new RuntimeException("Transaction with id " + id + " should not exist.");
+        } catch (HttpClientErrorException.NotFound ex) {
+            // Transaction doesn't exist, which is what we want
+        }
     }
-}
 
-@When("a request is to GET a {string} by bad id {int}")
-public void a_request_is_to_GET_a_transaction_by_bad_id(String path, Integer id) {
-    String url = "http://localhost:8080" + path + Long.valueOf(id);
-    try {
-        response = restTemplate.getForEntity(url, String.class);
-    } catch (HttpClientErrorException ex) {
-        response = ResponseEntity.status(ex.getRawStatusCode()).build();
+    @When("a request is to GET a {string} by bad id {int}")
+    public void a_request_is_to_GET_a_transaction_by_bad_id(String path, Integer id) {
+
+        // Test implementation ------------------------------------------
+        this.headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + authToken);
+        // --------------------------------------------------------------
+
+        String url = "http://localhost:8080" + path + Long.valueOf(id);
+        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+        try {
+            response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            context.setResponse(response);
+        } catch (HttpClientErrorException ex) {
+            response = ResponseEntity.status(ex.getRawStatusCode()).build();
+            context.setResponse(response);
+        }
     }
-}
 
-// @Then("the error response should be {int}")
-// public void the_error_response_should_be(Integer int1) {
-//     assertEquals(response.getStatusCode().value(), int1.intValue());
-// }
+    // @WithMockUser(username = "testUser", roles = {"EMPLOYEE"})
+    @Then("the response should be {int}")
+    public void the_response_should_be(Integer int1) {
+        assertEquals(responses.getStatusCode().value(), int1.intValue());
+    }
+
+
+    //Scenario: Successfully create a transaction
+    @Given("a transaction for €{int} with description {string} with accountFrom iban {string} and accountTo iban {string} exist")
+    public void a_transaction_with__exist(Integer amount, String description, String from, String to) {
+        transactionRequestDTO = new TransactionRequestDTO(from, to, new BigDecimal(amount), description);        
+    }
+    @When("a request is to POST the {string}")
+    public void a_request_is_to_post_the(String path) {
+        // Test implementation ------------------------------------------
+        this.headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + authToken);
+        // --------------------------------------------------------------
+
+        String url = "http://localhost:8080" + path;
+        HttpEntity<TransactionRequestDTO> entity = new HttpEntity<>(transactionRequestDTO, headers);
+        response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+    }
+    @Then("the create response should be {int}")
+    public void the_create_response_should_be(Integer code) {
+        assertEquals(response.getStatusCode().value(), code.intValue());
+    }
+    // for create bad transaction
+    @And("the response message should be {string}")
+    public void the_response_message_should_be(String message)
+    {
+    assertTrue(response.getBody().contains(message));        
+    }
 
 }

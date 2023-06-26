@@ -45,6 +45,11 @@ public class UserSteps {
         response = restTemplate.getForEntity(url, UserResponseDTO[].class);
         this.response = restTemplate.getForEntity(url, UserResponseDTO[].class);
     }
+    @When("I send a GET request to {string} endpoint with the filter set as {string} and limit set as {string}.")
+public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_and_limit_set_as(String string, String string2, String string3) {
+    // Write code here that turns the phrase above into concrete actions
+    throw new io.cucumber.java.PendingException();
+}
     @Then("I should receive a 200 OK response with a list of UserResponseDTOs of users with first name 'John' and the list should not contain more than 20 users.")
     public void i_should_receive_a_200_OK_response_with_a_list_of_UserResponseDTOs_of_users_with_first_name_John_and_the_list_should_not_contain_more_than_20_users() {
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -69,7 +74,7 @@ public class UserSteps {
     //Scenario: Fetching a Specific User
     @Given("there are users in the system and I have 'EMPLOYEE' or 'CUSTOMER' authority.")
     public void there_are_users_in_the_system_and_I_have_EMPLOYEE_or_CUSTOMER_authority() {
-
+        //hier moet nog auth bij
     }
     @When("I send a GET request to {string} endpoint with a valid user ID.")
     public void i_send_a_GET_request_to_users_endpoint_with_a_valid_user_ID(String path) {
@@ -96,7 +101,7 @@ public class UserSteps {
     //Scenario: Unauthorized Access to Fetch a Specific User
     @Given("there are users in the system and I do not have 'EMPLOYEE' or 'CUSTOMER' authority.")
     public void there_are_users_in_the_system_and_I_do_not_have_EMPLOYEE_or_CUSTOMER_authority() {
-
+//hier moet nog auth bij
     }
     @Then("I should receive a 401 Unauthorized response.")
     public void i_should_receive_a_401_Unauthorized_response() {
@@ -117,12 +122,12 @@ public class UserSteps {
     //Scenario: Unauthorized Access to Fetch All Accounts of a Specific User
     @Given("there are users with accounts in the system and I do not have 'EMPLOYEE' authority.")
     public void there_are_users_with_accounts_in_the_system_and_I_do_not_have_EMPLOYEE_authority() {
-
+//hier moet nog auth bij
     }
     //Scenario: Add a user successfully
     @Given("I am authorized with 'EMPLOYEE' role")
     public void i_am_authorized_with_EMPLOYEE_role() {
-
+//hier moet nog auth bij
     }
     @When("I send POST request to {string} with valid user details")
     public void i_send_POST_request_to_users_with_valid_user_details(String path) {
@@ -180,6 +185,17 @@ public class UserSteps {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
+    @Given("I have {string} authority.")
+    public void i_have_authority(String string) {
+            
+    }
+    @When("I send a GET request to {string} endpoint with the filter set as {string} \\(invalid format).")
+    public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_invalid_format(String string, String string2) {
+        
+    }
+
+}
+//test
     
     //Scenario: Fetching All Users with Invalid Filter Format
     // @Given("there are users in the system and I have 'EMPLOYEE' authority.")
@@ -306,4 +322,3 @@ public class UserSteps {
         //     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         // }
 
-}

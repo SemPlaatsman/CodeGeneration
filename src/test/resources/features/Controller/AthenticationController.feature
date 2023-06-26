@@ -1,5 +1,7 @@
 Feature: Authentication
 
+Background: Given auth header is set
+
   #werkt
   Scenario: Register a new user with valid request
     Given the API is running
@@ -18,7 +20,10 @@ Feature: Authentication
     Then the response status should be 201
     And the response should contain an authentication token
 
-
+    #testen zonder user in database
+    Example: Register a new user with valid request
+    | username | password | firstName | lastName | email | phoneNumber | birthdate |
+    | janedoe | jane123 | jane | doe | jane@doe.com | 1234567890 | 2000-07-09 |
 
     #werkt
   Scenario: Try to register a new user with an invalid request
@@ -55,11 +60,11 @@ Feature: Authentication
       """
     Then the error response should be 400
 
-# Steps made
+# werkt
   Scenario: Login with valid credentials
     Given the API is running
-    And a user with username "testUser" and password "testPassword" exists
-    When I send a POST request to login "/authenticate/login" with:
+    And a user with username "johndoe" and password "john123" already exists
+    When I send a POST request to "/authenticate/login" with:
       """
       {
         "username": "johndoe",
@@ -69,10 +74,10 @@ Feature: Authentication
     Then the login response status should be 200
     And the response should contain an authentication token
 
-# Steps made
+# werkt
   Scenario: Login with invalid credentials
     Given the API is running
-    When I send a POST request to login "/authenticate/login" with:
+    When I send a POST request to "/authenticate/login" with:
       """
       {
         "username": "johndoe",
@@ -81,10 +86,10 @@ Feature: Authentication
       """
     Then the login response status should be 401
 
-# Steps made
+# werkt
   Scenario: Login with non-existent user credentials
     Given the API is running
-    When I send a POST request to login "/authenticate/login" with:
+    When I send a POST request to "/authenticate/login" with:
       """
       {
         "username": "nonExistentUser",

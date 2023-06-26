@@ -1,4 +1,3 @@
-// Path: src\test\java\nl\inholland\codegeneration\stepdefinitions\Accounts.java
 package nl.inholland.codegeneration.stepdefinitions;
 
 import io.cucumber.java.en.And;
@@ -112,7 +111,9 @@ public class AccountSteps {
         String url = "http://localhost:8080" + path;
         restTemplate.delete(url);
     }
+}
 
+//test
 
     //Scenario: Successfully get all accounts
     // @Given("the API is running")
@@ -274,4 +275,3 @@ public class AccountSteps {
     // public void the_response_status_should_be(Integer responseStatus) {
     //     assertEquals(responseStatus, response.getStatusCodeValue());
     // }
-}

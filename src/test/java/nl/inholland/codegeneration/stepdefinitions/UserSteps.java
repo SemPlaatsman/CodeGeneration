@@ -186,13 +186,16 @@ public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_and_limit_se
     }
 
     @Given("I have {string} authority.")
-public void i_have_authority(String string) {
+    public void i_have_authority(String string) {
+            
+    }
+    @When("I send a GET request to {string} endpoint with the filter set as {string} \\(invalid format).")
+    public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_invalid_format(String string, String string2) {
         
+    }
+
 }
-@When("I send a GET request to {string} endpoint with the filter set as {string} \\(invalid format).")
-public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_invalid_format(String string, String string2) {
-    
-}
+//test
     
     //Scenario: Fetching All Users with Invalid Filter Format
     // @Given("there are users in the system and I have 'EMPLOYEE' authority.")
@@ -319,4 +322,3 @@ public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_invalid_form
         //     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         // }
 
-}

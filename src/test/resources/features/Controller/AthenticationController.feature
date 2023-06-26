@@ -18,7 +18,7 @@ Feature: Authentication
     Then the response status should be 201
     And the response should contain an authentication token
 
-    
+
 
     #werkt
   Scenario: Try to register a new user with an invalid request

@@ -20,53 +20,55 @@ import io.cucumber.java.lu.an;
 import nl.inholland.codegeneration.models.User;
 
 public class AuthenticationSteps {
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final SharedSteps sharedSteps = new SharedSteps();
-    private ResponseEntity<String> response;
+    // private final RestTemplate restTemplate = new RestTemplate();
+    // private final SharedSteps sharedSteps = new SharedSteps();
+    // public ResponseEntity<String> response;
+
+    //test
 
     // Scenario: Register a new user with valid request
-    @Given("the API is running")
-    public void the_api_is_running() {
-        sharedSteps.the_api_is_running();
-    }
+    // @Given("the API is running")
+    // public void the_api_is_running() {
+    //     sharedSteps.the_api_is_running();
+    // }
 
-    @When("I send a POST request to {string} with:")
-    public void i_send_a_post_request_to_with(String path, String body) {
-       sharedSteps.i_send_a_post_request_to_with(path,body);
-    }
+    // @When("I send a POST request to {string} with:")
+    // public void i_send_a_post_request_to_with(String path, String body) {
+    //    sharedSteps.i_send_a_post_request_to_with(path,body);
+    // }
 
-    @Then("the response status should be {int}")
-    public void the_response_status_should_be(Integer statusCode) {
-       sharedSteps.the_response_status_should_be(statusCode);
-    }
-
-    @And("the response should contain an authentication token")
-    public void the_response_should_contain_an_authentication_token() {
-        sharedSteps.the_response_should_contain_an_authentication_token();
-    }
+    
+    // @And("the response should contain an authentication token")
+    // public void the_response_should_contain_an_authentication_token() {
+    //     sharedSteps.the_response_should_contain_an_authentication_token();
+    // }
 
 //    // Scenario: Try to register a new user with an invalid request
 //     @Given("the API is running")
 //     public void the_api_is_running() {
-//         String url = "http://localhost:8080/health";
-//         ResponseEntity<String> healthCheckResponse = restTemplate.getForEntity(url, String.class);
-//         if (!"UP".equals(healthCheckResponse.getBody())) {
-//             throw new RuntimeException("API is not running");
-//         }
-//     }
-//
-//     @When("I send a POST request to {string} with:")
-//     public void i_send_a_post_request_to_with(String string, User user) {
-//         response = restTemplate.postForEntity("http://localhost:8080/authenticate/register", user, String.class);
-//     }
-//
-//     @Then("the response status should be {int}")
-//     public void the_response_status_should_be(Integer statusCode) {
-//         assertEquals(statusCode, response.getStatusCodeValue());
-//     }
-
-////     Scenario: Register a new user with an already existing username or email
-//     @Given("the API is running")
+    //         String url = "http://localhost:8080/health";
+    //         ResponseEntity<String> healthCheckResponse = restTemplate.getForEntity(url, String.class);
+    //         if (!"UP".equals(healthCheckResponse.getBody())) {
+        //             throw new RuntimeException("API is not running");
+        //         }
+        //     }
+        //
+        //     @When("I send a POST request to {string} with:")
+        //     public void i_send_a_post_request_to_with(String string, User user) {
+            //         response = restTemplate.postForEntity("http://localhost:8080/authenticate/register", user, String.class);
+            //     }
+            //
+            //     @Then("the response status should be {int}")
+            //     public void the_response_status_should_be(Integer statusCode) {
+                //         assertEquals(statusCode, response.getStatusCodeValue());
+                //     }
+                // @Then("the response status should be {int}")
+                // public void the_response_status_should_be(Integer statusCode) {
+                //    sharedSteps.the_response_status_should_be(statusCode);
+                // }
+                
+                ////     Scenario: Register a new user with an already existing username or email
+                //     @Given("the API is running")
 //     public void the_api_is_running() {
 //         String url = "http://localhost:8080/health";
 //         ResponseEntity<String> healthCheckResponse = restTemplate.getForEntity(url, String.class);

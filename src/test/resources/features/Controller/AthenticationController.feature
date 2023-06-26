@@ -1,5 +1,6 @@
 Feature: Authentication
 
+  #werkt
   Scenario: Register a new user with valid request
     Given the API is running
     When I send a POST request to "/authenticate/register" with:
@@ -11,11 +12,13 @@ Feature: Authentication
         "lastName": "doe",
         "email": "jane@doe.com",
         "phoneNumber": "1234567890",
-        "birthDate": "2000-01-01"
+        "birthdate": "2000-07-09"
       }
       """
     Then the response status should be 201
     And the response should contain an authentication token
+
+    
 
     #werkt
   Scenario: Try to register a new user with an invalid request
@@ -29,7 +32,7 @@ Feature: Authentication
         "lastName": "",
         "email": "",
         "phoneNumber": "",
-        "birthDate": ""
+        "birthdate": ""
       }
       """
     Then the error response should be 400
@@ -47,7 +50,7 @@ Feature: Authentication
         "lastName": "testLastName",
         "email": "testEmail@example.com",
         "phoneNumber": "1234567890",
-        "birthDate": "2000-01-01"
+        "birthdate": "2000-01-01"
       }
       """
     Then the error response should be 400

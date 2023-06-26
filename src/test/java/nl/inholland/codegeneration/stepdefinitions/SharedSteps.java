@@ -93,6 +93,7 @@ public class SharedSteps {
     
             // Make the POST request
             response = restTemplate.postForEntity(url, entity, String.class);
+            context.setResponse(response);
         } catch (Exception e) {
             if (e.getMessage().contains("400")) {
                 response = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -111,6 +112,11 @@ public class SharedSteps {
     @Then("the response should contain an authentication token")
     public void the_response_should_contain_an_authentication_token() {
         assertTrue(context.getResponse().getBody().contains("token"));
+    }
+
+    @And("the response status should be {int}")
+    public void the_response_should_contain(Integer code) {
+        assertEquals(context.getResponse().getStatusCode().value(), code.intValue());
     }
 
     @Then("the error response should be {int}")

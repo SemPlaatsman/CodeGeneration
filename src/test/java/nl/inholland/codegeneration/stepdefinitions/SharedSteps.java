@@ -5,18 +5,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.cucumber.java.lu.a;
+import io.cucumber.messages.internal.com.fasterxml.jackson.databind.ObjectMapper;
 import nl.inholland.codegeneration.models.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +33,15 @@ public class SharedSteps {
     private ResponseEntity<String> response;
     // @Autowired
     private String authToken;
+    private HttpHeaders headers;
 
     @Given("the API is running")
     public void the_api_is_running() {
 
-        authToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg3Nzc5NTg2LCJleHAiOjE2ODc4MTU1ODZ9.q9IzpS6-Iwe_gsEhi0rQDJ3eKWgJ_Pqvb9Hn64yetEk";
+        authToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg3Nzg4NzYxLCJleHAiOjE2ODc4MjQ3NjF9.K0JcOgEBY6pmxWfRGAjrRJTVRc_qpGeYOY2bWd1pYKY";
         String url = "http://localhost:8080/health";
 
-        HttpHeaders headers = new HttpHeaders();
+        headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.set("Authorization", "Bearer " + authToken);
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
@@ -49,12 +54,61 @@ public class SharedSteps {
         }
     }
 
+    // @When("I send a POST request to {string} with:")
+    // public void i_send_a_post_request_to_with(String path, String body) {
+    //     String url = "http://localhost:8080" + path;
+    //     HttpEntity<String> request = new HttpEntity<>(body);
+    //     response = restTemplate.postForEntity(url, request, String.class);
+    //     context.setResponse(response);
+    // }
+    @And("a user with username {string} and password {string} already exists")
+        public void a_user_with_username_and_password_already_exists(String username, String password) {
+            User user = new User();
+            user.setUsername(username);
+            user.setPassword(password);
+            // assuming you have setters for the other user fields, you should set those as well
+
+            String url = "http://localhost:8080/authenticate/login";
+            HttpEntity<User> request = new HttpEntity<>(user, headers); //assuming headers are set properly
+            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+
+            if (response.getStatusCode().value() != 200) { // Assuming 201 is the status for successful creation
+                throw new RuntimeException("User could not be created");
+    }
+        }
+
     @When("I send a POST request to {string} with:")
-    public void i_send_a_post_request_to_with(String path, String body) {
-        String url = "http://localhost:8080" + path;
-        HttpEntity<String> request = new HttpEntity<>(body);
-        response = restTemplate.postForEntity(url, request, String.class);
-        context.setResponse(response);
+    public void i_send_a_post_request_to_with(String path, String requestBody) throws Exception {
+        try {
+            String url = "http://localhost:8080" + path;
+    
+            // Convert the JSON string to a Map
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, String> body = mapper.readValue(requestBody, Map.class);
+    
+            // Create the request entity
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
+    
+            // Make the POST request
+            response = restTemplate.postForEntity(url, entity, String.class);
+            context.setResponse(response);
+        } catch (Exception e) {
+            if (e.getMessage().contains("400")) {
+                response = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+                context.setResponse(response);
+            } else if (e.getMessage().contains("401")) {
+                response = new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+                context.setResponse(response);
+            } else if (e.getMessage().contains("500")){
+                response = new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+                context.setResponse(response);
+            }
+            else {
+                throw new Exception(e);
+            }
+        }
     }
 
     // @Then("the response status should be {int}")
@@ -65,6 +119,11 @@ public class SharedSteps {
     @Then("the response should contain an authentication token")
     public void the_response_should_contain_an_authentication_token() {
         assertTrue(context.getResponse().getBody().contains("token"));
+    }
+
+    @And("the response status should be {int}")
+    public void the_response_should_contain(Integer code) {
+        assertEquals(context.getResponse().getStatusCode().value(), code.intValue());
     }
 
     @Then("the error response should be {int}")

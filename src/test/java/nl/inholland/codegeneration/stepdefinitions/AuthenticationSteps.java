@@ -5,10 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apiguardian.api.API;
 import org.junit.platform.commons.function.Try;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,12 +21,86 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.cucumber.java.lu.an;
+import io.cucumber.messages.internal.com.fasterxml.jackson.databind.ObjectMapper;
 import nl.inholland.codegeneration.models.User;
 
 public class AuthenticationSteps {
-    // private final RestTemplate restTemplate = new RestTemplate();
-    // private final SharedSteps sharedSteps = new SharedSteps();
-    // public ResponseEntity<String> response;
+    private final RestTemplate restTemplate = new RestTemplate();
+    private final SharedSteps sharedSteps = new SharedSteps();
+    public ResponseEntity<String> response;
+
+    private String authToken;
+    private HttpHeaders headers;
+
+     @Autowired
+    private ScenarioContext context;
+
+    @Given("auth header is set")
+    public void header_is_set() {
+        authToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg3Nzg4NzYxLCJleHAiOjE2ODc4MjQ3NjF9.K0JcOgEBY6pmxWfRGAjrRJTVRc_qpGeYOY2bWd1pYKY";
+        this.headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + authToken);
+    }
+
+    // @And("a user with username {string} and password {string} exists")
+    // public void a_user_with_username_and_password_exists(String username, String password) {
+    //     // Here you would typically interact with your test database to create a new
+    //     // user
+    //     Object user = new User();
+    //     ((User) user).setUsername(username);
+    //     ((User) user).setPassword(password);
+    //     String url = "http://localhost:8080/authenticate/login" + user;
+    //      // Convert the JSON string to a Map
+    //         ObjectMapper mapper = new ObjectMapper();
+    //         Map<String, String> body = mapper.readValue(user, Map.class);
+    
+    //         // Create the request entity
+    //         HttpHeaders headers = new HttpHeaders();
+    //         headers.setContentType(MediaType.APPLICATION_JSON);
+    //         HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
+    
+    //         // Make the POST request
+    //         response = restTemplate.postForEntity(url, entity, String.class);
+    //     if (response.getStatusCode().value() != 200) {
+    //         throw new RuntimeException("User could not be created");
+    //     }
+    // }
+
+    @When("I send a POST request to login {string} with:")
+    public void i_send_a_post_request_to_with(String path, String requestBody) throws Exception {
+        try {
+            String url = "http://localhost:8080" + path;
+            // Convert the JSON string to a Map
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, String> body = mapper.readValue(requestBody, Map.class);
+        
+                // Create the request entity
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+                HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
+        
+                // Make the POST request
+                response = restTemplate.postForEntity(url, entity, String.class);
+                context.setResponse(response);
+
+        } catch (Exception e) {
+            if (response.getStatusCode().value() != 200) {
+                context.setResponse(response);
+            } 
+            if (response.getStatusCode().value() == 401) {
+                context.setResponse(response);
+            }
+            else {
+                throw new RuntimeException("User could not be created");
+            }
+            // System.out.println(e);
+        }
+    }
+
+    @Then("the login response status should be {int}")
+    public void the_login_response_status_should_be(int statusCode) {
+        assertEquals(statusCode, context.getResponse().getStatusCode().value());
+    }
 
     //test
 
@@ -40,6 +118,7 @@ public class AuthenticationSteps {
     
     // @And("the response should contain an authentication token")
     // public void the_response_should_contain_an_authentication_token() {
+        
     //     sharedSteps.the_response_should_contain_an_authentication_token();
     // }
 
@@ -77,17 +156,6 @@ public class AuthenticationSteps {
 //         }
 //     }
 //
-//    @And("a user with username {string} and password {string} already exists")
-//    public void a_user_with_username_and_password_already_exists(String username, String password) {
-//        Object user = new User();
-//        ((User) user).setUsername(username);
-//        ((User) user).setPassword(password);
-//        String url = "http://localhost:8080/authenticate/login" + user;
-//        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-//        if (response.getStatusCode().value() != 200) {
-//            throw new RuntimeException("User could not be created");
-//        }
-//    }
 //
 //     @When("I send a POST request to {string} with:")
 //     public void i_send_a_post_request_to_with(String string, User user) {
@@ -110,26 +178,7 @@ public class AuthenticationSteps {
 //     }
 //     }
 //
-//     @And("a user with username {string} and password {string} exists")
-//     public void a_user_with_username_and_password_exists(String username, String password) {
-//         // Here you would typically interact with your test database to create a new
-//         // user
-//         Object user = new User();
-//         ((User) user).setUsername(username);
-//         ((User) user).setPassword(password);
-//         String url = "http://localhost:8080/authenticate/login" + user;
-//         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-//         if (response.getStatusCode().value() != 200) {
-//             throw new RuntimeException("User could not be created");
-//         }
-//     }
-//
-//     @When("I send a POST request to {string} with:")
-//     public void i_send_a_post_request_to_with(String path, String body) {
-//         String url = "http://localhost:8080" + path;
-//         HttpEntity<String> request = new HttpEntity<>(body);
-//         this.response = restTemplate.postForEntity(url, request, String.class);
-//     }
+    
 //
 //     @Then("the response status should be {int}")
 //     public void the_response_status_should_be(int statusCode) {
@@ -183,9 +232,6 @@ public class AuthenticationSteps {
 //        this.response = restTemplate.postForEntity(url, request, String.class);
 //    }
 //
-//    @Then("the login response status should be {int}")
-//    public void the_login_response_status_should_be(int statusCode) {
-//        assertEquals(statusCode, response.getStatusCode().value());
-//    }
+   
 
 }

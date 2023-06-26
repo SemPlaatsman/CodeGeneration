@@ -49,7 +49,7 @@ public class TransactionSteps {
 
     @Given("header is set")
     public void header_is_set() {
-        authToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg3Nzc5NTg2LCJleHAiOjE2ODc4MTU1ODZ9.q9IzpS6-Iwe_gsEhi0rQDJ3eKWgJ_Pqvb9Hn64yetEk";
+        authToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huZG9lIiwiaWF0IjoxNjg3Nzg4NzYxLCJleHAiOjE2ODc4MjQ3NjF9.K0JcOgEBY6pmxWfRGAjrRJTVRc_qpGeYOY2bWd1pYKY";
         this.headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + authToken);
     }

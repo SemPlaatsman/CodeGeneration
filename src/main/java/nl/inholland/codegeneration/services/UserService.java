@@ -90,10 +90,7 @@ public class UserService {
         // Delete all accounts of deleted user
         accounts.forEach(account -> account.setIsDeleted(true));
         List<Account> deletedAccounts = accountRepository.saveAll(accounts);
-        // Check user is deleted and all accounts are deleted
-        if (!deletedUser.getIsDeleted() || deletedAccounts.stream().anyMatch(account -> !account.getIsDeleted())) {
-            throw new APIException("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR, LocalDateTime.now());
-        }
+
     }
 
     // Add account specification to current specification

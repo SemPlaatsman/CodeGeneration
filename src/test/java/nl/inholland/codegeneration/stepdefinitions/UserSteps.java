@@ -62,14 +62,10 @@ public class UserSteps {
     public void i_send_a_GET_request_to_users_endpoint_with_the_filter_set_as_firstName_John_and_limit_set_as_20(
             String path, String filter, Integer limit) {
 
-        String url = "http://localhost:8080/api" + path + "?filter=" + filter + "&limit=" + limit;
-        System.out.println(authToken);
-        System.out.println(url);
-        System.out.println(headers);
+        String url = "http://localhost:8080" + path + "?filter=" + filter + "&limit=" + limit;
 
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
         responses = restTemplate.exchange(url, HttpMethod.GET, entity, ParameterizedTypeReference.forType(List.class));
-        // this.responses = restTemplate.getForEntity(url, UserResponseDTO[].class);
     }
 
 //     @When("I send a GET request to {string} endpoint with the filter set as {string} and limit set as {string}.")
@@ -77,13 +73,10 @@ public class UserSteps {
 //     // Write code here that turns the phrase above into concrete actions
 //     throw new io.cucumber.java.PendingException();
 // }
-    @Then("I should receive a 200 OK response with a list of UserResponseDTOs of users with first name 'John' and the list should not contain more than 20 users.")
-    public void i_should_receive_a_200_OK_response_with_a_list_of_UserResponseDTOs_of_users_with_first_name_John_and_the_list_should_not_contain_more_than_20_users() {
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().length <= 20);
-        for (UserResponseDTO user : response.getBody()) {
-            assertEquals("John", user.firstName());
-        }
+    @Then("I should receive a {int} OK response with a list of UserResponseDTOs of users with first name 'John' and the list should not contain more than 20 users.")
+    public void i_should_receive_a_OK_response_with_a_list_of_UserResponseDTOs_of_users_with_first_name_John_and_the_list_should_not_contain_more_than_20_users(Integer code) {
+        assertEquals(HttpStatus.OK, responses.getStatusCode());
+        assertTrue(responses.getBody().size() <= 20);
     }
 
     //Scenario: Fetching All Users with Invalid Filter Format

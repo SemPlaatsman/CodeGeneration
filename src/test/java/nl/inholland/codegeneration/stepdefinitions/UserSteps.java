@@ -14,6 +14,11 @@ import java.util.List;
 
 import org.apiguardian.api.API;
 import org.assertj.core.util.Lists;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -31,8 +36,23 @@ import io.cucumber.java.en.Given;
 
 public class UserSteps {
 
+    @Autowired
+    private ScenarioContext context;
+    @Autowired
+    private SharedStringService sharedStringService;
+    private String authToken;
+    private HttpHeaders headers = new HttpHeaders();
     RestTemplate restTemplate = new RestTemplate();
     ResponseEntity<UserResponseDTO[]> response;
+    ResponseEntity<List<UserResponseDTO>> responses;
+
+    @Given("user header is set")
+    public void header_is_set() {
+        authToken = sharedStringService.getToken();
+        this.headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + authToken);
+    }
+
     // Scenario: Fetching All Users with specific filter and limit
     @Given("there are users in the system and I have 'EMPLOYEE' authority.")
     public void there_are_users_in_the_system_and_I_have_EMPLOYEE_authority() {
@@ -41,15 +61,22 @@ public class UserSteps {
     @When("I send a GET request to {string} endpoint with the filter set as {string} and limit set as {int}.")
     public void i_send_a_GET_request_to_users_endpoint_with_the_filter_set_as_firstName_John_and_limit_set_as_20(
             String path, String filter, Integer limit) {
+
         String url = "http://localhost:8080/api" + path + "?filter=" + filter + "&limit=" + limit;
-        response = restTemplate.getForEntity(url, UserResponseDTO[].class);
-        this.response = restTemplate.getForEntity(url, UserResponseDTO[].class);
+        System.out.println(authToken);
+        System.out.println(url);
+        System.out.println(headers);
+
+        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+        responses = restTemplate.exchange(url, HttpMethod.GET, entity, ParameterizedTypeReference.forType(List.class));
+        // this.responses = restTemplate.getForEntity(url, UserResponseDTO[].class);
     }
-    @When("I send a GET request to {string} endpoint with the filter set as {string} and limit set as {string}.")
-public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_and_limit_set_as(String string, String string2, String string3) {
-    // Write code here that turns the phrase above into concrete actions
-    throw new io.cucumber.java.PendingException();
-}
+
+//     @When("I send a GET request to {string} endpoint with the filter set as {string} and limit set as {string}.")
+// public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_and_limit_set_as(String string, String string2, String string3) {
+//     // Write code here that turns the phrase above into concrete actions
+//     throw new io.cucumber.java.PendingException();
+// }
     @Then("I should receive a 200 OK response with a list of UserResponseDTOs of users with first name 'John' and the list should not contain more than 20 users.")
     public void i_should_receive_a_200_OK_response_with_a_list_of_UserResponseDTOs_of_users_with_first_name_John_and_the_list_should_not_contain_more_than_20_users() {
         assertEquals(HttpStatus.OK, response.getStatusCode());

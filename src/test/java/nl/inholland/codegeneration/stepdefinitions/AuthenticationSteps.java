@@ -45,6 +45,44 @@ public class AuthenticationSteps {
         headers.set("Authorization", "Bearer " + authToken);
     }
 
+    
+    @When("I send a POST request to login {string} with:")
+    public void i_send_a_post_request_to_with(String path, String requestBody) throws Exception {
+        try {
+            String url = "http://localhost:8080" + path;
+            // Convert the JSON string to a Map
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, String> body = mapper.readValue(requestBody, Map.class);
+                
+                // Create the request entity
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+                HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
+        
+                // Make the POST request
+                response = restTemplate.postForEntity(url, entity, String.class);
+                context.setResponse(response);
+                
+            } catch (Exception e) {
+            if (response.getStatusCode().value() != 200) {
+                context.setResponse(response);
+            } 
+            if (response.getStatusCode().value() == 401) {
+                context.setResponse(response);
+            }
+            else {
+                throw new RuntimeException("User could not be created");
+            }
+            // System.out.println(e);
+        }
+    }
+
+    @Then("the login response status should be {int}")
+    public void the_login_response_status_should_be(int statusCode) {
+        assertEquals(statusCode, context.getResponse().getStatusCode().value());
+    }
+    
+    //test
     // @And("a user with username {string} and password {string} exists")
     // public void a_user_with_username_and_password_exists(String username, String password) {
     //     // Here you would typically interact with your test database to create a new
@@ -68,44 +106,6 @@ public class AuthenticationSteps {
     //         throw new RuntimeException("User could not be created");
     //     }
     // }
-
-    @When("I send a POST request to login {string} with:")
-    public void i_send_a_post_request_to_with(String path, String requestBody) throws Exception {
-        try {
-            String url = "http://localhost:8080" + path;
-            // Convert the JSON string to a Map
-                ObjectMapper mapper = new ObjectMapper();
-                Map<String, String> body = mapper.readValue(requestBody, Map.class);
-        
-                // Create the request entity
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
-                HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
-        
-                // Make the POST request
-                response = restTemplate.postForEntity(url, entity, String.class);
-                context.setResponse(response);
-
-        } catch (Exception e) {
-            if (response.getStatusCode().value() != 200) {
-                context.setResponse(response);
-            } 
-            if (response.getStatusCode().value() == 401) {
-                context.setResponse(response);
-            }
-            else {
-                throw new RuntimeException("User could not be created");
-            }
-            // System.out.println(e);
-        }
-    }
-
-    @Then("the login response status should be {int}")
-    public void the_login_response_status_should_be(int statusCode) {
-        assertEquals(statusCode, context.getResponse().getStatusCode().value());
-    }
-
-    //test
 
     // Scenario: Register a new user with valid request
     // @Given("the API is running")

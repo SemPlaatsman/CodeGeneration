@@ -293,7 +293,7 @@ public class TransactionServiceTest {
     }
 
     @Test
-    void testGetById_invalidTransacion() {
+    void testGetById_invalidTransaction() {
 
         Long transactionId = 1L;
 
@@ -302,7 +302,6 @@ public class TransactionServiceTest {
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
                 () -> transactionService.getById(transactionId));
 
-        assertEquals("", exception.getMessage());
-
+        assertEquals("Transaction not found!", exception.getMessage());
     }
 }

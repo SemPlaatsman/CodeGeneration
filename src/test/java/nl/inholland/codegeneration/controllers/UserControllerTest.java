@@ -230,7 +230,7 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "user", roles = { "EMPLOYEE" })
     public void testInvalidAdd() throws Exception {
-        UserRequestDTO user = new UserRequestDTO(List.of(1), "username", "", "firstname", "lastname",
+        UserRequestDTO user = new UserRequestDTO(List.of(1), "username", "p", "firstname", "lastname",
                 "email@example.com", "1234567890", LocalDate.of(2001, 1, 1), new BigDecimal("1000"), new BigDecimal("200"));
 
         mockMvc.perform(post("/users")
@@ -238,7 +238,7 @@ public class UserControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-            .andExpect(result -> assertEquals(List.of("Password is too short!", "Password cannot be empty!").toString(),
+            .andExpect(result -> assertEquals(List.of("Password is too short!").toString(),
                     ((MethodArgumentNotValidException) Objects.requireNonNull(result.getResolvedException())).getBindingResult().getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList().toString()));
     }
 

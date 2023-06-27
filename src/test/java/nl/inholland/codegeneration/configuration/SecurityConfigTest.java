@@ -2,10 +2,12 @@ package nl.inholland.codegeneration.configuration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -84,7 +86,7 @@ public class SecurityConfigTest {
 
     UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = (UrlBasedCorsConfigurationSource) corsConfigurationSource;
 
-    CorsConfiguration registeredConfiguration = urlBasedCorsConfigurationSource.getCorsConfiguration(null);
+    CorsConfiguration registeredConfiguration = urlBasedCorsConfigurationSource.getCorsConfiguration(mock(HttpServletRequest.class));
 
     assertEquals(List.of("http://localhost:5173"), registeredConfiguration.getAllowedOrigins());
     assertEquals(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"), registeredConfiguration.getAllowedMethods());
@@ -92,7 +94,7 @@ public class SecurityConfigTest {
         registeredConfiguration.getAllowedHeaders());
     assertEquals(Arrays.asList("Authorization", "Cache-Control", "Content-Type"),
         registeredConfiguration.getExposedHeaders());
-    assertTrue(registeredConfiguration.getAllowCredentials());
+    assertTrue(Boolean.TRUE.equals(registeredConfiguration.getAllowCredentials()));
   }
 
 //  @Test

@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 
 class QueryParamsTest {
 
-    private QueryParams<Object> queryParams;
+    private QueryParams<User> queryParams;
 
     @Mock
     private Authentication authentication;
@@ -37,7 +37,7 @@ class QueryParamsTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
 
-        queryParams = new QueryParams<>(Object.class, 10, 1);
+        queryParams = new QueryParams<>(User.class, 12, 1);
     }
 
     @Test
@@ -45,7 +45,7 @@ class QueryParamsTest {
         when(authentication.getPrincipal()).thenReturn(mockUser);
         when(mockUser.getRoles()).thenReturn(Collections.singletonList(Role.EMPLOYEE));
 
-        FilterCriteria filterCriteria = new FilterCriteria("sampleKey", ":", "sampleValue");
+        FilterCriteria filterCriteria = new FilterCriteria("username", ":", "bob");
 
         assertTrue(queryParams.addFilter(filterCriteria));
     }
@@ -55,14 +55,14 @@ class QueryParamsTest {
         when(authentication.getPrincipal()).thenReturn(mockUser);
         when(mockUser.getRoles()).thenReturn(Collections.singletonList(Role.EMPLOYEE));
 
-        queryParams.setFilter("sampleKey:>:'sampleValue'");
+        queryParams.setFilter("id>:'3'");
 
         assertNotNull(queryParams.buildFilter());
     }
 
     @Test
     void testGetClassReference() {
-        assertEquals(Object.class, queryParams.getClassReference());
+        assertEquals(User.class, queryParams.getClassReference());
     }
 
     @Test
@@ -70,14 +70,14 @@ class QueryParamsTest {
         when(authentication.getPrincipal()).thenReturn(mockUser);
         when(mockUser.getRoles()).thenReturn(Collections.singletonList(Role.EMPLOYEE));
 
-        queryParams.setFilter("sampleKey:>:'sampleValue'");
+        queryParams.setFilter("id>:'4'");
 
         assertEquals(1, queryParams.getFilterCriteria().size());
     }
 
     @Test
     void testGetLimit() {
-        assertEquals(10, queryParams.getLimit());
+        assertEquals(12, queryParams.getLimit());
     }
 
     @Test
@@ -97,7 +97,7 @@ class QueryParamsTest {
         when(authentication.getPrincipal()).thenReturn(mockUser);
         when(mockUser.getRoles()).thenReturn(Collections.singletonList(Role.EMPLOYEE));
 
-        String filterQuery = "limit>:'10'";
+        String filterQuery = "isDeleted>:'true'";
         queryParams.setFilter(filterQuery);
 
         assertFalse(queryParams.getFilterCriteria().isEmpty());

@@ -416,7 +416,7 @@ public class AccountServiceTest {
         @Test
         void testDeleteAccount_BalanceNotZero() {
                 String iban = "NL88INHO0001204817";
-                Account existingAccount = new Account(iban, AccountType.CURRENT, null, new BigDecimal(0), null,
+                Account existingAccount = new Account(iban, AccountType.CURRENT, null, new BigDecimal(10), null,
                                 false);
 
                 Optional<Account> addedAccount = Optional.of(existingAccount);

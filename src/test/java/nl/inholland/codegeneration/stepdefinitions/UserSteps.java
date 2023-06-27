@@ -83,12 +83,12 @@ public class UserSteps {
     @When("I send a GET request to {string} endpoint with the filter set as {string} (invalid format).")
     public void i_send_a_GET_request_to_users_endpoint_with_the_filter_set_as_firstName_John_invalid_format(String path,
             String filter) {
-        String url = "http://localhost:8080/api" + path + "?filter=" + filter;
+        String url = "http://localhost:8080/" + path + "?filter=" + filter;
         response = restTemplate.getForEntity(url, UserResponseDTO[].class);
     }
-    @Then("I should receive a 400 Bad Request response.")
-    public void i_should_receive_a_400_Bad_Request_response() {
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    @Then("I should receive a {int} Bad Request response.")
+    public void i_should_receive_a_400_Bad_Request_response(Integer code) {
+        assertEquals(HttpStatus.BAD_REQUEST, responses.getStatusCode());
     }
 
     //Scenario: Fetching a Specific User
@@ -98,7 +98,7 @@ public class UserSteps {
     }
     @When("I send a GET request to {string} endpoint with a valid user ID.")
     public void i_send_a_GET_request_to_users_endpoint_with_a_valid_user_ID(String path) {
-        String url = "http://localhost:8080/api" + path;
+        String url = "http://localhost:8080/" + path;
         response = restTemplate.getForEntity(url, UserResponseDTO[].class);
     }
     @Then("I should receive a 200 OK response with UserResponseDTO of the user with the corresponding ID.")
@@ -111,7 +111,7 @@ public class UserSteps {
     // Scenario: Fetching User by Invalid ID
     @When("I send a GET request to {string} endpoint with an ID that does not exist in the system.")
     public void i_send_a_GET_request_to_users_endpoint_with_an_ID_that_does_not_exist_in_the_system(String path) {
-        String url = "http://localhost:8080/api" + path;
+        String url = "http://localhost:8080/" + path;
         response = restTemplate.getForEntity(url, UserResponseDTO[].class);
     }
     @Then("I should receive a 404 Not Found response.")
@@ -151,7 +151,7 @@ public class UserSteps {
     }
     @When("I send POST request to {string} with valid user details")
     public void i_send_POST_request_to_users_with_valid_user_details(String path) {
-        String url = "http://localhost:8080/api" + path;
+        String url = "http://localhost:8080/" + path;
         response = restTemplate.getForEntity(url, UserResponseDTO[].class);
     }
     // @Then("the response status should be 201")
@@ -165,7 +165,7 @@ public class UserSteps {
     //Scenario: Add a user with invalid data
     @When("I send POST request to {string} with invalid user details")
     public void i_send_POST_request_to_users_with_invalid_user_details(String path) {
-        String url = "http://localhost:8080/api" + path;
+        String url = "http://localhost:8080/" + path;
         response = restTemplate.getForEntity(url, UserResponseDTO[].class);
     }    
     @And("the response should contain {string}")
@@ -175,7 +175,7 @@ public class UserSteps {
     //Scenario: Update a user successfully
     @When("I send PUT request to {string} with valid user details")
     public void i_send_PUT_request_to_users_with_valid_user_details(String path) {
-        String url = "http://localhost:8080/api" + path;
+        String url = "http://localhost:8080/" + path;
         response = restTemplate.getForEntity(url, UserResponseDTO[].class);
     }
     // @Then("the response status should be 200")
@@ -189,7 +189,7 @@ public class UserSteps {
     //Scenario: Delete a user successfully
     @When("I send DELETE request to {string}")
     public void i_send_DELETE_request_to_users(String path) {
-        String url = "http://localhost:8080/api" + path;
+        String url = "http://localhost:8080/" + path;
         response = restTemplate.getForEntity(url, UserResponseDTO[].class);
     }
     @Then("the response status should be 204")

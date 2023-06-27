@@ -1,9 +1,15 @@
 Feature: Users
 
+    Background:
+        Given user is logged in as "EMPLOYEE" with username "johndoe" password "john123"
+        Given the API is running
+        Given user header is set
+        
+
     #getAllUsers
     Scenario: Fetching All Users with specific filter and limit
         Given there are users in the system and I have 'EMPLOYEE' authority.
-        When I send a GET request to '/users' endpoint with the filter set as 'firstName:John' and limit set as '20'.
+        When I send a GET request to '/users' endpoint with the filter set as 'firstName:John' and limit set as 20.
         Then I should receive a 200 OK response with a list of UserResponseDTOs of users with first name 'John' and the list should not contain more than 20 users.
 
     Scenario: Fetching All Users with Invalid Filter Format

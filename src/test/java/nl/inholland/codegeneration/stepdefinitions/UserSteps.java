@@ -134,10 +134,10 @@ public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_and_limit_se
         String url = "http://localhost:8080/api" + path;
         response = restTemplate.getForEntity(url, UserResponseDTO[].class);
     }
-    @Then("the response status should be 201")
-    public void the_response_status_should_be_201() {
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-    }
+    // @Then("the response status should be 201")
+    // public void the_response_status_should_be_201() {
+    //     assertEquals(HttpStatus.CREATED, response.getStatusCode());
+    // }
     @Then("the response should contain the added user details")
     public void the_response_should_contain_the_added_user_details() {
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -147,11 +147,7 @@ public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_and_limit_se
     public void i_send_POST_request_to_users_with_invalid_user_details(String path) {
         String url = "http://localhost:8080/api" + path;
         response = restTemplate.getForEntity(url, UserResponseDTO[].class);
-    }
-    @Then("the response status should be 400")
-    public void the_response_status_should_be_400() {
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    }
+    }    
     @And("the response should contain {string}")
     public void the_response_should_contain(String string) {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -162,10 +158,10 @@ public void i_send_a_get_request_to_endpoint_with_the_filter_set_as_and_limit_se
         String url = "http://localhost:8080/api" + path;
         response = restTemplate.getForEntity(url, UserResponseDTO[].class);
     }
-    @Then("the response status should be 200")
-    public void the_response_status_should_be_200() {
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
+    // @Then("the response status should be 200")
+    // public void the_response_status_should_be_200() {
+    //     assertEquals(HttpStatus.OK, response.getStatusCode());
+    // }
     @And("the response should contain the updated user details")
     public void the_response_should_contain_the_updated_user_details() {
         assertEquals(HttpStatus.OK, response.getStatusCode());

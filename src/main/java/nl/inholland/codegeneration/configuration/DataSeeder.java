@@ -97,9 +97,9 @@ public class DataSeeder implements ApplicationRunner {
                         passwordEncoder.encode("mark123"),
                         "Mark", "Bark", "mark.bark@gmail.com", "06 20587883", LocalDate.of(1903, 6, 13),
                         new BigDecimal(1000), new BigDecimal(200), true));
-                userRepository.save(new User(null, List.of(Role.CUSTOMER), "franktank",
-                        passwordEncoder.encode("frank123"),
-                        "Frank", "Tank", "frank@tank.dev", "0620587883", LocalDate.of(2005, 1, 13),
+                userRepository.save(new User(null, List.of(Role.CUSTOMER), "boris24",
+                        passwordEncoder.encode("boris123"),
+                        "Boris", "de Beste", "boris@best.dev", "06 12345678", LocalDate.of(2005, 1, 13),
                         new BigDecimal(1000), new BigDecimal(200), false));
                 userRepository.save(new User(null, List.of(Role.CUSTOMER), "floortje",
                         passwordEncoder.encode("floortje123"),
